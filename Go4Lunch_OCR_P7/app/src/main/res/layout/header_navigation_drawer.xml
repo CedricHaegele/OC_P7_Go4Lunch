@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="240dp"
+    android:orientation="vertical"
+    android:id="@+id/header_drawer">
+
+
+       <ImageView
+           android:id="@+id/dinner_header_drawer"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:scaleType="centerCrop"
+           android:src="@drawable/bolo" />
+
+
+       <TextView
+           android:id="@+id/topic_header_drawer"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_centerHorizontal="true"
+           android:layout_marginTop="1dp"
+           android:layout_marginEnd="0dp"
+           android:shadowColor="#E60808"
+           android:shadowDx="0.0"
+           android:shadowDy="0.0"
+           android:shadowRadius="10"
+           android:text="Go4Lunch"
+           android:textColor="#F3F0F0"
+           android:textSize="50sp"
+           android:textStyle="bold" />
+
+       <ImageView
+           android:id="@+id/PhotoUser"
+           android:layout_width="60dp"
+           android:layout_height="60dp"
+           android:layout_alignParentBottom="true"
+           android:layout_marginBottom="36dp"
+           android:backgroundTint="@color/black"
+           android:contentDescription="photo"
+           android:scaleType="center"
+           app:srcCompat="@mipmap/ic_launcher_round" />
+
+       <TextView
+           android:id="@+id/Name"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_below="@+id/topic_header_drawer"
+           android:layout_centerVertical="true"
+           android:layout_marginStart="10dp"
+           android:layout_marginTop="80dp"
+           android:layout_toEndOf="@id/PhotoUser"
+           android:textAppearance="?attr/textAppearanceBody1"
+           android:textColor="#592424"
+           android:textSize="12sp"
+           android:textStyle="bold"
+           app:drawableStartCompat="@drawable/ic_baseline_person_24"
+           app:drawableTint="@color/black"
+           android:text="John Malkovitch" />
+
+       <TextView
+           android:id="@+id/Mail"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_below="@+id/Name"
+           android:layout_centerVertical="true"
+           android:layout_marginStart="10dp"
+           android:layout_marginTop="5dp"
+           android:layout_toEndOf="@id/PhotoUser"
+           android:textAppearance="?attr/textAppearanceBody2"
+           android:textColor="#592424"
+           android:textSize="12sp"
+           android:textStyle="bold"
+           app:drawableStartCompat="@drawable/ic_baseline_email_24"
+           app:drawableTint="@color/black"
+           tools:layout_editor_absoluteX="154dp"
+           tools:layout_editor_absoluteY="124dp"
+           android:text="Jojo.Malko@gmail.com" />
+
+</RelativeLayout>
