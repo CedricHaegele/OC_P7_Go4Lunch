@@ -44,13 +44,11 @@ public class LoginActivity extends AppCompatActivity {
         //check if user is signed in (non-null) and Update UI accordingly
         firebaseAuth.addAuthStateListener(listener);
     }
-
     @Override
     protected void onStop() {
        // if (listener != null) firebaseAuth.removeAuthStateListener(listener);
         super.onStop();
     }
-
  */
 
     private void init() {

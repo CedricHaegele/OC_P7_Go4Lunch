@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.oc_p7_go4lunch.fragment.MapView;
 import com.example.oc_p7_go4lunch.model.Places;
 import com.example.oc_p7_go4lunch.model.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
@@ -12,7 +11,6 @@ import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.libraries.places.api.model.Place;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +22,7 @@ import retrofit2.Response;
 public class RestaurantsCall {
 
     public static List<RestaurantModel> restaurantList;
+
 
     public static void getRestaurants(String url, List<RestaurantModel> placesList, GoogleMap map, Context context) {
 
@@ -43,7 +42,7 @@ public class RestaurantsCall {
 
                             for (int i = 0; i < restaurantList.size(); i++) {
 
-                            placesList.add(restaurantList.get(i));
+                                placesList.add(restaurantList.get(i));
 
                                 map.addMarker(addMarker(map,placesList.get(i)));
 

@@ -18,14 +18,13 @@ import androidx.fragment.app.Fragment;
 
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.RestaurantsCall;
-import com.example.oc_p7_go4lunch.model.Places;
 import com.example.oc_p7_go4lunch.model.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
-import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -201,7 +200,7 @@ public class MapView extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void makeRequest(Location location){
+    private void makeRequest(Location location) {
 
         String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
                 + location.getLatitude() + ","
@@ -212,6 +211,7 @@ public class MapView extends Fragment implements OnMapReadyCallback {
 
         RestaurantsCall.getRestaurants(url, restaurantList, map, requireContext());
     }
+
 }
 
 
