@@ -19,12 +19,12 @@ import com.facebook.appevents.suggestedevents.ViewOnClickListener;
 
 import java.util.List;
 
-public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyViewHolder> implements View.OnClickListener {
+public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyViewHolder> {
 
     private Context context;
     private List<RestaurantModel> placesList;
 
-    public RestoListAdapter(List<RestaurantModel> placesList) {
+    public RestoListAdapter(List<RestaurantModel> placesList,Context context) {
         this.context = context;
         this.placesList = placesList;
     }
@@ -44,7 +44,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         holder.adress.setText(placesList.get(position).getPlaceId());
 
         Glide.with(context)
-                .load(placesList.get(position).getPhotos())
+                .load(placesList.get(position).getPhotos().get(0))
                 .into(holder.logo);
 
     }
@@ -72,9 +72,5 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
     }
 
-    @Override
-    public void onClick(View view) {
-
-    }
 }
 

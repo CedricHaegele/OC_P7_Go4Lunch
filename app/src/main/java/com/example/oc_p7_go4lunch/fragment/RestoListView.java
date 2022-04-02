@@ -30,6 +30,7 @@ import com.example.oc_p7_go4lunch.model.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -48,7 +49,7 @@ import retrofit2.Response;
 public class RestoListView extends Fragment {
 
     RecyclerView recyclerView;
-    List<RestaurantModel> placesList;
+    List<RestaurantModel> placesList = new ArrayList<>();
     LinearLayoutManager layoutManager;
     RestoListAdapter restoListAdapter;
 
@@ -74,11 +75,19 @@ public class RestoListView extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_resto_list, container, false);
 
-        getLocationPermission();
+        recyclerView = (RecyclerView)view;
 
+        //implémenter l'appel du RecyclerView
+        Context context = view.getContext();
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+
+        // Construct a FusedLocationProviderClient
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        getLocationPermission();
+        getDeviceLocation();
         return view;
     }
 
@@ -136,11 +145,9 @@ public class RestoListView extends Fragment {
                         restaurantList = response.body().getPlacesList();
 
                         if (restaurantList != null && restaurantList.size() > 0) {
-                            placesList.clear();
-                            //implémenter l'appel du RecyclerView
-                            recyclerView.setLayoutManager(layoutManager);
-                            restoListAdapter= new RestoListAdapter(restaurantList);
+                            restoListAdapter= new RestoListAdapter(restaurantList,getContext());
                             recyclerView.setAdapter(restoListAdapter);
+
 
                         } else {
                             placesList.clear();
