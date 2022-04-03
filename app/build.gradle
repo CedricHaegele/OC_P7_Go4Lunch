@@ -72,6 +72,8 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+
     //EASY PERMISSIONS
     implementation 'pub.devrel:easypermissions:3.0.0'
 

@@ -50,11 +50,9 @@ public class RestoListView extends Fragment {
 
     RecyclerView recyclerView;
     List<RestaurantModel> placesList = new ArrayList<>();
-    LinearLayoutManager layoutManager;
     RestoListAdapter restoListAdapter;
 
     GoogleMap map;
-    FloatingActionButton locationBtn;
 
     List<RestaurantModel> restaurantList = new ArrayList<>();
 
