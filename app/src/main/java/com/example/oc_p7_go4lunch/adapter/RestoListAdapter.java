@@ -15,18 +15,21 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
+import com.example.oc_p7_go4lunch.model.OpeningHours;
 import com.example.oc_p7_go4lunch.model.Places;
 import com.example.oc_p7_go4lunch.model.RestaurantModel;
 import com.facebook.appevents.suggestedevents.ViewOnClickListener;
 import com.squareup.picasso.Picasso;
 
+import java.time.DayOfWeek;
 import java.util.List;
 
 public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyViewHolder> {
 
-    private static final String TAG = "Test" ;
+    private static final String TAG = "Test";
     private Context context;
     private List<RestaurantModel> placesList;
+    private RestaurantModel restaurantModel;
 
     public RestoListAdapter(List<RestaurantModel> placesList, Context context) {
         this.context = context;
@@ -47,10 +50,12 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         holder.name.setText(placesList.get(position).getName());
         holder.adress.setText(placesList.get(position).getVicinity());
 
-        Glide.with(context.getApplicationContext())
-                .load(placesList.get(position).getPhotos())
-                .placeholder(R.drawable.ic_launcher_background)
+        Picasso.get()
+                .load(restaurantModel.getPhotos().get(0).getPhotoUrl())
+                .fit()
+                .centerCrop()
                 .into(holder.logo);
+
     }
 
     @Override
@@ -63,14 +68,16 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
         TextView name;
         TextView adress;
+        TextView openhours;
         ImageView logo;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            name = itemView.findViewById(R.id.nameResto);
-            adress = itemView.findViewById(R.id.adressResto);
-            logo = itemView.findViewById(R.id.imageResto);
+            name = itemView.findViewById(R.id.name);
+            adress = itemView.findViewById(R.id.address);
+            logo = itemView.findViewById(R.id.photo);
+            openhours = itemView.findViewById(R.id.opening_hours);
 
         }
 

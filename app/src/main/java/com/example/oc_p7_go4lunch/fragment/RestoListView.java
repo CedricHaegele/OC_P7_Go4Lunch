@@ -2,8 +2,11 @@ package com.example.oc_p7_go4lunch.fragment;
 
 import static android.content.ContentValues.TAG;
 
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 
@@ -29,6 +32,7 @@ import com.example.oc_p7_go4lunch.model.Places;
 import com.example.oc_p7_go4lunch.model.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,9 +40,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -51,6 +61,10 @@ public class RestoListView extends Fragment {
     RecyclerView recyclerView;
     List<RestaurantModel> placesList = new ArrayList<>();
     RestoListAdapter restoListAdapter;
+
+    // The entry point to the Places API.
+    private PlacesClient placesClient;
+
 
     GoogleMap map;
 
@@ -75,12 +89,7 @@ public class RestoListView extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_resto_list, container, false);
 
-        recyclerView = (RecyclerView)view;
-
-        //implémenter l'appel du RecyclerView
-        Context context = view.getContext();
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-
+        recyclerView = (RecyclerView) view;
 
         // Construct a FusedLocationProviderClient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
@@ -143,7 +152,7 @@ public class RestoListView extends Fragment {
                         restaurantList = response.body().getPlacesList();
 
                         if (restaurantList != null && restaurantList.size() > 0) {
-                            restoListAdapter= new RestoListAdapter(restaurantList,getContext());
+                            restoListAdapter = new RestoListAdapter(restaurantList, getContext());
                             recyclerView.setAdapter(restoListAdapter);
 
 
@@ -200,6 +209,5 @@ public class RestoListView extends Fragment {
             }
         }
     }
-
-
 }
+

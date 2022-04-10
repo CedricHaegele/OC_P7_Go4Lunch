@@ -1,5 +1,7 @@
 package com.example.oc_p7_go4lunch.model;
 
+import com.example.oc_p7_go4lunch.fragment.RestoListView;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

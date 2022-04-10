@@ -3,6 +3,7 @@ package com.example.oc_p7_go4lunch.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.example.oc_p7_go4lunch.BuildConfig;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -13,16 +14,18 @@ public class Photo implements Serializable
     @SerializedName("height")
     @Expose
     private Integer height;
+
     @SerializedName("html_attributions")
     @Expose
     private List<String> htmlAttributions = null;
+
     @SerializedName("photo_reference")
     @Expose
     private String photoReference;
+
     @SerializedName("width")
     @Expose
     private Integer width;
-
 
     public Integer getHeight() {
         return height;
@@ -54,6 +57,12 @@ public class Photo implements Serializable
 
     public void setWidth(Integer width) {
         this.width = width;
+    }
+
+    public String getPhotoUrl() {
+        String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=";
+        String key = "&key=" + "AIzaSyAKLxEEJ5Gzxjsm2Arvz_bNpeTFdgJ7xik";
+        return url + getPhotoReference() + key;
     }
 
 }
