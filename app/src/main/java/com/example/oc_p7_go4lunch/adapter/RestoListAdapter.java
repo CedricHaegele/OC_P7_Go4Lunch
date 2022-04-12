@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,10 +27,10 @@ import java.util.List;
 
 public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyViewHolder> {
 
-    private static final String TAG = "Test";
     private Context context;
     private List<RestaurantModel> placesList;
-    private RestaurantModel restaurantModel;
+    public RestaurantModel restaurantModel;
+
 
     public RestoListAdapter(List<RestaurantModel> placesList, Context context) {
         this.context = context;
@@ -49,9 +50,10 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.name.setText(placesList.get(position).getName());
         holder.adress.setText(placesList.get(position).getVicinity());
+        holder.ratingBar.setRating(placesList.get(position).getRating().hashCode());
 
         Picasso.get()
-                .load(restaurantModel.getPhotos().get(0).getPhotoUrl())
+                .load(placesList.get(position).getIcon())
                 .fit()
                 .centerCrop()
                 .into(holder.logo);
@@ -70,6 +72,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         TextView adress;
         TextView openhours;
         ImageView logo;
+        RatingBar ratingBar;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -78,6 +81,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             adress = itemView.findViewById(R.id.address);
             logo = itemView.findViewById(R.id.photo);
             openhours = itemView.findViewById(R.id.opening_hours);
+            ratingBar = itemView.findViewById(R.id.ratingBar);
 
         }
 
