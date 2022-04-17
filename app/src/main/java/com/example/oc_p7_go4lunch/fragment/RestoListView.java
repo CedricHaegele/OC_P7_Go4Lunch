@@ -152,9 +152,9 @@ public class RestoListView extends Fragment {
                         restaurantList = response.body().getPlacesList();
 
                         if (restaurantList != null && restaurantList.size() > 0) {
+                            Toast.makeText(getContext(),restaurantList.get(0).getPhotos().get(0).getPhotoUrl(),Toast.LENGTH_LONG).show();
                             restoListAdapter = new RestoListAdapter(restaurantList, getContext());
                             recyclerView.setAdapter(restoListAdapter);
-
 
                         } else {
                             placesList.clear();

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,14 +24,13 @@ import com.facebook.appevents.suggestedevents.ViewOnClickListener;
 import com.squareup.picasso.Picasso;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyViewHolder> {
 
     private Context context;
     private List<RestaurantModel> placesList;
-    public RestaurantModel restaurantModel;
-
 
     public RestoListAdapter(List<RestaurantModel> placesList, Context context) {
         this.context = context;
@@ -48,14 +48,20 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.name.setText(placesList.get(position).getName());
-        holder.adress.setText(placesList.get(position).getVicinity());
-        holder.ratingBar.setRating(placesList.get(position).getRating().hashCode());
+        RestaurantModel restaurantModel = placesList.get(position);
 
-        Picasso.get()
-                .load(placesList.get(position).getIcon())
-                .fit()
-                .centerCrop()
+        holder.name.setText(restaurantModel.getName());
+        holder.adress.setText(restaurantModel.getVicinity());
+        holder.ratingBar.setRating((Float.parseFloat(String.valueOf(restaurantModel.getRating()))) / 2);
+
+        if(restaurantModel.getPhotos().size()>0){
+            //Toast.makeText(context.getApplicationContext(), (CharSequence) restaurantModel.getPhotos().get(2), Toast.LENGTH_LONG).show();
+            Log.d("TestPhotos",restaurantModel.getPhotos().get(0).getPhotoUrl());
+
+        }
+
+        Glide.with(context)
+                .load(restaurantModel.getPhotos().get(0).getPhotoUrl())
                 .into(holder.logo);
 
     }
@@ -73,6 +79,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         TextView openhours;
         ImageView logo;
         RatingBar ratingBar;
+
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
