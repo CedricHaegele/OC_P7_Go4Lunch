@@ -2,11 +2,8 @@ package com.example.oc_p7_go4lunch.fragment;
 
 import static android.content.ContentValues.TAG;
 
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
-
-import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 
@@ -14,41 +11,31 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.RestaurantsCall;
+
 import com.example.oc_p7_go4lunch.adapter.RestoListAdapter;
 import com.example.oc_p7_go4lunch.model.Places;
 import com.example.oc_p7_go4lunch.model.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.model.PhotoMetadata;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPhotoRequest;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -90,6 +77,9 @@ public class RestoListView extends Fragment {
         View view = inflater.inflate(R.layout.fragment_resto_list, container, false);
 
         recyclerView = (RecyclerView) view;
+
+        // Calling the method that configuring click on RecyclerView
+        this.configureOnClickRecyclerView();
 
         // Construct a FusedLocationProviderClient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
@@ -152,7 +142,6 @@ public class RestoListView extends Fragment {
                         restaurantList = response.body().getPlacesList();
 
                         if (restaurantList != null && restaurantList.size() > 0) {
-                            Toast.makeText(getContext(),restaurantList.get(0).getPhotos().get(0).getPhotoUrl(),Toast.LENGTH_LONG).show();
                             restoListAdapter = new RestoListAdapter(restaurantList, getContext());
                             recyclerView.setAdapter(restoListAdapter);
 
@@ -208,6 +197,25 @@ public class RestoListView extends Fragment {
                 getDeviceLocation();
             }
         }
+    }
+
+    // Configure item click on RecyclerView
+    private void configureOnClickRecyclerView() {
+        ItemClickSupport.addTo(recyclerView, R.layout.fragment_resto_item)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+
+                        // 1 - Get restaurant from adapter
+                        RestaurantModel restaurant = restoListAdapter.getPlacesList().get(position);
+                        // 2 - Show result in a Toast
+                        Toast.makeText(getContext(), "You clicked on Restaurant : " + restaurant.getName(), Toast.LENGTH_SHORT).show();
+
+                     //   Intent intent = new Intent (getActivity(), DetailRestaurant.class);
+                    //    startActivity(intent);
+
+                    }
+                });
     }
 }
 

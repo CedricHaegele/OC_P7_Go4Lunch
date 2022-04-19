@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.oc_p7_go4lunch.R;
+
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.model.OpeningHours;
 import com.example.oc_p7_go4lunch.model.Places;
@@ -32,18 +33,19 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     private Context context;
     private List<RestaurantModel> placesList;
 
+
     public RestoListAdapter(List<RestaurantModel> placesList, Context context) {
         this.context = context;
         this.placesList = placesList;
-    }
+            }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        View v = inflater.inflate(R.layout.fragment_resto_item, parent, false);
-        return new MyViewHolder(v);
+        View view = inflater.inflate(R.layout.fragment_resto_item, parent, false);
+        return new MyViewHolder(view);
     }
 
     @Override
@@ -54,15 +56,20 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         holder.adress.setText(restaurantModel.getVicinity());
         holder.ratingBar.setRating((Float.parseFloat(String.valueOf(restaurantModel.getRating()))) / 2);
 
-        if(restaurantModel.getPhotos().size()>0){
-            //Toast.makeText(context.getApplicationContext(), (CharSequence) restaurantModel.getPhotos().get(2), Toast.LENGTH_LONG).show();
-            Log.d("TestPhotos",restaurantModel.getPhotos().get(0).getPhotoUrl());
-
+        if (restaurantModel.getOpeningHours() != null) {
+            holder.openhours.setVisibility(View.GONE);
         }
 
         Glide.with(context)
                 .load(restaurantModel.getPhotos().get(0).getPhotoUrl())
                 .into(holder.logo);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
     }
 
@@ -77,8 +84,10 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         TextView name;
         TextView adress;
         TextView openhours;
+        TextView distance;
         ImageView logo;
         RatingBar ratingBar;
+        TextView root;
 
 
         public MyViewHolder(@NonNull View itemView) {
@@ -89,10 +98,12 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             logo = itemView.findViewById(R.id.photo);
             openhours = itemView.findViewById(R.id.opening_hours);
             ratingBar = itemView.findViewById(R.id.ratingBar);
-
+            distance = itemView.findViewById(R.id.distance);
         }
-
     }
 
+    public List<RestaurantModel> getPlacesList() {
+        return placesList;
+    }
 }
 
