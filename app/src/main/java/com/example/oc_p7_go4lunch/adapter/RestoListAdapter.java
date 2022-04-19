@@ -1,31 +1,23 @@
 package com.example.oc_p7_go4lunch.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.oc_p7_go4lunch.R;
 
-import com.example.oc_p7_go4lunch.fragment.RestoListView;
-import com.example.oc_p7_go4lunch.model.OpeningHours;
-import com.example.oc_p7_go4lunch.model.Places;
+import com.example.oc_p7_go4lunch.RestaurantDetail;
 import com.example.oc_p7_go4lunch.model.RestaurantModel;
-import com.facebook.appevents.suggestedevents.ViewOnClickListener;
-import com.squareup.picasso.Picasso;
 
-import java.time.DayOfWeek;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyViewHolder> {
@@ -64,12 +56,6 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
                 .load(restaurantModel.getPhotos().get(0).getPhotoUrl())
                 .into(holder.logo);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
 
     }
 

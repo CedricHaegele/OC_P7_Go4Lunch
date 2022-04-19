@@ -37,6 +37,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -210,9 +211,6 @@ public class RestoListView extends Fragment {
                         RestaurantModel restaurant = restoListAdapter.getPlacesList().get(position);
                         // 2 - Show result in a Toast
                         Toast.makeText(getContext(), "You clicked on Restaurant : " + restaurant.getName(), Toast.LENGTH_SHORT).show();
-
-                     //   Intent intent = new Intent (getActivity(), DetailRestaurant.class);
-                    //    startActivity(intent);
 
                     }
                 });
