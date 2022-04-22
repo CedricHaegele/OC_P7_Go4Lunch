@@ -9,13 +9,11 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
 
-import com.example.oc_p7_go4lunch.RestaurantDetail;
 import com.example.oc_p7_go4lunch.model.RestaurantModel;
 
 import java.util.List;
@@ -49,7 +47,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         holder.ratingBar.setRating((Float.parseFloat(String.valueOf(restaurantModel.getRating()))) / 2);
 
         if (restaurantModel.getOpeningHours() != null) {
-            holder.openhours.setVisibility(View.GONE);
+            holder.openhours.setVisibility(View.VISIBLE);
         }
 
         Glide.with(context)

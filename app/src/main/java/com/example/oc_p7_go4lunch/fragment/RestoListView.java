@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
 import com.example.oc_p7_go4lunch.R;
 
@@ -37,7 +38,6 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -202,7 +202,7 @@ public class RestoListView extends Fragment {
 
     // Configure item click on RecyclerView
     private void configureOnClickRecyclerView() {
-        ItemClickSupport.addTo(recyclerView, R.layout.fragment_resto_item)
+        ItemClickSupport.addTo(recyclerView, R.layout.fragment_resto_list)
                 .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
@@ -212,6 +212,13 @@ public class RestoListView extends Fragment {
                         // 2 - Show result in a Toast
                         Toast.makeText(getContext(), "You clicked on Restaurant : " + restaurant.getName(), Toast.LENGTH_SHORT).show();
 
+                        Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
+                        intent.putExtra("Name",restaurant.getName());
+                        intent.putExtra("Adress",restaurant.getVicinity());
+                        intent.putExtra("Rating",restaurant.getRating());
+                        intent.putExtra("Photo",restaurant.getPhotos().get(0).getPhotoReference());
+
+                        startActivity(intent);
                     }
                 });
     }
