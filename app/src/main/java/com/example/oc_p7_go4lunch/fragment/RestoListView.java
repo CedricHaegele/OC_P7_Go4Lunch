@@ -215,6 +215,7 @@ public class RestoListView extends Fragment {
                         Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
                         intent.putExtra("Name",restaurant.getName());
                         intent.putExtra("Adress",restaurant.getVicinity());
+                        // intent.putExtra("Type",restaurant.getGeometry());
                         intent.putExtra("Rating",restaurant.getRating());
                         intent.putExtra("Photo",restaurant.getPhotos().get(0).getPhotoReference());
 

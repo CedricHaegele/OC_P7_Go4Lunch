@@ -1,7 +1,9 @@
 package com.example.oc_p7_go4lunch.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -13,10 +15,6 @@ import com.example.oc_p7_go4lunch.model.RestaurantModel;
 
 public class RestaurantDetail extends AppCompatActivity {
 
-    TextView restaurantName;
-    public int position;
-    RestaurantModel restaurantModel;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -24,10 +22,30 @@ public class RestaurantDetail extends AppCompatActivity {
         setContentView(R.layout.restaurant_detail);
 
 
-        restaurantModel = (RestaurantModel) getIntent().getSerializableExtra("Restaurant");
-        position = getIntent().getIntExtra("Position", 0);
+        TextView Detail = (TextView) findViewById(R.id.detail_name);
+        TextView Adress = (TextView)findViewById(R.id.detail_address);
+        // TextView Type = (TextView)findViewById(R.id.type_restaurant);
 
-        restaurantName = findViewById(R.id.detail_name);
+
+
+
+        Intent callingIntent = getIntent();
+        if (callingIntent!=null){
+            String name = callingIntent.getStringExtra("Name");
+            String adress = callingIntent.getStringExtra("Adress");
+            // String type = callingIntent.getStringExtra("Type");
+
+            String data = name ;
+            Detail.setText(data);
+
+            String data2 = adress;
+            Adress.setText(data2);
+
+            // String data3 = type;
+            // Type.setText(data3);
+
+        }
+
 
     }
 
