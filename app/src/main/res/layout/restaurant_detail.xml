@@ -8,22 +8,13 @@
     android:fitsSystemWindows="true"
     tools:context=".activities.RestaurantDetail">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="230dp"
-        android:fitsSystemWindows="true"
-        android:theme="@style/Widget.AppCompat.Light.ActionBar.TabView">
-
         <ImageView
             android:id="@+id/detail_photo"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="230dp"
             android:contentDescription="restaurant_photo"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/bolo" />
-
-    </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -66,13 +57,6 @@
                 android:text="12 rue Faubourg Poissonière"
                 android:textColor="@android:color/white" />
 
-            <TextView
-                android:id="@+id/type_restaurant"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:text="French Restaurant "
-                android:textColor="@android:color/white" />
 
         </LinearLayout>
 
@@ -138,7 +122,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@android:color/white"
-        app:layout_anchor="@id/app_bar"
+        app:layout_anchor="@id/detail_photo"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@drawable/ic_baseline_check_circle_24" />
 
