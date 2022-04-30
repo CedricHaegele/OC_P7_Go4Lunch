@@ -121,13 +121,12 @@ public class MapView extends Fragment implements OnMapReadyCallback {
 
         // adding on click listener to marker of google maps.
         map.setOnMarkerClickListener(marker -> {
-            // on marker click we are getting the title of our marker
-            // which is clicked and displaying it in a toast message.
+
             String markerName = marker.getTitle();
+            RestaurantModel placeId = (RestaurantModel) marker.getTag();
 
             Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
-
-            intent.putExtra("Restaurant", (RestaurantModel) map.addMarker(new MarkerOptions().position(latLngArrayList.get(i)).title("Marker in " + locationNameArraylist.get(i))).getTag());
+            intent.putExtra("Restaurant", placeId);
 
             Toast.makeText(requireContext(), "The Restaurant clicked is " + markerName, Toast.LENGTH_SHORT).show();
             startActivity(intent);
