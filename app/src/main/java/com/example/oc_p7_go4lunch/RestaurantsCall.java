@@ -4,8 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.oc_p7_go4lunch.model.Places;
-import com.example.oc_p7_go4lunch.model.RestaurantModel;
+import com.example.oc_p7_go4lunch.model.googleplaces.Places;
+import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.gms.maps.GoogleMap;

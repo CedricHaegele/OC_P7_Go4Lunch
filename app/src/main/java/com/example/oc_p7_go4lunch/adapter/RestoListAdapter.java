@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
 
-import com.example.oc_p7_go4lunch.model.RestaurantModel;
+import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 
 import java.util.List;
 
@@ -23,11 +23,10 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     private Context context;
     private List<RestaurantModel> placesList;
 
-
     public RestoListAdapter(List<RestaurantModel> placesList, Context context) {
         this.context = context;
         this.placesList = placesList;
-            }
+    }
 
     @NonNull
     @Override
@@ -46,15 +45,10 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         holder.adress.setText(restaurantModel.getVicinity());
         holder.ratingBar.setRating((Float.parseFloat(String.valueOf(restaurantModel.getRating()))) / 2);
 
-        if (restaurantModel.getOpeningHours() != null) {
-            holder.openhours.setVisibility(View.VISIBLE);
-        }
 
         Glide.with(context)
                 .load(restaurantModel.getPhotos().get(0).getPhotoUrl())
                 .into(holder.logo);
-
-
     }
 
     @Override
@@ -65,13 +59,12 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
+        public ImageView logo;
         TextView name;
         TextView adress;
         TextView openhours;
         TextView distance;
-        ImageView logo;
         RatingBar ratingBar;
-        TextView root;
 
 
         public MyViewHolder(@NonNull View itemView) {

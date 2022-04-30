@@ -1,7 +1,7 @@
 package com.example.oc_p7_go4lunch;
 
-import com.example.oc_p7_go4lunch.model.Geometry;
-import com.example.oc_p7_go4lunch.model.Photo;
+import com.example.oc_p7_go4lunch.model.googleplaces.Geometry;
+import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

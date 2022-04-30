@@ -1,6 +1,6 @@
 package com.example.oc_p7_go4lunch.webservices;
 
-import com.example.oc_p7_go4lunch.model.Places;
+import com.example.oc_p7_go4lunch.model.googleplaces.Places;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

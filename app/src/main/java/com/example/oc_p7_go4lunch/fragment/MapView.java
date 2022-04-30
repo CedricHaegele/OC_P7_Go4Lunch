@@ -21,10 +21,7 @@ import androidx.fragment.app.Fragment;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.RestaurantsCall;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
-import com.example.oc_p7_go4lunch.model.Places;
-import com.example.oc_p7_go4lunch.model.RestaurantModel;
-import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
-import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
+import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,7 +29,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -44,7 +40,7 @@ public class MapView extends Fragment implements OnMapReadyCallback {
 
     GoogleMap map;
     FloatingActionButton locationBtn;
-    ArrayList<LatLng> arrayList = new ArrayList<LatLng>();
+    ArrayList<LatLng> arrayList = new ArrayList<>();
     LatLng Strasbourg = new LatLng(48.583328, 7.75);
 
     // two array list for our lat long and location Name;
@@ -106,7 +102,7 @@ public class MapView extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
         map = googleMap;
         LatLng sydney = new LatLng(-33.852, 151.211);
         map.addMarker(new MarkerOptions()
@@ -124,20 +120,20 @@ public class MapView extends Fragment implements OnMapReadyCallback {
         }
 
         // adding on click listener to marker of google maps.
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                // on marker click we are getting the title of our marker
-                // which is clicked and displaying it in a toast message.
-                String markerName = marker.getTitle();
-                Toast.makeText(requireContext(), "Clicked location is " + markerName, Toast.LENGTH_SHORT).show();
+        map.setOnMarkerClickListener(marker -> {
+            // on marker click we are getting the title of our marker
+            // which is clicked and displaying it in a toast message.
+            String markerName = marker.getTitle();
 
-                Intent intent = new Intent(requireContext(),RestaurantDetail.class);
-                startActivity(intent);
+            Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
 
-                return false;
-            }
+            intent.putExtra("Restaurant", (RestaurantModel) map.addMarker(new MarkerOptions().position(latLngArrayList.get(i)).title("Marker in " + locationNameArraylist.get(i))).getTag());
+
+            Toast.makeText(requireContext(), "The Restaurant clicked is " + markerName, Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+            return false;
         });
+
         map.getUiSettings().setZoomControlsEnabled(true);
     }
 

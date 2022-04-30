@@ -3,7 +3,7 @@ package com.example.oc_p7_go4lunch.viewmodel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.oc_p7_go4lunch.model.RestaurantModel;
+import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 
 import java.util.List;
 

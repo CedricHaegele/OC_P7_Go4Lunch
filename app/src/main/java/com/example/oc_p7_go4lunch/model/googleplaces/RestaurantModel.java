@@ -1,4 +1,4 @@
-package com.example.oc_p7_go4lunch.model;
+package com.example.oc_p7_go4lunch.model.googleplaces;
 
 import java.io.Serializable;
 import java.util.List;

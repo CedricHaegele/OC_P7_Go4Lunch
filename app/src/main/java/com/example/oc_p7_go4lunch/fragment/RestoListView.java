@@ -24,8 +24,8 @@ import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
 import com.example.oc_p7_go4lunch.R;
 
 import com.example.oc_p7_go4lunch.adapter.RestoListAdapter;
-import com.example.oc_p7_go4lunch.model.Places;
-import com.example.oc_p7_go4lunch.model.RestaurantModel;
+import com.example.oc_p7_go4lunch.model.googleplaces.Places;
+import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -203,23 +203,16 @@ public class RestoListView extends Fragment {
     // Configure item click on RecyclerView
     private void configureOnClickRecyclerView() {
         ItemClickSupport.addTo(recyclerView, R.layout.fragment_resto_list)
-                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-                    @Override
-                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                .setOnItemClickListener((recyclerView, position, v) -> {
 
-                        // 1 - Get restaurant from adapter
-                        RestaurantModel restaurant = restoListAdapter.getPlacesList().get(position);
-                        // 2 - Show result in a Toast
-                        Toast.makeText(getContext(), "You clicked on Restaurant : " + restaurant.getName(), Toast.LENGTH_SHORT).show();
+                    // 1 - Get restaurant from adapter
+                    RestaurantModel restaurant = restoListAdapter.getPlacesList().get(position);
+                    // 2 - Show result in a Toast
+                    Toast.makeText(getContext(), "You clicked on Restaurant : " + restaurant.getName(), Toast.LENGTH_SHORT).show();
 
-                        Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
-                        intent.putExtra("Name",restaurant.getName());
-                        intent.putExtra("Adress",restaurant.getVicinity());
-
-                        intent.putExtra("Photo",restaurant.getPhotos().get(0).getPhotoReference());
-
-                        startActivity(intent);
-                    }
+                    Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
+                    intent.putExtra("Restaurant", restaurant);
+                    startActivity(intent);
                 });
     }
 }

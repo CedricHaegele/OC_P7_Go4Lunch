@@ -1,4 +1,4 @@
-package com.example.oc_p7_go4lunch.model;
+package com.example.oc_p7_go4lunch.model.googleplaces;
 
 import com.google.gson.annotations.SerializedName;
 
