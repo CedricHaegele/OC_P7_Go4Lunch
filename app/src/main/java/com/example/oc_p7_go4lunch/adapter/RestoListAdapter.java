@@ -1,6 +1,9 @@
 package com.example.oc_p7_go4lunch.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.location.Location;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
 
+import com.example.oc_p7_go4lunch.model.googleplaces.OpeningHours;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
+import com.firebase.ui.auth.data.model.User;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -44,6 +50,20 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         holder.name.setText(restaurantModel.getName());
         holder.adress.setText(restaurantModel.getVicinity());
         holder.ratingBar.setRating((Float.parseFloat(String.valueOf(restaurantModel.getRating()))) / 2);
+
+        //Opening Hours
+        String ifOpen;
+        OpeningHours openingHours = restaurantModel.getOpeningHours();
+        if (openingHours != null) {
+            if (openingHours.getOpenNow()) {
+                ifOpen = context.getString(R.string.openRest);
+            } else {
+                ifOpen = context.getString(R.string.closedRest);
+            }
+            holder.openhours.setText(ifOpen);
+        }
+
+        //Distance with user
 
 
         Glide.with(context)

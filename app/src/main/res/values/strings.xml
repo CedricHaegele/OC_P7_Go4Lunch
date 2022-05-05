@@ -55,4 +55,8 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
 
+    //opening Hours
+    <string name="openRest">OPEN</string>
+    <string name="closedRest">CLOSED</string>
+
 </resources>

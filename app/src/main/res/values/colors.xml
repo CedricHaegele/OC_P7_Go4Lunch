@@ -13,6 +13,7 @@
     <color name="whiteM">#bebebe</color>
     <color name="whiteGrey">#d3d3d3</color>
     <color name="orange">#FFA500</color>
+    <color name="red">#F61202</color>
 
     <!-- APP BASE -->
     <color name="colorAccentDark">#000000</color>

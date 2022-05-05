@@ -22,6 +22,7 @@ import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.RestaurantsCall;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,17 +32,27 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MapView extends Fragment implements OnMapReadyCallback {
 
     GoogleMap map;
     FloatingActionButton locationBtn;
+    PlacesClient placesClient;
     ArrayList<LatLng> arrayList = new ArrayList<>();
-    LatLng Strasbourg = new LatLng(48.583328, 7.75);
 
     // two array list for our lat long and location Name;
     private ArrayList<LatLng> latLngArrayList;
@@ -72,6 +83,30 @@ public class MapView extends Fragment implements OnMapReadyCallback {
                 .findFragmentById(R.id.mapGps);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
+
+        String apikey = "google_maps_key";
+        Places.initialize(requireContext(), apikey);
+
+        PlacesClient placesClient = Places.createClient(requireContext());
+
+        AutocompleteSupportFragment autocompleteSupportFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        autocompleteSupportFragment.setTypeFilter(TypeFilter.ESTABLISHMENT);
+
+        autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onError(@NonNull Status status) {
+                Log.i(TAG, "An error Occured: " + status);
+            }
+
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+            }
+        });
+
 
         // Construct a FusedLocationProviderClient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
@@ -245,8 +280,3 @@ public class MapView extends Fragment implements OnMapReadyCallback {
         RestaurantsCall.getRestaurants(url, restaurantList, map, requireContext());
     }
 }
-
-
-
-
-

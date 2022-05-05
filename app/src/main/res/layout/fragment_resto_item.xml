@@ -42,7 +42,7 @@
                 android:id="@+id/opening_hours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Open until 7 pm"
+                android:text="OPEN"
                 android:textSize="15sp"
                 android:textStyle="italic" />
         </LinearLayout>
