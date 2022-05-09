@@ -51,8 +51,6 @@ public class MapView extends Fragment implements OnMapReadyCallback {
 
     GoogleMap map;
     FloatingActionButton locationBtn;
-    PlacesClient placesClient;
-    ArrayList<LatLng> arrayList = new ArrayList<>();
 
     // two array list for our lat long and location Name;
     private ArrayList<LatLng> latLngArrayList;
@@ -81,29 +79,42 @@ public class MapView extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.mapGps);
-        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
-        String apikey = "google_maps_key";
-        Places.initialize(requireContext(), apikey);
+        String apiKey = getString(R.string.google_api_key);
+
+        if (!Places.isInitialized()) {
+            Places.initialize(requireContext(), apiKey);
+        }
 
         PlacesClient placesClient = Places.createClient(requireContext());
 
-        AutocompleteSupportFragment autocompleteSupportFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
-        autocompleteSupportFragment.setTypeFilter(TypeFilter.ESTABLISHMENT);
+        autocompleteFragment.setLocationBias(RectangularBounds.newInstance(
+                new LatLng(-33.852, 151.211),
+                new LatLng(-33.852, 151.211)));
 
-        autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        //select a country
+        autocompleteFragment.setCountries("US");
 
-        autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onError(@NonNull Status status) {
-                Log.i(TAG, "An error Occured: " + status);
-            }
+        // Specify the types of place data to return.
+        assert autocompleteFragment != null;
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
 
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+            }
+
+
+            @Override
+            public void onError(@NonNull Status status) {
+                Log.i(TAG, "An error occurred: " + status);
             }
         });
 

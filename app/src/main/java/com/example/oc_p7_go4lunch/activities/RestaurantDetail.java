@@ -3,6 +3,7 @@ package com.example.oc_p7_go4lunch.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -23,6 +24,7 @@ public class RestaurantDetail extends AppCompatActivity {
         TextView Detail = findViewById(R.id.detail_name);
         TextView Adress = findViewById(R.id.detail_address);
         ImageView logo =  findViewById(R.id.logo);
+        RatingBar ratingBar = findViewById(R.id.ratingBar);
 
         Intent callingIntent = getIntent();
 
@@ -30,7 +32,6 @@ public class RestaurantDetail extends AppCompatActivity {
             RestaurantModel restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
             Detail.setText(restaurant.getName());
             Adress.setText(restaurant.getVicinity());
-
 
             Glide.with(this)
                     .load(restaurant.getPhotos().get(0).getPhotoUrl())

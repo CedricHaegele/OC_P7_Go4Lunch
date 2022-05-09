@@ -12,6 +12,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -63,7 +64,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             holder.openhours.setText(ifOpen);
         }
 
-        //Distance with user
+        //get the Distance with user
 
 
         Glide.with(context)
