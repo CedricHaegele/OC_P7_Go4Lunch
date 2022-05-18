@@ -49,6 +49,8 @@ public class RestoListView extends Fragment {
     RecyclerView recyclerView;
     List<RestaurantModel> placesList = new ArrayList<>();
     RestoListAdapter restoListAdapter;
+    private static double currentLatitude;
+    private static double currentLongitude;
 
     // The entry point to the Places API.
     private PlacesClient placesClient;
@@ -77,7 +79,7 @@ public class RestoListView extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_resto_list, container, false);
 
-        recyclerView = (RecyclerView) view;
+        recyclerView = view.findViewById(R.id.list_restos);
 
         // Calling the method that configuring click on RecyclerView
         this.configureOnClickRecyclerView();

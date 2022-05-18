@@ -59,4 +59,6 @@
     <string name="openRest">OPEN</string>
     <string name="closedRest">CLOSED</string>
 
+    <string name="mesuremetre">m</string>
+
 </resources>

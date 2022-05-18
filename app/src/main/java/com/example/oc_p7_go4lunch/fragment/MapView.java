@@ -30,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
@@ -46,8 +47,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
-public class MapView extends Fragment implements OnMapReadyCallback {
+public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     GoogleMap map;
     FloatingActionButton locationBtn;
@@ -70,7 +72,7 @@ public class MapView extends Fragment implements OnMapReadyCallback {
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
-    private Location lastKnownLocation;
+    public static Location lastKnownLocation;
 
 
     @Override
@@ -81,43 +83,7 @@ public class MapView extends Fragment implements OnMapReadyCallback {
                 .findFragmentById(R.id.mapGps);
         mapFragment.getMapAsync(this);
 
-        String apiKey = getString(R.string.google_api_key);
-
-        if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), apiKey);
-        }
-
-        PlacesClient placesClient = Places.createClient(requireContext());
-
-        // Initialize the AutocompleteSupportFragment.
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-
-        autocompleteFragment.setLocationBias(RectangularBounds.newInstance(
-                new LatLng(-33.852, 151.211),
-                new LatLng(-33.852, 151.211)));
-
-        //select a country
-        autocompleteFragment.setCountries("US");
-
-        // Specify the types of place data to return.
-        assert autocompleteFragment != null;
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-
-        // Set up a PlaceSelectionListener to handle the response.
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(@NonNull Place place) {
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-            }
-
-
-            @Override
-            public void onError(@NonNull Status status) {
-                Log.i(TAG, "An error occurred: " + status);
-            }
-        });
-
+        getAutocompletePredictions();
 
         // Construct a FusedLocationProviderClient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
@@ -144,8 +110,47 @@ public class MapView extends Fragment implements OnMapReadyCallback {
             updateLocationUI();
             getDeviceLocation();
         });
-
     }
+
+    public void getAutocompletePredictions() {
+
+        String apiKey = getString(R.string.google_maps_key);
+
+        if (!Places.isInitialized()) {
+            Places.initialize(requireActivity().getApplicationContext(), apiKey);
+        }
+
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        //select a country
+        assert autocompleteFragment != null;
+        autocompleteFragment.setCountries("FR");
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS, Place.Field.TYPES));
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+
+
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                // adding on click listener to marker of google maps.
+                MarkerOptions markerOptions = new MarkerOptions().position(Objects.requireNonNull(place.getLatLng())).snippet(place.getName());
+                map.addMarker(markerOptions).setTag(place);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 30));
+                map.setOnMarkerClickListener(MapView.this);
+
+            }
+            @Override
+            public void onError(@NonNull Status status) {
+
+            }
+        });
+    }
+
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -154,6 +159,7 @@ public class MapView extends Fragment implements OnMapReadyCallback {
         map.addMarker(new MarkerOptions()
                 .position(sydney)
                 .title("Marker in Sydney"));
+        map.setOnMarkerClickListener(MapView.this);
 
         // below line is to add marker to google maps
         for (int i = 0; i < latLngArrayList.size(); i++) {
@@ -164,20 +170,6 @@ public class MapView extends Fragment implements OnMapReadyCallback {
             // below line is use to move camera.
             map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         }
-
-        // adding on click listener to marker of google maps.
-        map.setOnMarkerClickListener(marker -> {
-
-            String markerName = marker.getTitle();
-            RestaurantModel placeId = (RestaurantModel) marker.getTag();
-
-            Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
-            intent.putExtra("Restaurant", placeId);
-
-            Toast.makeText(requireContext(), "The Restaurant clicked is " + markerName, Toast.LENGTH_SHORT).show();
-            startActivity(intent);
-            return false;
-        });
 
         map.getUiSettings().setZoomControlsEnabled(true);
     }
@@ -289,5 +281,30 @@ public class MapView extends Fragment implements OnMapReadyCallback {
                 + "&key=" + getResources().getString(R.string.google_maps_key);
 
         RestaurantsCall.getRestaurants(url, restaurantList, map, requireContext());
+    }
+
+    @Override
+    public boolean onMarkerClick(@NonNull Marker marker) {
+        if (marker.getTag() instanceof RestaurantModel) {
+
+        String markerName = marker.getTitle();
+        RestaurantModel placeId = (RestaurantModel) marker.getTag();
+
+        Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
+        intent.putExtra("Restaurant", placeId);
+
+        Toast.makeText(requireContext(), "The Restaurant clicked is " + markerName, Toast.LENGTH_SHORT).show();
+        startActivity(intent);
+        return false;
+    }
+      else if (marker.getTag() instanceof Place) {
+            Place place = (Place) marker.getTag();
+            String markerName = place.getName();
+            Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
+            intent.putExtra("Place", place);
+            Toast.makeText(requireContext(), "The Place clicked is " + markerName, Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+       }
+        return false;
     }
 }

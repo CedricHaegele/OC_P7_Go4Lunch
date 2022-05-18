@@ -7,3 +7,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "OC_P7_Go4Lunch"
 include ':app'
+include ':roundedimageview'

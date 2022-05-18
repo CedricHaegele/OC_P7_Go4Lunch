@@ -9,6 +9,33 @@ import com.google.gson.annotations.SerializedName;
 
 public class RestaurantModel implements Serializable
 {
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    private double latitude;
+    private double longitude;
+    private int distance;
 
     @SerializedName("business_status")
     @Expose
