@@ -2,6 +2,7 @@ package com.example.oc_p7_go4lunch.fragment;
 
 import static android.content.ContentValues.TAG;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -35,13 +36,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.RectangularBounds;
-import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -101,8 +97,14 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         super.onViewCreated(view, savedInstanceState);
 
         locationBtn = requireActivity().findViewById(R.id.floating_action_button);
+        locationDefault();
         findLocationBtn();
 
+    }
+
+    public void locationDefault() {
+        updateLocationUI();
+        getDeviceLocation();
     }
 
     public void findLocationBtn() {
@@ -144,6 +146,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
                 map.setOnMarkerClickListener(MapView.this);
 
             }
+
             @Override
             public void onError(@NonNull Status status) {
 
@@ -287,24 +290,23 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
     public boolean onMarkerClick(@NonNull Marker marker) {
         if (marker.getTag() instanceof RestaurantModel) {
 
-        String markerName = marker.getTitle();
-        RestaurantModel placeId = (RestaurantModel) marker.getTag();
+            String markerName = marker.getTitle();
+            RestaurantModel placeId = (RestaurantModel) marker.getTag();
 
-        Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
-        intent.putExtra("Restaurant", placeId);
+            Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
+            intent.putExtra("Restaurant", placeId);
 
-        Toast.makeText(requireContext(), "The Restaurant clicked is " + markerName, Toast.LENGTH_SHORT).show();
-        startActivity(intent);
-        return false;
-    }
-      else if (marker.getTag() instanceof Place) {
+            Toast.makeText(requireContext(), "The Restaurant clicked is " + markerName, Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+            return false;
+        } else if (marker.getTag() instanceof Place) {
             Place place = (Place) marker.getTag();
             String markerName = place.getName();
             Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
             intent.putExtra("Place", place);
             Toast.makeText(requireContext(), "The Place clicked is " + markerName, Toast.LENGTH_SHORT).show();
             startActivity(intent);
-       }
+        }
         return false;
     }
 }

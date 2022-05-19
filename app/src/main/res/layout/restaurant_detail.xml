@@ -57,6 +57,12 @@
                 android:text="12 rue Faubourg Poissonière"
                 android:textColor="@android:color/white" />
 
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="3" />
+
 
         </LinearLayout>
 

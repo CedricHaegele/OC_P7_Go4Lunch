@@ -15,6 +15,6 @@
     <color name="orange">#FFA500</color>
     <color name="red">#F61202</color>
 
-    <!-- APP BASE -->
+       <!-- APP BASE -->
     <color name="colorAccentDark">#000000</color>
 </resources>

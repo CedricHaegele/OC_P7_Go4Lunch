@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
             new FirebaseAuthUIActivityResultContract(),
             this::onSignInResult
     );
-/*
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
        // if (listener != null) firebaseAuth.removeAuthStateListener(listener);
         super.onStop();
     }
- */
+
 
     private void init() {
         // Choose authentication providers

@@ -3,6 +3,9 @@ package com.example.oc_p7_go4lunch.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
 import android.location.Address;
 import android.location.Location;
 import android.util.Log;
@@ -14,6 +17,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -60,6 +64,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
         holder.name.setText(restaurantModel.getName());
         holder.adress.setText(restaurantModel.getVicinity());
+
         holder.ratingBar.setRating((Float.parseFloat(String.valueOf(restaurantModel.getRating()))) / 2);
         holder.getDistance(restaurantModel);
 
@@ -84,7 +89,6 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         final RestoListView binding;
         return placesList.size();
     }
-
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 

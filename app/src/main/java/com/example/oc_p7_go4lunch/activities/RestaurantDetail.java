@@ -45,6 +45,7 @@ public class RestaurantDetail extends AppCompatActivity {
             RestaurantModel restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
             Detail.setText(restaurant.getName());
             Adress.setText(restaurant.getVicinity());
+            ratingBar.setRating(restaurant.getRating().floatValue());
 
             Glide.with(this)
                     .load(restaurant.getPhotos().get(0).getPhotoUrl())
@@ -56,7 +57,6 @@ public class RestaurantDetail extends AppCompatActivity {
             Adress.setText(place.getAddress());
 
             fetchPlaceToImage(place);
-
 
         }
     }

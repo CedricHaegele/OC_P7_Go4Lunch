@@ -28,16 +28,23 @@ import com.example.oc_p7_go4lunch.model.googleplaces.Places;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,8 +56,6 @@ public class RestoListView extends Fragment {
     RecyclerView recyclerView;
     List<RestaurantModel> placesList = new ArrayList<>();
     RestoListAdapter restoListAdapter;
-    private static double currentLatitude;
-    private static double currentLongitude;
 
     // The entry point to the Places API.
     private PlacesClient placesClient;
@@ -80,6 +85,7 @@ public class RestoListView extends Fragment {
         View view = inflater.inflate(R.layout.fragment_resto_list, container, false);
 
         recyclerView = view.findViewById(R.id.list_restos);
+        getAutocompletePredictions();
 
         // Calling the method that configuring click on RecyclerView
         this.configureOnClickRecyclerView();
@@ -89,6 +95,40 @@ public class RestoListView extends Fragment {
         getLocationPermission();
         getDeviceLocation();
         return view;
+    }
+
+    public void getAutocompletePredictions() {
+
+        String apiKey = getString(R.string.google_maps_key);
+
+        if (!com.google.android.libraries.places.api.Places.isInitialized()) {
+            com.google.android.libraries.places.api.Places.initialize(requireActivity().getApplicationContext(), apiKey);
+        }
+
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        //select a country
+        assert autocompleteFragment != null;
+        autocompleteFragment.setCountries("FR");
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS, Place.Field.TYPES));
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+
+
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+
+            }
+            @Override
+            public void onError(@NonNull Status status) {
+
+            }
+        });
     }
 
 
