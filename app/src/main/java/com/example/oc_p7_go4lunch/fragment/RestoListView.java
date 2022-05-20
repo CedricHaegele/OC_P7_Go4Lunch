@@ -60,7 +60,6 @@ public class RestoListView extends Fragment {
     // The entry point to the Places API.
     private PlacesClient placesClient;
 
-
     GoogleMap map;
 
     List<RestaurantModel> restaurantList = new ArrayList<>();
@@ -122,8 +121,12 @@ public class RestoListView extends Fragment {
 
             @Override
             public void onPlaceSelected(@NonNull Place place) {
+                Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
+                intent.putExtra("Restaurant",place.getName());
+                startActivity(intent);
 
             }
+
             @Override
             public void onError(@NonNull Status status) {
 

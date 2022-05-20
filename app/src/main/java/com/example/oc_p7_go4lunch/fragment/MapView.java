@@ -2,21 +2,28 @@ package com.example.oc_p7_go4lunch.fragment;
 
 import static android.content.ContentValues.TAG;
 
-import android.annotation.SuppressLint;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.oc_p7_go4lunch.R;
@@ -39,16 +46,22 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NavigableMap;
 import java.util.Objects;
 
 public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     GoogleMap map;
     FloatingActionButton locationBtn;
+    Toolbar toolbar;
+    DrawerLayout drawerLayout;
+    ActionBarDrawerToggle toggle;
+    NavigationView navigationView;
 
     // two array list for our lat long and location Name;
     private ArrayList<LatLng> latLngArrayList;
@@ -75,10 +88,17 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.mapGps);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
+        //drawer Navigation
+        toolbar = (requireActivity()).findViewById(R.id.toolbar);
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
+
+        drawerNavigation();
         getAutocompletePredictions();
 
         // Construct a FusedLocationProviderClient
@@ -92,19 +112,29 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         return view;
     }
 
+    private void drawerNavigation() {
+        drawerLayout = requireActivity().findViewById(R.id.drawer);
+        toggle = new ActionBarDrawerToggle(requireActivity(), drawerLayout, toolbar, R.string.open, R.string.close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (toggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         locationBtn = requireActivity().findViewById(R.id.floating_action_button);
-        locationDefault();
-        findLocationBtn();
 
-    }
-
-    public void locationDefault() {
-        updateLocationUI();
         getDeviceLocation();
+        findLocationBtn();
     }
 
     public void findLocationBtn() {
@@ -187,6 +217,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             locationPermissionGranted = true;
+
         } else {
             ActivityCompat.requestPermissions(requireActivity(),
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -206,7 +237,6 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 locationPermissionGranted = true;
-                getDeviceLocation();
             }
         }
         updateLocationUI();
@@ -309,4 +339,5 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         }
         return false;
     }
+
 }

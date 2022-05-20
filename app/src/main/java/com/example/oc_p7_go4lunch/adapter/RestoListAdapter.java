@@ -79,6 +79,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             }
             holder.openhours.setText(ifOpen);
         }
+
         Glide.with(context)
                 .load(restaurantModel.getPhotos().get(0).getPhotoUrl())
                 .into(holder.logo);
@@ -123,6 +124,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             }
         }
     }
+
 
     public List<RestaurantModel> getPlacesList() {
         return placesList;

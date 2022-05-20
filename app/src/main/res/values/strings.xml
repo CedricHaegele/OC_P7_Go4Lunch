@@ -22,6 +22,7 @@
     <string name="button_login_text_not_logged">Connexion</string>
     <string name="logo_drawer">logo_drawer</string>
 
+    <!-- NAVIGATION DRAWER -->
     <string name="open">Open navigation</string>
     <string name="close">Close navigation</string>
 
