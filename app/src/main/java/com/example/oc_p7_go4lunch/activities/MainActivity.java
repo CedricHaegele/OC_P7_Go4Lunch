@@ -1,6 +1,9 @@
 package com.example.oc_p7_go4lunch.activities;
 
 import android.os.Bundle;
+import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -15,19 +18,28 @@ import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.fragment.MapView;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesAvailableList;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
+    Toolbar toolbar;
     BottomNavigationView mBottomNavigationView;
+    static DrawerLayout drawerLayout;
+    ActionBarDrawerToggle toggle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        SetUpNavDrawer();
 
         changeFragment(new MapView());
 
@@ -35,6 +47,20 @@ public class MainActivity extends AppCompatActivity {
         mBottomNavigationView.setOnItemSelectedListener(navy);
     }
 
+    public void SetUpNavDrawer() {
+        drawerLayout = findViewById(R.id.drawer);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (toggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void changeFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -62,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 changeFragment(new WorkmatesAvailableList());
                 break;
         }
-
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     };
 }

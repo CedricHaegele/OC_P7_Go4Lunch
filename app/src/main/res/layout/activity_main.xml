@@ -13,6 +13,32 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FF4800"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:navigationIcon="@drawable/ic_baseline_menu_24"
+            app:titleMarginStart="40dp"
+            app:title="I'm Hungry !!!">
+
+            <LinearLayout
+                android:id="@+id/container_autocomplete"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end">
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/autocomplete_fragment"
+                    android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"/>
+            </LinearLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
         <FrameLayout
             android:id="@+id/nav_host_fragment"
             android:layout_width="match_parent"

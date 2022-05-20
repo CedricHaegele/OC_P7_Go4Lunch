@@ -88,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
-                android:numStars="3"
+                android:numStars="4"
                 android:theme="@style/Widget.AppCompat.RatingBar" />
 
         </RelativeLayout>

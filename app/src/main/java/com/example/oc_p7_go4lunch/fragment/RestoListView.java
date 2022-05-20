@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -17,7 +18,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
@@ -56,6 +60,8 @@ public class RestoListView extends Fragment {
     RecyclerView recyclerView;
     List<RestaurantModel> placesList = new ArrayList<>();
     RestoListAdapter restoListAdapter;
+    LinearLayout container_autocomplete;
+    Toolbar toolbar;
 
     // The entry point to the Places API.
     private PlacesClient placesClient;
@@ -86,6 +92,11 @@ public class RestoListView extends Fragment {
         recyclerView = view.findViewById(R.id.list_restos);
         getAutocompletePredictions();
 
+        //drawer Navigation
+        toolbar = (requireActivity()).findViewById(R.id.toolbar);
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
+        container_autocomplete = toolbar.findViewById(R.id.container_autocomplete);
+
         // Calling the method that configuring click on RecyclerView
         this.configureOnClickRecyclerView();
 
@@ -106,7 +117,7 @@ public class RestoListView extends Fragment {
 
         // Initialize the AutocompleteSupportFragment.
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+                requireActivity().getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         //select a country
         assert autocompleteFragment != null;
@@ -122,7 +133,7 @@ public class RestoListView extends Fragment {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
                 Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
-                intent.putExtra("Restaurant",place.getName());
+                intent.putExtra("Place",place);
                 startActivity(intent);
 
             }

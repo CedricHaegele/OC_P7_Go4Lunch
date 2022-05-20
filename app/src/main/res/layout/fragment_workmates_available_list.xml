@@ -6,20 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FF4800"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:navigationIcon="@drawable/ic_baseline_menu_24"
-        app:titleMarginStart="40dp"
-        app:title="Available Workmates">
-
-            </androidx.appcompat.widget.Toolbar>
-
-    <androidx.recyclerview.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/workmates"
         android:layout_width="0dp"
         android:layout_height="0dp"

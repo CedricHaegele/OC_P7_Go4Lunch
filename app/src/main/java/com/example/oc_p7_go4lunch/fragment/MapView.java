@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,9 +60,10 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
     GoogleMap map;
     FloatingActionButton locationBtn;
     Toolbar toolbar;
+    LinearLayout container_autocomplete;
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle toggle;
-    NavigationView navigationView;
+
 
     // two array list for our lat long and location Name;
     private ArrayList<LatLng> latLngArrayList;
@@ -97,6 +99,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         //drawer Navigation
         toolbar = (requireActivity()).findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
+        container_autocomplete = toolbar.findViewById(R.id.container_autocomplete);
 
         drawerNavigation();
         getAutocompletePredictions();
@@ -119,13 +122,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         toggle.syncState();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (toggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -154,7 +151,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
 
         // Initialize the AutocompleteSupportFragment.
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+                requireActivity().getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         //select a country
         assert autocompleteFragment != null;
@@ -219,7 +216,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
             locationPermissionGranted = true;
 
         } else {
-            ActivityCompat.requestPermissions(requireActivity(),
+            requestPermissions(
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
@@ -237,6 +234,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 locationPermissionGranted = true;
+                getDeviceLocation();
             }
         }
         updateLocationUI();
