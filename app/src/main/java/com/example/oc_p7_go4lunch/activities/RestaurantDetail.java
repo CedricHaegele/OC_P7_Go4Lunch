@@ -37,7 +37,7 @@ public class RestaurantDetail extends AppCompatActivity {
         TextView Detail = findViewById(R.id.detail_name);
         TextView Adress = findViewById(R.id.detail_address);
         logo = findViewById(R.id.logo);
-        RatingBar ratingBar = findViewById(R.id.ratingBar);
+        RatingBar ratingBar = findViewById(R.id.ratingDetail);
 
         Intent callingIntent = getIntent();
 
@@ -45,7 +45,7 @@ public class RestaurantDetail extends AppCompatActivity {
             RestaurantModel restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
             Detail.setText(restaurant.getName());
             Adress.setText(restaurant.getVicinity());
-            ratingBar.setRating(restaurant.getRating().floatValue()/3);
+            ratingBar.setNumStars(restaurant.getRating().intValue());
 
             Glide.with(this)
                     .load(restaurant.getPhotos().get(0).getPhotoUrl())

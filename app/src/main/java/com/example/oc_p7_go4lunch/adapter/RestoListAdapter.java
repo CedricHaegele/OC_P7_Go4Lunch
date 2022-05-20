@@ -65,7 +65,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         holder.name.setText(restaurantModel.getName());
         holder.adress.setText(restaurantModel.getVicinity());
 
-        holder.ratingBar.setRating((Float.parseFloat(String.valueOf(restaurantModel.getRating()))) / 2);
+        holder.ratingBar.setNumStars(restaurantModel.getRating().intValue());
         holder.getDistance(restaurantModel);
 
         //Opening Hours

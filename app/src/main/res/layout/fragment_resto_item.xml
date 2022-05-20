@@ -9,17 +9,15 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="5">
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:id="@+id/tab1"
-            android:layout_width="0dp"
+            android:layout_width="240dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
-            android:layout_weight="4"
             android:orientation="vertical">
 
             <TextView
@@ -35,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:text="French - 12 rue du Faubourg Poissonière"
+                android:text="French - 12 rue du Faubourg PoissoniÃ¨re"
                 android:textSize="13sp" />
 
             <TextView
@@ -49,16 +47,17 @@
 
         <RelativeLayout
             android:id="@+id/tab2"
-            android:layout_width="0dp"
-            android:layout_marginTop="4dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_width="80dp"
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_above="@id/ic_user"
+                android:layout_alignParentRight="true"
                 android:layout_marginLeft="8dp"
+                android:layout_marginEnd="5dp"
                 android:text="120 m" />
 
 
@@ -68,45 +67,47 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/ratingBar"
                 android:layout_toLeftOf="@+id/users"
-                android:src="@drawable/ic_baseline_person_24"
-                />
+                android:src="@drawable/ic_baseline_person_24" />
 
             <TextView
                 android:id="@+id/users"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/ratingBar"
-                android:layout_marginBottom="5dp"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
                 android:text="(2)" />
 
             <RatingBar
                 android:id="@+id/ratingBar"
-                style="?android:attr/ratingBarStyleSmall"
+                style="@style/Widget.AppCompat.RatingBar.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
-                android:numStars="4"
-                android:theme="@style/Widget.AppCompat.RatingBar" />
+                android:numStars="5"
+                android:progressTint="@color/teal_700"
+                android:rating="4" />
 
         </RelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/tab3"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_weight="1">
+            android:gravity="bottom"
+            >
 
             <ImageView
                 android:id="@+id/photo"
-                android:layout_width="75dp"
+                android:layout_width="wrap_content"
                 android:layout_height="75dp"
-                android:scaleType="centerCrop" />
+                android:scaleType="fitXY"
+                android:src="@drawable/bolo" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </LinearLayout>
 

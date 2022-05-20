@@ -58,10 +58,14 @@
                 android:textColor="@android:color/white" />
 
             <RatingBar
-                android:id="@+id/ratingBar"
+                android:id="@+id/ratingDetail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:numStars="4" />
+                android:layout_marginStart="10dp"
+                style="@style/Widget.AppCompat.RatingBar.Indicator"
+                android:progressTint="@color/teal_700"
+                android:rating="4"
+                android:numStars="5" />
 
 
         </LinearLayout>

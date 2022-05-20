@@ -37,8 +37,6 @@ public class WorkmatesAvailableList extends Fragment {
         return inflater.inflate(R.layout.fragment_workmates_available_list, container, false);
 
 
-
-
     }
 
 
