@@ -38,7 +38,7 @@
 
 
         <activity
-            android:name=".activities.LoginActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
 
         </activity>
@@ -50,7 +50,7 @@
         </activity>
 
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.LoginActivity"
             android:exported="true">
 
             <intent-filter>

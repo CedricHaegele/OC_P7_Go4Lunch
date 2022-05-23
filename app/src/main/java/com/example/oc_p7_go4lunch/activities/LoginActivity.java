@@ -1,11 +1,14 @@
 package com.example.oc_p7_go4lunch.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.oc_p7_go4lunch.R;
+import com.facebook.FacebookSdk;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
@@ -27,6 +30,9 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FacebookSdk.setClientToken(String.valueOf(R.string.facebook_application_id));
+        FacebookSdk.sdkInitialize(getApplicationContext());
         init();
 
         //Initialize Firebase Auth
@@ -38,19 +44,6 @@ public class LoginActivity extends AppCompatActivity {
             this::onSignInResult
     );
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //check if user is signed in (non-null) and Update UI accordingly
-        firebaseAuth.addAuthStateListener(listener);
-    }
-    @Override
-    protected void onStop() {
-       // if (listener != null) firebaseAuth.removeAuthStateListener(listener);
-        super.onStop();
-    }
-
-
     private void init() {
         // Choose authentication providers
         List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -58,12 +51,11 @@ public class LoginActivity extends AppCompatActivity {
                 new AuthUI.IdpConfig.GoogleBuilder().build(),
                 new AuthUI.IdpConfig.FacebookBuilder().build());
 
-// Create and launch sign-in intent
+        // Create and launch sign-in intent
         Intent signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .build();
-        startActivityMain();
         signInLauncher.launch(signInIntent);
     }
 
@@ -73,16 +65,23 @@ public class LoginActivity extends AppCompatActivity {
             // Successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+            Uri photoProfile = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
+
+            Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
+            mainActivity.putExtra("user", user);
+            mainActivity.putExtra("photo",photoProfile);
+
+
+            startActivity(mainActivity);
         } else {
-            if (response == null) {
+            if (response != null) {
                 finish();
             }
         }
     }
 
     private void startActivityMain() {
-        Intent MainActivity = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(MainActivity);
+
     }
 
 }
