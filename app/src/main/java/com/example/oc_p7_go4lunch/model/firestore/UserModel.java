@@ -1,19 +1,17 @@
 package com.example.oc_p7_go4lunch.model.firestore;
-
-
 import java.io.Serializable;
 
 public class UserModel implements Serializable {
-    public String mail, name, url;
+    public String mail, name, photo;
 
-    UserModel(){
+    public UserModel(){
 
     }
 
-    public UserModel(String mail, String name, String url) {
+    public UserModel(String mail, String name, String photo) {
         this.mail = mail;
         this.name = name;
-        this.url = url;
+        this.photo = photo;
     }
 
     public String getMail() {
@@ -32,12 +30,12 @@ public class UserModel implements Serializable {
         this.name = name;
     }
 
-    public String getUrl() {
-        return url;
+    public String getPhoto() {
+        return photo;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }
 

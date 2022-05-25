@@ -8,11 +8,14 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.oc_p7_go4lunch.R;
+import com.example.oc_p7_go4lunch.helper.FirebaseHelper;
+import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.facebook.FacebookSdk;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -21,8 +24,6 @@ import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener listener;
 
     public LoginActivity() {
     }
@@ -35,8 +36,6 @@ public class LoginActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         init();
 
-        //Initialize Firebase Auth
-        firebaseAuth = FirebaseAuth.getInstance();
     }
 
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
@@ -62,27 +61,26 @@ public class LoginActivity extends AppCompatActivity {
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == RESULT_OK) {
+
             // Successfully signed in
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
             Uri photoProfile = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
 
+            UserModel user = new UserModel(firebaseUser.getEmail(),firebaseUser.getDisplayName(),String.valueOf(firebaseUser.getPhotoUrl()));
+            FirebaseHelper.getUsersCollection();
+            FirebaseHelper.createUser(firebaseUser.getUid(), user);
+
             Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
-            mainActivity.putExtra("user", user);
+            mainActivity.putExtra("user", firebaseUser);
             mainActivity.putExtra("photo",photoProfile);
-
-
             startActivity(mainActivity);
+
         } else {
             if (response != null) {
                 finish();
             }
         }
     }
-
-    private void startActivityMain() {
-
-    }
-
 }
 
