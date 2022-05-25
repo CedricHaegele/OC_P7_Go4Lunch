@@ -17,4 +17,5 @@
 
        <!-- APP BASE -->
     <color name="colorAccentDark">#000000</color>
+    <color name="yellow">#FFEB3B</color>
 </resources>

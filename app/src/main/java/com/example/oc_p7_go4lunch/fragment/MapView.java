@@ -123,7 +123,6 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
     }
 
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -319,10 +318,10 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         if (marker.getTag() instanceof RestaurantModel) {
 
             String markerName = marker.getTitle();
-            RestaurantModel placeId = (RestaurantModel) marker.getTag();
+            RestaurantModel place = (RestaurantModel) marker.getTag();
 
             Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
-            intent.putExtra("Restaurant", placeId);
+            intent.putExtra("Restaurant", place);
 
             Toast.makeText(requireContext(), "The Restaurant clicked is " + markerName, Toast.LENGTH_SHORT).show();
             startActivity(intent);

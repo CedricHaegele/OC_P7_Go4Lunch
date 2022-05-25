@@ -44,7 +44,7 @@ public class RestaurantsCall {
 
                                 placesList.add(restaurantList.get(i));
 
-                                map.addMarker(addMarker(map,placesList.get(i)));
+                                map.addMarker(addMarker(map, placesList.get(i)));
 
                             }
                         } else {
@@ -65,7 +65,7 @@ public class RestaurantsCall {
         });
     }
 
-    public static MarkerOptions addMarker ( GoogleMap map, RestaurantModel restaurant) {
+    public static MarkerOptions addMarker(GoogleMap map, RestaurantModel restaurant) {
         double newLat = restaurant.getGeometry().getLocation().getLat();
         double newLng = restaurant.getGeometry().getLocation().getLng();
         LatLng latLng = new LatLng(newLat, newLng);

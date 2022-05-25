@@ -33,16 +33,19 @@
            android:textSize="50sp"
            android:textStyle="bold" />
 
-       <ImageView
+       <com.makeramen.roundedimageview.RoundedImageView
            android:id="@+id/PhotoUser"
            android:layout_width="60dp"
            android:layout_height="60dp"
            android:layout_alignParentBottom="true"
            android:layout_marginBottom="36dp"
-           android:backgroundTint="@color/black"
+           android:background="@drawable/circular"
+           app:riv_corner_radius_bottom_left="20dp"
+           app:riv_corner_radius_top_right="20dp"
+           app:riv_corner_radius="20dp"
+           android:backgroundTint="@color/white"
            android:contentDescription="photo"
-           android:scaleType="center"
-           app:srcCompat="@mipmap/ic_launcher_round" />
+           android:scaleType="center" />
 
        <TextView
            android:id="@+id/Name"

@@ -1,45 +1,54 @@
 package com.example.oc_p7_go4lunch.fragment;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.databinding.FragmentWorkmateItemBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.example.oc_p7_go4lunch.R;
+import com.example.oc_p7_go4lunch.adapter.WorkmatesListAdapter;
+import com.example.oc_p7_go4lunch.databinding.FragmentWorkmateItemBinding;
+import com.example.oc_p7_go4lunch.model.firestore.UserModel;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class WorkmatesAvailableList extends Fragment {
 
-    private FragmentWorkmateItemBinding binding;
-    // Access a Cloud Firestore instance from your Activity
+    private RecyclerView recyclerView;
+    private View view;
+    private WorkmatesListAdapter workmatesListAdapter;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+    public WorkmatesAvailableList() {
+        // Required empty public constructor
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentWorkmateItemBinding.inflate(getLayoutInflater());
-        return inflater.inflate(R.layout.fragment_workmates_available_list, container, false);
 
+        //inflate the layout for this fragment
+        view = inflater.inflate(R.layout.fragment_workmate_item,container,false);
 
+        recyclerView = (RecyclerView) view.findViewById(R.id.workmatesList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
+        FirebaseRecyclerOptions<UserModel>options =
+                new FirebaseRecyclerOptions.Builder<UserModel>()
+                        .setQuery(FirebaseDatabase.getInstance().getReference().child("users"),UserModel.class)
+                        .build();
+
+        workmatesListAdapter = new WorkmatesListAdapter(options);
+        recyclerView.setAdapter(workmatesListAdapter);
+
+        return view;
 
     }
-
-
 }
+
