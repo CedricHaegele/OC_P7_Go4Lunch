@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:background="?selectableItemBackground"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="5">
+
+        <LinearLayout
+            android:id="@+id/tab1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="4"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Le Zinc"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="French - 12 rue du Faubourg Poissonière"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/opening_hours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OPEN"
+                android:textSize="15sp"
+                android:textStyle="italic" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/tab2"
+            android:layout_width="0dp"
+            android:layout_marginTop="4dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="120 m" />
+
+
+            <ImageView
+                android:id="@+id/ic_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/ratingBar"
+                android:layout_toLeftOf="@+id/users"
+                android:src="@drawable/ic_baseline_person_24"
+                />
+
+            <TextView
+                android:id="@+id/users"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/ratingBar"
+                android:layout_marginBottom="5dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:text="(2)" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:numStars="4"
+                android:theme="@style/Widget.AppCompat.RatingBar" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/tab3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/photo"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:scaleType="centerCrop" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="1dp"
+        android:background="?android:attr/listDivider"
+        android:visibility="visible" />
+
+</LinearLayout>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/chat_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff">
+
+
+    <!-- RECYCLER VIEW CONTAINER -->
+    <LinearLayout
+        android:id="@+id/chat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/chat_add_message_container"
+        android:orientation="vertical">
+
+        <!-- MESSAGE RECYCLER VIEW EMPTY -->
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/chat_text_view_recycler_view_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="chat_empty"
+            android:textAlignment="center" />
+
+        <!-- RECYCLER VIEW -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chat_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <!-- IMAGE CHOSEN PREVIEW -->
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/chat_image_chosen_preview"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_above="@id/chat_add_message_container"
+        android:layout_margin="10dp"
+        android:contentDescription="Image preview" />
+
+    <!-- ADD MESSAGE CONTAINER -->
+    <LinearLayout
+        android:id="@+id/chat_add_message_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#DDDFDF">
+
+               <!-- TEXT MESSAGE EDIT TEXT -->
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/chat_message_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="compose_your_message"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine"
+            android:minHeight="48dp"
+            android:textColorHint="#BC000000"
+            android:textSize="15sp" />
+
+           </LinearLayout>
+</RelativeLayout>
