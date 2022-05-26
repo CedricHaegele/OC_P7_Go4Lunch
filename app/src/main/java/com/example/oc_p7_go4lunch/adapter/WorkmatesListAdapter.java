@@ -62,7 +62,7 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
                     .load(mUser.getPhoto())
                     .placeholder(R.drawable.quantum_ic_cloud_off_vd_theme_24)
                     .circleCrop()
-                    .error(R.drawable.quantum_ic_cloud_off_vd_theme_24)
+                    .error(R.drawable.default_avatar)
                     .into(img);
         }
     }

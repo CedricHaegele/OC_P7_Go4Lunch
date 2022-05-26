@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -147,9 +148,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()) {
 
+            case myLunch:
+                Toast.makeText(this, "You clicked", Toast.LENGTH_LONG).show();
+                break;
+
+            case settings:
+                Toast.makeText(this, "You clicked on", Toast.LENGTH_LONG).show();
+                break;
+
             case logOut:
                 logOut();
-                return true;
+                finish();
+                break;
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
