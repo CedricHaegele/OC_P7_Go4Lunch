@@ -33,19 +33,13 @@
            android:textSize="50sp"
            android:textStyle="bold" />
 
-       <com.makeramen.roundedimageview.RoundedImageView
+       <de.hdodenhof.circleimageview.CircleImageView
            android:id="@+id/PhotoUser"
            android:layout_width="60dp"
            android:layout_height="60dp"
            android:layout_alignParentBottom="true"
            android:layout_marginBottom="36dp"
-           android:background="@drawable/circular"
-           app:riv_corner_radius_bottom_left="20dp"
-           app:riv_corner_radius_top_right="20dp"
-           app:riv_corner_radius="20dp"
-           android:backgroundTint="@color/white"
-           android:contentDescription="photo"
-           android:scaleType="center" />
+           android:background="@color/fui_transparent"/>
 
        <TextView
            android:id="@+id/Name"
@@ -53,7 +47,7 @@
            android:layout_height="wrap_content"
            android:layout_below="@+id/topic_header_drawer"
            android:layout_centerVertical="true"
-           android:layout_marginStart="10dp"
+           android:layout_marginStart="5dp"
            android:layout_marginTop="80dp"
            android:layout_toEndOf="@id/PhotoUser"
            android:textAppearance="?attr/textAppearanceBody1"
@@ -70,7 +64,7 @@
            android:layout_height="wrap_content"
            android:layout_below="@+id/Name"
            android:layout_centerVertical="true"
-           android:layout_marginStart="10dp"
+           android:layout_marginStart="5dp"
            android:layout_marginTop="5dp"
            android:layout_toEndOf="@id/PhotoUser"
            android:textAppearance="?attr/textAppearanceBody2"

@@ -63,14 +63,18 @@
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable-v24/ic_baseline_email_24.xml" value="0.113" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable-v24/ic_baseline_local_dining_24.xml" value="0.113" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable-v24/ic_baseline_star_24.xml" value="0.2615" />
+        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable-v24/ic_baseline_view_list_24.xml" value="0.1675" />
+        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/attrs.xml" value="0.2285" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/background_image_foreground.xml" value="0.149" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/circular.xml" value="0.2525" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/ic_baseline_check_circle_24.xml" value="0.113" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/ic_baseline_language_24.xml" value="0.2615" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/ic_baseline_local_phone_24.xml" value="0.2615" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/ic_baseline_location.xml" value="0.113" />
+        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.1675" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/ic_launcher_background.xml" value="0.113" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.113" />
+        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/ic_shape.xml" value="0.135" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/image.xml" value="0.2525" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.23055555555555557" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/app_bar_main.xml" value="0.25" />
@@ -90,7 +94,7 @@
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_settings.xml" value="0.2604166666666667" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_workmate_item.xml" value="0.3" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_workmates_available_list.xml" value="0.22" />
-        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/header_navigation_drawer.xml" value="0.22" />
+        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/header_navigation_drawer.xml" value="0.1" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/place_item_layout.xml" value="0.30052083333333335" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/restaurant_detail.xml" value="0.1" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/toolbar.xml" value="0.346875" />

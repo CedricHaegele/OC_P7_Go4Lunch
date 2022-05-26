@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,25 +19,25 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.fragment.MapView;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
-import com.example.oc_p7_go4lunch.fragment.WorkmatesAvailableList;
+import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     Toolbar toolbar;
     BottomNavigationView mBottomNavigationView;
     static DrawerLayout drawerLayout;
     ActionBarDrawerToggle toggle;
     NavigationView navigationView;
-
+    LinearLayout container_autocomplete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
 
         mBottomNavigationView = findViewById(R.id.bottom_nav);
         mBottomNavigationView.setOnItemSelectedListener(navy);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.drawer_nav);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        container_autocomplete = toolbar.findViewById(R.id.container_autocomplete);
     }
 
     public void setUpNavDrawer() {
@@ -74,13 +80,13 @@ public class MainActivity extends AppCompatActivity {
         mail.setText(user.getEmail());
 
 
-            Uri photoProfile = getIntent().getParcelableExtra("photo");
+        Uri photoProfile = getIntent().getParcelableExtra("photo");
 
-            if(photoProfile!=null){
+        if (photoProfile != null) {
             Glide.with(this)
                     .load(photoProfile)
                     .into(photo);
-            }else{
+        } else {
 
             Glide.with(this)
                     .load("https://th.bing.com/th/id/R.1e7cab2bec37bf6652050ce85976a841?rik=A85GcZRw0yX5pA&riu=http%3a%2f%2fimg2.wikia.nocookie.net%2f__cb20130810123628%2fhighlander%2ffr%2fimages%2fa%2faa%2fPhoto_non_disponible.png&ehk=Z9TmOuUXm8yURB7P41GBPhNu2B1uy79oy%2fLu%2f8RI%2fAc%3d&risl=&pid=ImgRaw&r=0")
@@ -112,19 +118,48 @@ public class MainActivity extends AppCompatActivity {
 
             case mapview:
                 changeFragment(new MapView());
+                container_autocomplete.setVisibility(View.VISIBLE);
+                toolbar.setTitle("I'm Hungry !");
                 break;
 
             case listView:
                 changeFragment(new RestoListView());
+                container_autocomplete.setVisibility(View.VISIBLE);
+                toolbar.setTitle("I'm Hungry !");
                 break;
 
             case workmates:
-                changeFragment(new WorkmatesAvailableList());
+                changeFragment(new WorkmatesList());
+                container_autocomplete.setVisibility(View.INVISIBLE);
+                toolbar.setTitle("Workmates");
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     };
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        final int myLunch = R.id.my_lunch;
+        final int settings = R.id.settings;
+        final int logOut = R.id.nav_logout;
+
+
+        switch (item.getItemId()) {
+
+            case logOut:
+                logOut();
+                return true;
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void logOut() {
+        AuthUI.getInstance().signOut(this);
+        startActivity(new Intent(this, LoginActivity.class));
+    }
 }
 
 
