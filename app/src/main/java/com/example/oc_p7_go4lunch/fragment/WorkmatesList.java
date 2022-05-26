@@ -5,11 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,7 +23,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkmatesAvailableList extends Fragment {
+public class WorkmatesList extends Fragment {
 
     public RecyclerView recyclerView;
     private WorkmatesListAdapter workmatesListAdapter;
@@ -37,7 +34,7 @@ public class WorkmatesAvailableList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_workmates_available_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_workmates_list, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.workmatesList);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));

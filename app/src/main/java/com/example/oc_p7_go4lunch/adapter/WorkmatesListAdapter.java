@@ -60,9 +60,9 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
 
             Glide.with(img.getContext())
                     .load(mUser.getPhoto())
-                    .placeholder(R.drawable.common_google_signin_btn_icon_dark)
+                    .placeholder(R.drawable.quantum_ic_cloud_off_vd_theme_24)
                     .circleCrop()
-                    .error(R.drawable.common_google_signin_btn_icon_dark_normal)
+                    .error(R.drawable.quantum_ic_cloud_off_vd_theme_24)
                     .into(img);
         }
     }

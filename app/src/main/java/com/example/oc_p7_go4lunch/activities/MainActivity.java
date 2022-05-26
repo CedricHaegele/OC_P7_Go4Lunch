@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -20,18 +19,16 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.fragment.MapView;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
-import com.example.oc_p7_go4lunch.fragment.WorkmatesAvailableList;
+import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -132,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case workmates:
-                changeFragment(new WorkmatesAvailableList());
+                changeFragment(new WorkmatesList());
                 container_autocomplete.setVisibility(View.INVISIBLE);
                 toolbar.setTitle("Workmates");
                 break;
