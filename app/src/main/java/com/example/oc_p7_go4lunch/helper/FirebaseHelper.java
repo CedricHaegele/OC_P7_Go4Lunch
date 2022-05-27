@@ -4,6 +4,7 @@ import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.firebase.ui.auth.data.model.User;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -22,7 +23,12 @@ public class FirebaseHelper {
     }
 
     // get all users
-    public static Task<QuerySnapshot> getUsersDocuments(){
+    public static Task<QuerySnapshot> getUsersDocuments() {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).get();
+    }
+
+    // Get user document
+    public static Task<DocumentSnapshot> getUserDocument(String uid) {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(uid).get();
     }
 }

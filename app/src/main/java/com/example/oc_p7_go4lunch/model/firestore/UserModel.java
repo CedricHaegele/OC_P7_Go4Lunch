@@ -2,12 +2,21 @@ package com.example.oc_p7_go4lunch.model.firestore;
 import java.io.Serializable;
 
 public class UserModel implements Serializable {
-    public String mail, name, photo;
+    public String mail, name, photo, restaurantID;
 
     public UserModel(){
 
     }
 
+    // for firestore
+    public UserModel(String mail, String name, String photo, String restaurantID) {
+        this.mail = mail;
+        this.name = name;
+        this.photo = photo;
+        this.restaurantID = restaurantID;
+    }
+
+    // for identification
     public UserModel(String mail, String name, String photo) {
         this.mail = mail;
         this.name = name;
@@ -37,7 +46,17 @@ public class UserModel implements Serializable {
     public void setPhoto(String photo) {
         this.photo = photo;
     }
+
+    public String getRestaurantID() {
+        return restaurantID;
+    }
+
+    public void setRestaurantID(String restaurantID) {
+        this.restaurantID = restaurantID;
+    }
 }
+
+
 
 
 

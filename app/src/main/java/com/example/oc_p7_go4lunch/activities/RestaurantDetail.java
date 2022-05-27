@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.api.UserHelper;
+import com.example.oc_p7_go4lunch.helper.FirebaseHelper;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.google.android.gms.common.api.ApiException;
@@ -25,7 +25,10 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +38,8 @@ public class RestaurantDetail extends AppCompatActivity {
     Bitmap bitmap;
     ImageView logo;
     ImageButton imageChecked;
+    RestaurantModel restaurant;
+    FirebaseUser firebaseUser;
 
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,7 +55,7 @@ public class RestaurantDetail extends AppCompatActivity {
         Intent callingIntent = getIntent();
 
         if (callingIntent != null && callingIntent.hasExtra("Restaurant")) {
-            RestaurantModel restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
+            restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
             Detail.setText(restaurant.getName());
             Adress.setText(restaurant.getVicinity());
             ratingBar.setNumStars(restaurant.getRating().intValue());
@@ -68,22 +73,27 @@ public class RestaurantDetail extends AppCompatActivity {
         }
 
 
-       /* imageChecked.setOnClickListener(new View.OnClickListener() {
+        imageChecked.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UserHelper.getUser().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                FirebaseHelper.getUserDocument(firebaseUser.getUid())
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                        if (documentSnapshot.exists()){
-                            imageChecked.setImageResource(R.drawable.ic_button_is_checked);}
-
-                            else{
-                            imageChecked.setImageResource(R.drawable.ic_button_unchecked); }
-                        }
-                });
+                                if (documentSnapshot.exists()) {
+                                    UserModel user = documentSnapshot.toObject(UserModel.class);
+                                    user.setRestaurantID(restaurant.getPlaceId());
+                                    FirebaseHelper.getUsersCollection().document(firebaseUser.getUid()).set(user, SetOptions.merge());
+                                    imageChecked.setImageResource(R.drawable.ic_button_is_checked);
+                                } else {
+                                    imageChecked.setImageResource(R.drawable.ic_button_unchecked);
+                                }
+                            }
+                        });
             }
-        });**/
+        });
     }
 
     private void fetchPlaceToImage(Place place) {
