@@ -3,7 +3,8 @@ package com.example.oc_p7_go4lunch.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -13,14 +14,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
+import com.example.oc_p7_go4lunch.api.UserHelper;
+import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +34,8 @@ public class RestaurantDetail extends AppCompatActivity {
 
     Bitmap bitmap;
     ImageView logo;
+    ImageButton imageChecked;
+
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +45,7 @@ public class RestaurantDetail extends AppCompatActivity {
         TextView Adress = findViewById(R.id.detail_address);
         logo = findViewById(R.id.logo);
         RatingBar ratingBar = findViewById(R.id.ratingDetail);
+        imageChecked = (ImageButton) findViewById(R.id.fab);
 
         Intent callingIntent = getIntent();
 
@@ -57,8 +65,25 @@ public class RestaurantDetail extends AppCompatActivity {
             Adress.setText(place.getAddress());
 
             fetchPlaceToImage(place);
-
         }
+
+
+       /* imageChecked.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UserHelper.getUser().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                        if (documentSnapshot.exists()){
+                            imageChecked.setImageResource(R.drawable.ic_button_is_checked);}
+
+                            else{
+                            imageChecked.setImageResource(R.drawable.ic_button_unchecked); }
+                        }
+                });
+            }
+        });**/
     }
 
     private void fetchPlaceToImage(Place place) {
@@ -101,5 +126,7 @@ public class RestaurantDetail extends AppCompatActivity {
             });
         });
     }
+
 }
+
 
