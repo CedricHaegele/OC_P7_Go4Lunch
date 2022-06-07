@@ -137,6 +137,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         locationBtn.setOnClickListener(view -> {
             updateLocationUI();
             getDeviceLocation();
+            locationBtn.setVisibility(View.GONE);
         });
     }
 

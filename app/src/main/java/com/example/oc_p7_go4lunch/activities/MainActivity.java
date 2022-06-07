@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         name.setText(user.getDisplayName());
         mail.setText(user.getEmail());
 
-
         Uri photoProfile = getIntent().getParcelableExtra("photo");
 
         if (photoProfile != null) {

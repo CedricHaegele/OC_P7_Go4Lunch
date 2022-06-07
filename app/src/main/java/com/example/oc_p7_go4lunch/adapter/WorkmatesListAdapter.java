@@ -49,10 +49,12 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
         CircleImageView img;
         TextView name;
 
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             img = (CircleImageView) itemView.findViewById(R.id.imageProfile);
             name = (TextView) itemView.findViewById(R.id.textName);
+
         }
 
         private void setData(UserModel mUser) {

@@ -111,6 +111,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             distanceCalculated = itemView.findViewById(R.id.distance);
         }
 
+
         @SuppressLint("SetTextI18n")
         public void getDistance(RestaurantModel itemRestaurant) {
             if (MapView.lastKnownLocation != null) {
@@ -123,8 +124,8 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
                 distanceCalculated.setText("" + distance + " m");
             }
         }
-    }
 
+    }
 
     public List<RestaurantModel> getPlacesList() {
         return placesList;
