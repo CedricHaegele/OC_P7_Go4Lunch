@@ -48,14 +48,15 @@ public class LoginActivity extends AppCompatActivity {
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.GoogleBuilder().build(),
-               new AuthUI.IdpConfig.FacebookBuilder().build()
-                );
+                new AuthUI.IdpConfig.FacebookBuilder().build(),
+                new AuthUI.IdpConfig.TwitterBuilder().build()
+        );
 
         // Create and launch sign-in intent
         Intent signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
-                .setLogo(R.drawable.bolo)
+                .setLogo(R.drawable.lunch)
                 .build();
         signInLauncher.launch(signInIntent);
     }
@@ -69,13 +70,13 @@ public class LoginActivity extends AppCompatActivity {
 
             Uri photoProfile = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
 
-            UserModel user = new UserModel(firebaseUser.getEmail(),firebaseUser.getDisplayName(),String.valueOf(firebaseUser.getPhotoUrl()));
+            UserModel user = new UserModel(firebaseUser.getEmail(), firebaseUser.getDisplayName(), String.valueOf(firebaseUser.getPhotoUrl()));
             FirebaseHelper.getUsersCollection();
             FirebaseHelper.createUser(firebaseUser.getUid(), user);
 
             Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
             mainActivity.putExtra("user", firebaseUser);
-            mainActivity.putExtra("photo",photoProfile);
+            mainActivity.putExtra("photo", photoProfile);
             startActivity(mainActivity);
 
         } else {

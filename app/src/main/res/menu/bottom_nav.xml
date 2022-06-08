@@ -13,4 +13,8 @@
         android:id="@+id/workmates"
         android:icon="@drawable/ic_baseline_people_24"
         android:title="@string/workmates" />
+    <item
+        android:id="@+id/chat"
+        android:icon="@drawable/ic_baseline_chat_24"
+        android:title="Chat"/>
 </menu>

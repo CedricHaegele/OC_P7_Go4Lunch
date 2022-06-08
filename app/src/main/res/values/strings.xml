@@ -11,6 +11,7 @@
     <string name="map_view">Map View</string>
     <string name="list_view">List View</string>
     <string name="workmates">Workmates</string>
+    <string name="chat">Chat</string>
 
     <!-- MAIN ACTIVITY -->
     <string name="error_not_connected">Vous devez vous connecter !</string>
@@ -26,6 +27,9 @@
     <string name="open">Open navigation</string>
     <string name="close">Close navigation</string>
 
+    <!-- TWITTER -->
+    <string name="twitter_consumer_key">AzHdxzRGb9uwb7O9tUxozHXy6</string>
+    <string name="twitter_consumer_secret">ZI5ynCuqMYTfq5n9RNB60XM4aL6EkjaKi3rqperDIRAQP4LlVu</string>
 
     <!-- FACEBOOK -->
     <string name="facebook_application_id">352075503690656</string>
