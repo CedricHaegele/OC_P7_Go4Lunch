@@ -18,7 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FF4800"
+            android:background="#D3352A"
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:navigationIcon="@drawable/ic_baseline_menu_24"
@@ -63,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#EF4D02"
+        android:background="#D3352A"
         app:headerLayout="@layout/header_navigation_drawer"
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
@@ -79,8 +79,6 @@
     </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
-
-
 
 
 

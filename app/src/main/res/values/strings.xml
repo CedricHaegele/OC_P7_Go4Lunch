@@ -3,7 +3,7 @@
 
     <string name="main_activity_description">Find a nice restaurant and invite your co-workers for lunch</string>
 
-    //<string name="google_maps_key" translatable="false">AIzaSyA6jc02k7aSRUMGrsw5wbFzyEhH0W__ymI</string>
+    <string name="google_maps_key" translatable="false">AIzaSyBg3_iFg4rQwCvWMt9AbwvY2A8GVFTV4Tk</string>
 
     <string name="click_on_three_lines_top_left_hand_corner_in_toolbar">click on three lines Top left hand corner in toolbar</string>
 
@@ -27,16 +27,8 @@
     <string name="open">Open navigation</string>
     <string name="close">Close navigation</string>
 
-    <!-- TWITTER -->
-    <string name="twitter_consumer_key">AzHdxzRGb9uwb7O9tUxozHXy6</string>
-    <string name="twitter_consumer_secret">ZI5ynCuqMYTfq5n9RNB60XM4aL6EkjaKi3rqperDIRAQP4LlVu</string>
 
-    <!-- FACEBOOK -->
-    <string name="facebook_application_id">352075503690656</string>
-    <string name="fb_login_protocol_scheme">fb352075503690656</string>
-    <string name="facebook_client_token">47ae2e2be6ae0d0e46a3c391bcdca0cc</string>
-
-     <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_activity_maps">MapsActivity</string>
 
 
      <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -83,5 +75,21 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="Settings">Settings</string>
+    <string name="title">Title</string>
+    <string name="angelina">Angelina</string>
+    <string name="is_eating">is eating</string>
+    <string name="le_zinc">Le Zinc</string>
+    <string name="french_12_rue_du_faubourg_poissoni_re">French - 12 rue du Faubourg PoissoniÃ¨re</string>
+    <string name="OPEN">OPEN</string>
+    <string name="_120_m">120 m</string>
+    <string name="_2">(2)</string>
+    <string name="go4lunch">Go4Lunch</string>
+    <string name="john_malkovitch">John Malkovitch</string>
+    <string name="jojo_malko_gmail_com">Jojo.Malko@gmail.com</string>
+    <string name="restaurant_photo">restaurant_photo</string>
+    <string name="_12_rue_faubourg_poissoni_re">12 rue Faubourg Poissonière</string>
+    <string name="Le_Zinc">Le Zinc</string>
+
 
 </resources>

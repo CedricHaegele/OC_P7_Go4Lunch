@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
@@ -89,7 +88,7 @@
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.113" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/ic_shape.xml" value="0.135" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/drawable/image.xml" value="0.2525" />
-        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.23055555555555557" />
+        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/app_bar_main.xml" value="0.25" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/content_main.xml" value="0.3385416666666667" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/custom_info_window.xml" value="0.26927083333333335" />
@@ -99,7 +98,7 @@
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_detail_restaurant.xml" value="0.3625" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_detail_restaurantt.xml" value="0.3625" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_map_view.xml" value="0.33" />
-        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_mylunch.xml" value="0.3385416666666667" />
+        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_mylunch.xml" value="0.5" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_restaurant_detail.xml" value="0.2546875" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_restaurant_detaill.xml" value="0.30885416666666665" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_resto_item.xml" value="0.33" />
@@ -107,9 +106,11 @@
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_settings.xml" value="0.2604166666666667" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_workmate_item.xml" value="0.3" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_workmates_available_list.xml" value="0.22" />
-        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/header_navigation_drawer.xml" value="0.1" />
+        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/fragment_workmates_list.xml" value="0.24947916666666667" />
+        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/header_navigation_drawer.xml" value="0.3333333333333333" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/place_item_layout.xml" value="0.30052083333333335" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/restaurant_detail.xml" value="0.3333333333333333" />
+        <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/settings_activity.xml" value="0.30052083333333335" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/layout/toolbar.xml" value="0.346875" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/menu/bottom_nav.xml" value="0.30052083333333335" />
         <entry key="..\:/Users/zikce/OneDrive/Documents/ProjectsAndroid/OC_P7_Go4Lunch/app/src/main/res/menu/drawer_nav.xml" value="0.30052083333333335" />
@@ -118,10 +119,17 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="jbr-17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.0535472972972973" />
+      </ProjectState>
+    </option>
   </component>
 </project>

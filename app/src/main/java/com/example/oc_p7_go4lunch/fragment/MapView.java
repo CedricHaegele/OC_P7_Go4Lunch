@@ -75,7 +75,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
     // not granted.
     private boolean locationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private final LatLng defaultLocation = new LatLng(48.5734, 7.7521);
     private static final int DEFAULT_ZOOM = 15;
 
     // The entry point to the Fused Location Provider.
@@ -91,10 +91,12 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.mapGps);
-        assert mapFragment != null;
-        mapFragment.getMapAsync(this);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapGps);
+
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
+
 
         //drawer Navigation
         toolbar = (requireActivity()).findViewById(R.id.toolbar);
@@ -184,11 +186,18 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
+        Log.d("Debug", "onMapReady called");
         map = googleMap;
-        LatLng sydney = new LatLng(-33.852, 151.211);
+
+        // Centrer la carte sur Strasbourg par défaut
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
+
+        getDeviceLocation(); // Ensuite, obtenir la localisation réelle
+
+        LatLng strasbourg = new LatLng(48.5734, 7.7521);
         map.addMarker(new MarkerOptions()
-                .position(sydney)
-                .title("Marker in Sydney"));
+                .position(strasbourg)
+                .title("Marker in Strasbourg"));
         map.setOnMarkerClickListener(MapView.this);
 
         // below line is to add marker to google maps
@@ -198,7 +207,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
             map.addMarker(new MarkerOptions().position(latLngArrayList.get(i)).title("Marker in " + locationNameArraylist.get(i)));
 
             // below line is use to move camera.
-            map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            map.moveCamera(CameraUpdateFactory.newLatLng(strasbourg));
         }
 
         map.getUiSettings().setZoomControlsEnabled(true);
@@ -230,7 +239,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         locationPermissionGranted = false;
-        if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {// If request is cancelled, the result arrays are empty.
+        if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 locationPermissionGranted = true;
@@ -239,6 +248,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         }
         updateLocationUI();
     }
+
 
     /**
      * method to set the location controls on the map.
@@ -274,26 +284,17 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
             if (locationPermissionGranted) {
                 Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Set the map's camera position to the current location of the device.
+                    if (task.isSuccessful() && map != null) {
                         lastKnownLocation = task.getResult();
+                        LatLng location;
                         if (lastKnownLocation != null) {
-                            LatLng location = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    location, DEFAULT_ZOOM));
-                            map.addMarker(new MarkerOptions()
-                                    .position(location)
-                                    .title("You're Here !!!"));
-
-                            makeRequest(lastKnownLocation);
-
+                            location = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                        } else {
+                            location = defaultLocation; // Utilisez Strasbourg comme emplacement par défaut
                         }
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM));
                     } else {
-                        Log.d(TAG, "Current location is null. Using defaults.");
-                        Log.e(TAG, "Exception: %s", task.getException());
-                        map.moveCamera(CameraUpdateFactory
-                                .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
-                        map.getUiSettings().setMyLocationButtonEnabled(false);
+                        // Gérez les erreurs ou les cas où map est null
                     }
                 });
             }
@@ -301,6 +302,8 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
             Log.e("Exception: %s", e.getMessage(), e);
         }
     }
+
+
 
     private void makeRequest(Location location) {
 

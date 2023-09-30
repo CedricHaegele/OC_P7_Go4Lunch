@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Android Manifest File -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!--
-         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the "MyLocation" functionality.
-    -->
-    <!-- Always include this permission -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Include only if your app benefits from precise location access. -->
+
+    <!-- Permissions Section -->
+
+    <!-- Permission for coarse location access, useful for features like geofencing -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Permission for fine location access, necessary for features like map pinpointing -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Permission for internet access -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Application Section -->
 
     <application
         android:allowBackup="true"
@@ -18,67 +24,51 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.OC_P7_Go4Lunch">
+
+        <!-- Activities Section -->
+
+        <!-- Settings Activity -->
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
-        <!--
-             The API key for Google Maps-based APIs is defined as a string resource.
-             (See the file "res/values/google_maps_api.xml").
-             Note that the API key is linked to the encryption key used to sign the APK.
-             You need a different API key for each encryption key, including the release key that is used to
-             sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/.
-        -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
 
+        <activity
+            android:name="com.firebase.ui.auth.KickoffActivity"
+            android:theme="@style/MyFirebaseUIToolbar"
+            tools:replace="android:theme" />
+
+        <!-- Login Activity -->
+        <activity
+            android:name=".activities.LoginActivity"
+            android:exported="true" />
+
+        <!-- Restaurant Detail Activity -->
+        <activity
+            android:name=".activities.RestaurantDetail"
+            android:exported="true" />
+
+        <!-- Main Activity -->
         <activity
             android:name=".activities.MainActivity"
             android:exported="true">
 
-        </activity>
-
-        <activity
-            android:name=".activities.RestaurantDetail"
-            android:exported="true">
-        </activity>
-
-        <activity
-            android:name=".activities.LoginActivity"
-            android:exported="true">
+            <!-- Intent filter to launch this activity as the main entry point of the app -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
+        <!-- Meta-data Section -->
+
+        <!-- Google Maps API Key -->
         <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_application_id"/>
-        <meta-data
-            android:name="com.facebook.sdk.ClientToken"
-            android:value="@string/facebook_client_token"/>
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
 
-
-        <activity
-            android:name="com.facebook.FacebookActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name" />
-        <activity
-            android:name="com.facebook.CustomTabActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="@string/fb_login_protocol_scheme" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>
+

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.navigation:navigation-common:2.7.3@aar">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/294347d61ae5ebdc8dad6cdd6f426973/transformed/navigation-common-2.7.3/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/294347d61ae5ebdc8dad6cdd6f426973/transformed/navigation-common-2.7.3/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/294347d61ae5ebdc8dad6cdd6f426973/transformed/navigation-common-2.7.3/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/androidx.navigation/navigation-common/2.7.3/bd92f1e96dbea910bc51ada8993a3949f17d3f67/navigation-common-2.7.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

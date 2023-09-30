@@ -1,15 +1,15 @@
 <component name="libraryTable">
   <library name="Gradle: com.facebook.android:facebook-common:13.2.0@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/9fafc99b07b3a466ef1a7b377a3eeab8/transformed/jetified-facebook-common-13.2.0/AndroidManifest.xml" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/9fafc99b07b3a466ef1a7b377a3eeab8/transformed/jetified-facebook-common-13.2.0/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/9fafc99b07b3a466ef1a7b377a3eeab8/transformed/jetified-facebook-common-13.2.0/jars/classes.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/cc38c704a38c36617e1e78a5a0c5a5e1/transformed/jetified-facebook-common-13.2.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/cc38c704a38c36617e1e78a5a0c5a5e1/transformed/jetified-facebook-common-13.2.0/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/cc38c704a38c36617e1e78a5a0c5a5e1/transformed/jetified-facebook-common-13.2.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.facebook.android/facebook-common/13.2.0/fd45f6a14304c6105455293a35e609379782d8cf/facebook-common-13.2.0-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.facebook.android/facebook-common/13.2.0/fd45f6a14304c6105455293a35e609379782d8cf/facebook-common-13.2.0-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.facebook.android/facebook-common/13.2.0/c23ede5889b3198246ac2c7eb54ef8ee1cdbb437/facebook-common-13.2.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.facebook.android/facebook-common/13.2.0/c23ede5889b3198246ac2c7eb54ef8ee1cdbb437/facebook-common-13.2.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

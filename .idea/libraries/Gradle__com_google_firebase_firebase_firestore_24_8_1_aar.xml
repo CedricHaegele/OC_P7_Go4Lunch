@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.firebase:firebase-firestore:24.8.1@aar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/736d5abbb6ae24e580af899fa0f19db7/transformed/jetified-firebase-firestore-24.8.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/736d5abbb6ae24e580af899fa0f19db7/transformed/jetified-firebase-firestore-24.8.1/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.google.firebase/firebase-firestore/24.8.1/c7447681aa00935f559ec4655cb4b32c1466a326/firebase-firestore-24.8.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

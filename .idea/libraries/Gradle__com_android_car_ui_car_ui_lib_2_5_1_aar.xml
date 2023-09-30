@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: com.android.car.ui:car-ui-lib:2.5.1@aar">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/1eda8044cfd171d002faed7093ef9ec3/transformed/jetified-car-ui-lib-2.5.1/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/1eda8044cfd171d002faed7093ef9ec3/transformed/jetified-car-ui-lib-2.5.1/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/1eda8044cfd171d002faed7093ef9ec3/transformed/jetified-car-ui-lib-2.5.1/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.android.car.ui/car-ui-lib/2.5.1/47a3d1a7185646332827ea51cc28f10373c50e91/car-ui-lib-2.5.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>

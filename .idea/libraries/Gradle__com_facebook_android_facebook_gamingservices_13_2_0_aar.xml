@@ -1,16 +1,14 @@
 <component name="libraryTable">
   <library name="Gradle: com.facebook.android:facebook-gamingservices:13.2.0@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/9a0aca82a702583cfe054997ebb50f4f/transformed/jetified-facebook-gamingservices-13.2.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b9107d0efc1873e196379c2c4600a4cb/transformed/jetified-facebook-gamingservices-13.2.0/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/b9107d0efc1873e196379c2c4600a4cb/transformed/jetified-facebook-gamingservices-13.2.0/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b9107d0efc1873e196379c2c4600a4cb/transformed/jetified-facebook-gamingservices-13.2.0/res" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/fd629303c988af70e2d75ed0f6ddd0f3/transformed/jetified-facebook-gamingservices-13.2.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/fd629303c988af70e2d75ed0f6ddd0f3/transformed/jetified-facebook-gamingservices-13.2.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.facebook.android/facebook-gamingservices/13.2.0/124285b9267117622961f5aaf12d2d2708107eb/facebook-gamingservices-13.2.0-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.facebook.android/facebook-gamingservices/13.2.0/124285b9267117622961f5aaf12d2d2708107eb/facebook-gamingservices-13.2.0-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.facebook.android/facebook-gamingservices/13.2.0/efb48e1773f0296e83e9eaf4937f9016e90a2d9f/facebook-gamingservices-13.2.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.facebook.android/facebook-gamingservices/13.2.0/efb48e1773f0296e83e9eaf4937f9016e90a2d9f/facebook-gamingservices-13.2.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

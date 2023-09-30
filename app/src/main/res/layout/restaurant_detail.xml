@@ -12,7 +12,7 @@
             android:id="@+id/logo"
             android:layout_width="match_parent"
             android:layout_height="230dp"
-            android:contentDescription="restaurant_photo"
+            android:contentDescription="@string/restaurant_photo"
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/bolo" />
 
@@ -43,7 +43,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="70"
-                    android:text="Le Zinc"
+                    android:text="@string/Le_Zinc"
                     android:textColor="@android:color/white"
                     android:textSize="20sp" />
 
@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:text="12 rue Faubourg Poissonière"
+                android:text="@string/_12_rue_faubourg_poissoni_re"
                 android:textColor="@android:color/white" />
 
             <RatingBar

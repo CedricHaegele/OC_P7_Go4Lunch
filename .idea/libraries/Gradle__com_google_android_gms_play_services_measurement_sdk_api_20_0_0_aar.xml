@@ -1,13 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.android.gms:play-services-measurement-sdk-api:20.0.0@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/1ae11c770c8ac21185e778277ed085a1/transformed/jetified-play-services-measurement-sdk-api-20.0.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/11a2a341157b8e257e0bb106b05a66ac/transformed/jetified-play-services-measurement-sdk-api-20.0.0/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/11a2a341157b8e257e0bb106b05a66ac/transformed/jetified-play-services-measurement-sdk-api-20.0.0/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/11a2a341157b8e257e0bb106b05a66ac/transformed/jetified-play-services-measurement-sdk-api-20.0.0/res" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/b99610f115107d09ea0a0e4e030994be/transformed/jetified-play-services-measurement-sdk-api-20.0.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/b99610f115107d09ea0a0e4e030994be/transformed/jetified-play-services-measurement-sdk-api-20.0.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.android.gms/play-services-measurement-sdk-api/20.0.0/ace98f39b262c59be4be4d52b871d1ba5dfff723/play-services-measurement-sdk-api-20.0.0-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.google.android.gms/play-services-measurement-sdk-api/20.0.0/ace98f39b262c59be4be4d52b871d1ba5dfff723/play-services-measurement-sdk-api-20.0.0-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES />
   </library>

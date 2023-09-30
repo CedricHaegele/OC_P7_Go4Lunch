@@ -30,6 +30,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -74,11 +75,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View headerView = navigationView.getHeaderView(0);
         TextView name = headerView.findViewById(R.id.Name);
         TextView mail = headerView.findViewById(R.id.Mail);
-        ImageView photo = headerView.findViewById(R.id.PhotoUser);
+        ImageView photo = headerView.findViewById(R.id.photo);
 
-        FirebaseUser user = getIntent().getParcelableExtra("user");
-        name.setText(user.getDisplayName());
-        mail.setText(user.getEmail());
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            name.setText(user.getDisplayName());
+            mail.setText(user.getEmail());
+        } else {
+            // Vous pouvez gérer ici le cas où aucun utilisateur n'est connecté.
+            // Par exemple, rediriger l'utilisateur vers une activité de connexion.
+        }
+
 
         Uri photoProfile = getIntent().getParcelableExtra("photo");
 
@@ -88,9 +95,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .into(photo);
         } else {
 
-            Glide.with(this)
-                    .load("https://th.bing.com/th/id/R.1e7cab2bec37bf6652050ce85976a841?rik=A85GcZRw0yX5pA&riu=http%3a%2f%2fimg2.wikia.nocookie.net%2f__cb20130810123628%2fhighlander%2ffr%2fimages%2fa%2faa%2fPhoto_non_disponible.png&ehk=Z9TmOuUXm8yURB7P41GBPhNu2B1uy79oy%2fLu%2f8RI%2fAc%3d&risl=&pid=ImgRaw&r=0")
-                    .into(photo);
+            if (photo != null) {
+                if (photoProfile != null) {
+                    Glide.with(this)
+                            .load(photoProfile)
+                            .into(photo);
+                } else {
+                    Glide.with(this)
+                            .load("https://th.bing.com/th/id/R.1e7cab2bec37bf6652050ce85976a841?rik=A85GcZRw0yX5pA&riu=http%3a%2f%2fimg2.wikia.nocookie.net%2f__cb20130810123628%2fhighlander%2ffr%2fimages%2fa%2faa%2fPhoto_non_disponible.png&ehk=Z9TmOuUXm8yURB7P41GBPhNu2B1uy79oy%2fLu%2f8RI%2fAc%3d&risl=&pid=ImgRaw&r=0")
+                            .into(photo);
+                }
+            }
+
         }
     }
 
@@ -157,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case logOut:
                 logOut();
-                finish();
                 break;
         }
 
@@ -166,8 +181,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void logOut() {
-        AuthUI.getInstance().signOut(this);
-        startActivity(new Intent(this, LoginActivity.class));
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }
 

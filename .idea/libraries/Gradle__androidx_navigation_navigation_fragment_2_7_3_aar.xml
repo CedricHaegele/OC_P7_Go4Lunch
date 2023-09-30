@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.navigation:navigation-fragment:2.7.3@aar">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/cbbff9bbf33aae48bcb76d5234999376/transformed/navigation-fragment-2.7.3/res" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/cbbff9bbf33aae48bcb76d5234999376/transformed/navigation-fragment-2.7.3/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/cbbff9bbf33aae48bcb76d5234999376/transformed/navigation-fragment-2.7.3/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/androidx.navigation/navigation-fragment/2.7.3/886507be50597636be6edbfd3301e96cc0557e08/navigation-fragment-2.7.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -6,14 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,15 +13,20 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
-import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
 import com.example.oc_p7_go4lunch.R;
-
+import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.adapter.RestoListAdapter;
 import com.example.oc_p7_go4lunch.model.googleplaces.Places;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
+import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
 import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.gms.common.api.Status;
@@ -38,17 +35,16 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -117,10 +113,15 @@ public class RestoListView extends Fragment {
 
         // Initialize the AutocompleteSupportFragment.
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                requireActivity().getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+                requireActivity().getSupportFragmentManager().findFragmentById(R.id.container_autocomplete);
 
-        //select a country
-        assert autocompleteFragment != null;
+
+        if (autocompleteFragment == null) {
+            Log.e("TAG", "Autocomplete fragment is null");
+            // Vous pouvez également ajouter une action pour résoudre ce problème, par exemple fermer le fragment ou afficher un message à l'utilisateur.
+            return;
+        }
+
         autocompleteFragment.setCountries("FR");
 
         // Specify the types of place data to return.
@@ -133,7 +134,7 @@ public class RestoListView extends Fragment {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
                 Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
-                intent.putExtra("Place",place);
+                intent.putExtra("Place", place);
                 startActivity(intent);
 
             }
@@ -194,9 +195,22 @@ public class RestoListView extends Fragment {
             @Override
             public void onResponse(Call<Places> call, Response<Places> response) {
 
+                Gson gson = new Gson();
+                String json = gson.toJson(response.body());
+                Log.d("TAG", "Contenu de l'objet Places: " + json);
+
+
+
                 if (response.errorBody() == null) {
                     if (response.body() != null) {
                         restaurantList = response.body().getPlacesList();
+
+                        // Ajout des logs ici pour vérifier si restaurantList est correctement rempli
+                        if (restaurantList != null && restaurantList.size() > 0) {
+                            Log.d("TAG", "Liste de restaurants obtenue: " + restaurantList.size());
+                        } else {
+                            Log.d("TAG", "Liste de restaurants vide ou nulle");
+                        }
 
                         if (restaurantList != null && restaurantList.size() > 0) {
                             restoListAdapter = new RestoListAdapter(restaurantList, getContext());
@@ -204,7 +218,9 @@ public class RestoListView extends Fragment {
 
                         } else {
                             placesList.clear();
-                            map.clear();
+                            if (map != null) {
+                                map.clear();
+                            }
                         }
                     }
                 } else {

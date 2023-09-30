@@ -16,7 +16,7 @@
             android:id="@+id/tab1"
             android:layout_width="240dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:orientation="vertical">
 
@@ -24,7 +24,7 @@
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Le Zinc"
+                android:text="@string/le_zinc"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -33,14 +33,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:text="French - 12 rue du Faubourg PoissoniÃ¨re"
+                android:text="@string/french_12_rue_du_faubourg_poissoni_re"
                 android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/opening_hours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="OPEN"
+                android:text="@string/OPEN"
                 android:textSize="15sp"
                 android:textStyle="italic" />
         </LinearLayout>
@@ -55,10 +55,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@id/ic_user"
-                android:layout_alignParentRight="true"
-                android:layout_marginLeft="8dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="8dp"
                 android:layout_marginEnd="5dp"
-                android:text="120 m" />
+                android:text="@string/_120_m" />
 
 
             <ImageView
@@ -66,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/ratingBar"
-                android:layout_toLeftOf="@+id/users"
+                android:layout_toStartOf="@+id/users"
                 android:src="@drawable/ic_baseline_person_24" />
 
             <TextView
@@ -75,17 +75,16 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/ratingBar"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
-                android:text="(2)" />
+                android:text="@string/_2" />
 
             <RatingBar
                 android:id="@+id/ratingBar"
                 style="@style/Widget.AppCompat.RatingBar.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:numStars="5"
                 android:progressTint="@color/teal_700"

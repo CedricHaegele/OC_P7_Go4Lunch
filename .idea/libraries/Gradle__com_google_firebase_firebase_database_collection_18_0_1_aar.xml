@@ -1,16 +1,14 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.firebase:firebase-database-collection:18.0.1@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/aa32b93a9adc37710bd9a52a0c2458b2/transformed/jetified-firebase-database-collection-18.0.1/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/899e361724b71a49f021f3921b7fd74b/transformed/jetified-firebase-database-collection-18.0.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/899e361724b71a49f021f3921b7fd74b/transformed/jetified-firebase-database-collection-18.0.1/AndroidManifest.xml" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/899e361724b71a49f021f3921b7fd74b/transformed/jetified-firebase-database-collection-18.0.1/res" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/b83c9a063a67ab9471a9f108206b42b6/transformed/jetified-firebase-database-collection-18.0.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/b83c9a063a67ab9471a9f108206b42b6/transformed/jetified-firebase-database-collection-18.0.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.firebase/firebase-database-collection/18.0.1/641c828ba56aad8e1c54d66e4d7c63db27c19033/firebase-database-collection-18.0.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.google.firebase/firebase-database-collection/18.0.1/641c828ba56aad8e1c54d66e4d7c63db27c19033/firebase-database-collection-18.0.1-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.firebase/firebase-database-collection/18.0.1/75d14361b174bc454c47039dd531985b55e6c376/firebase-database-collection-18.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.google.firebase/firebase-database-collection/18.0.1/75d14361b174bc454c47039dd531985b55e6c376/firebase-database-collection-18.0.1-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

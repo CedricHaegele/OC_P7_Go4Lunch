@@ -6,15 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mapGps"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
-
+        />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floating_action_button"
         android:layout_width="wrap_content"
@@ -24,7 +21,7 @@
         android:contentDescription="@string/location"
         app:backgroundTint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_gps_fixed_24" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

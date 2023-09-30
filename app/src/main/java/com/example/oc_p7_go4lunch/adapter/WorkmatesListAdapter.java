@@ -19,7 +19,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdapter.ViewHolder> {
 
-    private List<UserModel> userList;
+    private final List<UserModel> userList;
 
     public WorkmatesListAdapter(List<UserModel> userModels) {
         this.userList = userModels;
@@ -45,7 +45,7 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
         return userList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView img;
         TextView name;
 
@@ -62,7 +62,7 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
 
             Glide.with(img.getContext())
                     .load(mUser.getPhoto())
-                    .placeholder(R.drawable.quantum_ic_cloud_off_vd_theme_24)
+                    .placeholder(com.google.android.libraries.places.R.drawable.quantum_ic_cloud_off_vd_theme_24)
                     .circleCrop()
                     .error(R.drawable.default_avatar)
                     .into(img);

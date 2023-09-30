@@ -5,7 +5,7 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+    <color name="black">#2C2828</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorPrimary">#03A9F4</color>
     <color name="colorPrimaryDark">#0287c3</color>
@@ -13,7 +13,8 @@
     <color name="whiteM">#bebebe</color>
     <color name="whiteGrey">#d3d3d3</color>
     <color name="orange">#FFA500</color>
-    <color name="red">#F61202</color>
+    <color name="red">#D3352A</color>
+    <color name="Toolbar">#E83902</color>
 
        <!-- APP BASE -->
     <color name="colorAccentDark">#000000</color>

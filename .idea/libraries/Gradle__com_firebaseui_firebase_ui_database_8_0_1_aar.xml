@@ -1,16 +1,14 @@
 <component name="libraryTable">
   <library name="Gradle: com.firebaseui:firebase-ui-database:8.0.1@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/883bf8bc17ee28f9373e1d5d046eaad5/transformed/jetified-firebase-ui-database-8.0.1/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f854514536943f2aca66a4db9cbe9b03/transformed/jetified-firebase-ui-database-8.0.1/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/f854514536943f2aca66a4db9cbe9b03/transformed/jetified-firebase-ui-database-8.0.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f854514536943f2aca66a4db9cbe9b03/transformed/jetified-firebase-ui-database-8.0.1/AndroidManifest.xml" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/3ff1519eec451383b1978a97f58274c4/transformed/jetified-firebase-ui-database-8.0.1/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/3ff1519eec451383b1978a97f58274c4/transformed/jetified-firebase-ui-database-8.0.1/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.firebaseui/firebase-ui-database/8.0.1/6cf0bbf99a60b474707b8c998d09667f7092d9fe/firebase-ui-database-8.0.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.firebaseui/firebase-ui-database/8.0.1/6cf0bbf99a60b474707b8c998d09667f7092d9fe/firebase-ui-database-8.0.1-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.firebaseui/firebase-ui-database/8.0.1/b75c8480c4b48b7d5386f3012fc1fc8bb9e8fe62/firebase-ui-database-8.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.firebaseui/firebase-ui-database/8.0.1/b75c8480c4b48b7d5386f3012fc1fc8bb9e8fe62/firebase-ui-database-8.0.1-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

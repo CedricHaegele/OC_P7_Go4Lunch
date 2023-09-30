@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.firebase:firebase-database:20.2.2@aar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/42f9d0a389f76f35527dd5fd4ab062c1/transformed/jetified-firebase-database-20.2.2/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/42f9d0a389f76f35527dd5fd4ab062c1/transformed/jetified-firebase-database-20.2.2/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.google.firebase/firebase-database/20.2.2/b227af41c92ce342cace9e813b38984935cf2a12/firebase-database-20.2.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

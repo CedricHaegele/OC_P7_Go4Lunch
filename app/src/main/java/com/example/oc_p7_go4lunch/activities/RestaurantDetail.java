@@ -3,7 +3,6 @@ package com.example.oc_p7_go4lunch.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -17,8 +16,6 @@ import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.helper.FirebaseHelper;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
@@ -27,7 +24,6 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.Collections;
@@ -72,28 +68,41 @@ public class RestaurantDetail extends AppCompatActivity {
         }
 
 
-        imageChecked.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                FirebaseHelper.getUserDocument(firebaseUser.getUid())
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                                if (documentSnapshot.exists()) {
-                                    UserModel user = documentSnapshot.toObject(UserModel.class);
-                                    user.setRestaurantID(restaurant.getPlaceId());
-                                    FirebaseHelper.getUsersCollection().document(firebaseUser.getUid()).set(user, SetOptions.merge());
-                                    imageChecked.setImageResource(R.drawable.ic_button_is_checked);
-                                } else {
-                                    imageChecked.setImageResource(R.drawable.ic_button_unchecked);
-                                }
-                            }
+        imageChecked.setOnClickListener(view -> {
+            firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            if(firebaseUser != null) {
+                String uid = firebaseUser.getUid();
+                FirebaseHelper.getUserDocument(uid)
+                        .addOnSuccessListener(documentSnapshot -> {
+                            // Votre code existant
                         });
+            } else {
+                // Gérer le cas où firebaseUser est null (utilisateur non connecté)
             }
         });
+
+
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null){
+            FirebaseHelper.getUserDocument(firebaseUser.getUid())
+                    .addOnSuccessListener(documentSnapshot -> {
+
+                        if (documentSnapshot.exists()) {
+                            UserModel user = documentSnapshot.toObject(UserModel.class);
+                            assert user != null;
+                            user.setRestaurantID(restaurant.getPlaceId());
+                            FirebaseHelper.getUsersCollection().document(firebaseUser.getUid()).set(user, SetOptions.merge());
+                            imageChecked.setImageResource(R.drawable.ic_button_is_checked);
+                        } else {
+                            imageChecked.setImageResource(R.drawable.ic_button_unchecked);
+                        }
+                    });
+        } else {
+        // Gérez le cas où l'utilisateur n'est pas connecté.
+        // Par exemple, redirigez-le vers l'écran de connexion.
     }
+        }
+
 
     private void fetchPlaceToImage(Place place) {
         PlacesClient placesClient = Places.createClient(this);
@@ -129,9 +138,6 @@ public class RestaurantDetail extends AppCompatActivity {
                         .into(logo);
 
             }).addOnFailureListener((exception) -> {
-                if (exception instanceof ApiException) {
-
-                }
             });
         });
     }

@@ -38,7 +38,14 @@ public class RestaurantsCall {
 
                         if (restaurantList != null && restaurantList.size() > 0) {
                             placesList.clear();
-                            map.clear();
+                            Log.d("Debug", "About to call map.clear()");
+                            if (map != null) {
+                                map.clear();
+                                Log.d("Debug", "Successfully called map.clear()");
+                            } else {
+                                Log.d("Debug", "map is null");
+                            }
+
 
                             for (int i = 0; i < restaurantList.size(); i++) {
 
@@ -49,7 +56,14 @@ public class RestaurantsCall {
                             }
                         } else {
                             placesList.clear();
-                            map.clear();
+                            Log.d("Debug", "About to call map.clear()");
+                            if (map != null) {
+                                map.clear();
+                                Log.d("Debug", "Successfully called map.clear()");
+                            } else {
+                                Log.d("Debug", "map is null");
+                            }
+
                         }
                     }
                 } else {

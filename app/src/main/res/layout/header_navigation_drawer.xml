@@ -1,45 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="240dp"
-    android:orientation="vertical"
-    android:id="@+id/header_drawer">
-
+    android:layout_height="@dimen/nav_header_height"
+    android:gravity="center"
+    android:orientation="vertical">
 
        <ImageView
-           android:id="@+id/dinner_header_drawer"
-           android:layout_width="match_parent"
-           android:layout_height="match_parent"
+           android:id="@+id/imageView"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
            android:scaleType="centerCrop"
-           android:src="@drawable/bolo" />
-
+           android:src="@drawable/bar_restaurant"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintHorizontal_bias="0.0"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           app:layout_constraintVertical_bias="0.0"
+           android:contentDescription="nav_header" />
 
        <TextView
            android:id="@+id/topic_header_drawer"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:layout_centerHorizontal="true"
-           android:layout_marginTop="1dp"
-           android:layout_marginEnd="0dp"
+           android:layout_alignParentStart="true"
            android:shadowColor="#E60808"
-           android:shadowDx="0.0"
-           android:shadowDy="0.0"
-           android:shadowRadius="10"
-           android:text="Go4Lunch"
+           android:shadowRadius="45"
+           android:text="@string/go4lunch"
            android:textColor="#F3F0F0"
-           android:textSize="50sp"
-           android:textStyle="bold" />
+           android:textSize="60sp"
+           android:textStyle="bold"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="@+id/imageView"
+           app:layout_constraintTop_toTopOf="@+id/imageView" />
 
        <de.hdodenhof.circleimageview.CircleImageView
-           android:id="@+id/PhotoUser"
-           android:layout_width="60dp"
-           android:layout_height="60dp"
+           android:id="@+id/photo_user"
+           android:layout_width="55dp"
+           android:layout_height="55dp"
            android:layout_alignParentBottom="true"
-           android:layout_marginBottom="36dp"
-           android:background="@color/fui_transparent"/>
+           android:layout_marginStart="25dp"
+           android:src="@drawable/profil_user"
+           app:civ_border_color="@color/white"
+           app:civ_border_width="2dp"
+           app:layout_constraintBottom_toBottomOf="@+id/imageView"
+           app:layout_constraintEnd_toStartOf="@+id/Mail"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toBottomOf="@+id/topic_header_drawer" />
 
        <TextView
            android:id="@+id/Name"
@@ -47,16 +56,22 @@
            android:layout_height="wrap_content"
            android:layout_below="@+id/topic_header_drawer"
            android:layout_centerVertical="true"
-           android:layout_marginStart="5dp"
-           android:layout_marginTop="80dp"
-           android:layout_toEndOf="@id/PhotoUser"
+           android:layout_toEndOf="@id/photo_user"
+           android:shadowColor="#E60808"
+           android:shadowRadius="45"
+           android:text="john_smith"
            android:textAppearance="?attr/textAppearanceBody1"
-           android:textColor="#592424"
+           android:textColor="#FFFFFF"
            android:textSize="12sp"
            android:textStyle="bold"
            app:drawableStartCompat="@drawable/ic_baseline_person_24"
-           app:drawableTint="@color/black"
-           android:text="John Malkovitch" />
+           app:drawableTint="@color/white"
+           app:layout_constraintBottom_toTopOf="@+id/Mail"
+           app:layout_constraintEnd_toEndOf="@+id/topic_header_drawer"
+           app:layout_constraintHorizontal_bias="0.546"
+           app:layout_constraintStart_toStartOf="@+id/topic_header_drawer"
+           app:layout_constraintTop_toBottomOf="@+id/topic_header_drawer"
+           app:layout_constraintVertical_bias="1.0" />
 
        <TextView
            android:id="@+id/Mail"
@@ -64,17 +79,19 @@
            android:layout_height="wrap_content"
            android:layout_below="@+id/Name"
            android:layout_centerVertical="true"
-           android:layout_marginStart="5dp"
-           android:layout_marginTop="5dp"
-           android:layout_toEndOf="@id/PhotoUser"
+           android:layout_toEndOf="@id/photo_user"
+           android:shadowColor="#E60808"
+           android:shadowRadius="45"
+           android:text="jsmith_1337_gmail_com"
            android:textAppearance="?attr/textAppearanceBody2"
-           android:textColor="#592424"
+           android:textColor="#FBF8F8"
            android:textSize="12sp"
            android:textStyle="bold"
            app:drawableStartCompat="@drawable/ic_baseline_email_24"
-           app:drawableTint="@color/black"
-           tools:layout_editor_absoluteX="154dp"
-           tools:layout_editor_absoluteY="124dp"
-           android:text="Jojo.Malko@gmail.com" />
+           app:drawableTint="@color/white"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintStart_toStartOf="@+id/Name"
+           app:layout_constraintTop_toBottomOf="@+id/topic_header_drawer"
+           app:layout_constraintVertical_bias="0.75" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
