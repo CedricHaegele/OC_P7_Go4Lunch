@@ -71,11 +71,11 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
 
     List<RestaurantModel> restaurantList = new ArrayList<>();
 
-    // A default location (Sydney, Australia) and default zoom to use when location permission is
-    // not granted.
+
     private boolean locationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private final LatLng defaultLocation = new LatLng(48.5734, 7.7521);
+    private final LatLng defaultLocation = new LatLng(37.4220, -122.0841);
+
     private static final int DEFAULT_ZOOM = 15;
 
     // The entry point to the Fused Location Provider.
@@ -96,12 +96,6 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
-
-
-        //drawer Navigation
-        toolbar = (requireActivity()).findViewById(R.id.toolbar);
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        container_autocomplete = toolbar.findViewById(R.id.container_autocomplete);
 
         drawerNavigation();
         getAutocompletePredictions();
@@ -189,29 +183,24 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         Log.d("Debug", "onMapReady called");
         map = googleMap;
 
-        // Centrer la carte sur Strasbourg par défaut
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
+        // Votre logique de carte ici ...
 
-        getDeviceLocation(); // Ensuite, obtenir la localisation réelle
-
-        LatLng strasbourg = new LatLng(48.5734, 7.7521);
-        map.addMarker(new MarkerOptions()
-                .position(strasbourg)
-                .title("Marker in Strasbourg"));
-        map.setOnMarkerClickListener(MapView.this);
-
-        // below line is to add marker to google maps
-        for (int i = 0; i < latLngArrayList.size(); i++) {
-
-            // adding marker to each location on google maps
-            map.addMarker(new MarkerOptions().position(latLngArrayList.get(i)).title("Marker in " + locationNameArraylist.get(i)));
-
-            // below line is use to move camera.
-            map.moveCamera(CameraUpdateFactory.newLatLng(strasbourg));
-        }
-
-        map.getUiSettings().setZoomControlsEnabled(true);
+        // Calcul de la distance
+        double distance = calculateDistance(37.421942, -122.0840597, 37.4144292, -122.0811554);
+        Log.d("Distance", "Distance entre les deux points: " + distance + " km");
     }
+
+    public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
 
     /**
      * Request location permission, so that we can get the location of the
@@ -289,13 +278,20 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
                         LatLng location;
                         if (lastKnownLocation != null) {
                             location = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                            Log.d("CurrentLocation", "Latitude : " + MapView.lastKnownLocation.getLatitude() + ", Longitude : " + MapView.lastKnownLocation.getLongitude());
+
+                            makeRequest(lastKnownLocation);
                         } else {
-                            location = defaultLocation; // Utilisez Strasbourg comme emplacement par défaut
+                            location = defaultLocation;
                         }
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM));
                     } else {
-                        // Gérez les erreurs ou les cas où map est null
-                    }
+                        Log.d(TAG, "Current location is null. Using defaults.");
+                        if (map != null) {
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
+                        }
+
+                                            }
                 });
             }
         } catch (SecurityException e) {

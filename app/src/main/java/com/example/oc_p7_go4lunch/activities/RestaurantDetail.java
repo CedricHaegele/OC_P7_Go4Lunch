@@ -2,7 +2,9 @@ package com.example.oc_p7_go4lunch.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -12,9 +14,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.helper.FirebaseHelper;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
+import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
@@ -51,6 +58,7 @@ public class RestaurantDetail extends AppCompatActivity {
 
         if (callingIntent != null && callingIntent.hasExtra("Restaurant")) {
             restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
+            Log.d("RestaurantDetail", "Received restaurant: " + restaurant);
             Detail.setText(restaurant.getName());
             Adress.setText(restaurant.getVicinity());
             ratingBar.setNumStars(restaurant.getRating().intValue());
@@ -70,7 +78,7 @@ public class RestaurantDetail extends AppCompatActivity {
 
         imageChecked.setOnClickListener(view -> {
             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            if(firebaseUser != null) {
+            if (firebaseUser != null) {
                 String uid = firebaseUser.getUid();
                 FirebaseHelper.getUserDocument(uid)
                         .addOnSuccessListener(documentSnapshot -> {
@@ -83,14 +91,16 @@ public class RestaurantDetail extends AppCompatActivity {
 
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null){
+        if (firebaseUser != null) {
             FirebaseHelper.getUserDocument(firebaseUser.getUid())
                     .addOnSuccessListener(documentSnapshot -> {
 
                         if (documentSnapshot.exists()) {
                             UserModel user = documentSnapshot.toObject(UserModel.class);
                             assert user != null;
-                            user.setRestaurantID(restaurant.getPlaceId());
+                            if (restaurant != null) {
+                                user.setRestaurantID(restaurant.getPlaceId());
+                            }
                             FirebaseHelper.getUsersCollection().document(firebaseUser.getUid()).set(user, SetOptions.merge());
                             imageChecked.setImageResource(R.drawable.ic_button_is_checked);
                         } else {
@@ -98,10 +108,11 @@ public class RestaurantDetail extends AppCompatActivity {
                         }
                     });
         } else {
-        // Gérez le cas où l'utilisateur n'est pas connecté.
-        // Par exemple, redirigez-le vers l'écran de connexion.
-    }
+            Log.d("RestaurantDetail", "Restaurant object: " + restaurant);
+
+
         }
+    }
 
 
     private void fetchPlaceToImage(Place place) {
@@ -134,8 +145,21 @@ public class RestaurantDetail extends AppCompatActivity {
                 bitmap = fetchPhotoResponse.getBitmap();
 
                 Glide.with(this)
-                        .load(bitmap)
+                        .load("https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png")
+                        .addListener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                Log.e("Glide", "Load failed", e);
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                return false;
+                            }
+                        })
                         .into(logo);
+
 
             }).addOnFailureListener((exception) -> {
             });

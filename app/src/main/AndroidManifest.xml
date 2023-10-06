@@ -15,6 +15,8 @@
     <!-- Permission for internet access -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
     <!-- Application Section -->
 
     <application
@@ -46,11 +48,13 @@
         <!-- Restaurant Detail Activity -->
         <activity
             android:name=".activities.RestaurantDetail"
+            android:theme="@style/AppTheme"
             android:exported="true" />
 
         <!-- Main Activity -->
         <activity
             android:name=".activities.MainActivity"
+            android:theme="@style/AppTheme"
             android:exported="true">
 
             <!-- Intent filter to launch this activity as the main entry point of the app -->
@@ -67,6 +71,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
     </application>
 

@@ -2,8 +2,8 @@
   <library name="Gradle: androidx.lifecycle:lifecycle-process:2.6.2@aar">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/10bbff8b5bff44e07d50b4c05bce7eb6/transformed/jetified-lifecycle-process-2.6.2/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/10bbff8b5bff44e07d50b4c05bce7eb6/transformed/jetified-lifecycle-process-2.6.2/AndroidManifest.xml" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/10bbff8b5bff44e07d50b4c05bce7eb6/transformed/jetified-lifecycle-process-2.6.2/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/10bbff8b5bff44e07d50b4c05bce7eb6/transformed/jetified-lifecycle-process-2.6.2/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

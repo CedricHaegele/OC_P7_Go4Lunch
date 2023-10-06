@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.activity:activity:1.7.1@aar">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/367d98e2c8de65f3666d9bf7fbc1f743/transformed/jetified-activity-1.7.1/res" />
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/367d98e2c8de65f3666d9bf7fbc1f743/transformed/jetified-activity-1.7.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/367d98e2c8de65f3666d9bf7fbc1f743/transformed/jetified-activity-1.7.1/res" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/367d98e2c8de65f3666d9bf7fbc1f743/transformed/jetified-activity-1.7.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />

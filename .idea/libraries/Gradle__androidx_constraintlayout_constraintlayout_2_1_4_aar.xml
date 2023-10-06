@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.constraintlayout:constraintlayout:2.1.4@aar">
     <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/e3987e4a22f8facd967578ea74e4cbfe/transformed/constraintlayout-2.1.4/jars/classes.jar!/" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/e3987e4a22f8facd967578ea74e4cbfe/transformed/constraintlayout-2.1.4/res" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/e3987e4a22f8facd967578ea74e4cbfe/transformed/constraintlayout-2.1.4/AndroidManifest.xml" />
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/e3987e4a22f8facd967578ea74e4cbfe/transformed/constraintlayout-2.1.4/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

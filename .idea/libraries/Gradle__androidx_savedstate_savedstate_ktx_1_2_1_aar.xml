@@ -2,8 +2,8 @@
   <library name="Gradle: androidx.savedstate:savedstate-ktx:1.2.1@aar">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/ba0b3d1f465c69bf0b1ccb25604e623c/transformed/jetified-savedstate-ktx-1.2.1/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/ba0b3d1f465c69bf0b1ccb25604e623c/transformed/jetified-savedstate-ktx-1.2.1/AndroidManifest.xml" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/ba0b3d1f465c69bf0b1ccb25604e623c/transformed/jetified-savedstate-ktx-1.2.1/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/ba0b3d1f465c69bf0b1ccb25604e623c/transformed/jetified-savedstate-ktx-1.2.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

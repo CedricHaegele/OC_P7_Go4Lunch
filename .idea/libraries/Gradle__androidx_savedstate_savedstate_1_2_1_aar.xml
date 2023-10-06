@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.savedstate:savedstate:1.2.1@aar">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/7a18b3914edbbc90888f390ef36d1027/transformed/jetified-savedstate-1.2.1/res" />
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/7a18b3914edbbc90888f390ef36d1027/transformed/jetified-savedstate-1.2.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/7a18b3914edbbc90888f390ef36d1027/transformed/jetified-savedstate-1.2.1/res" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/7a18b3914edbbc90888f390ef36d1027/transformed/jetified-savedstate-1.2.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />

@@ -4,9 +4,9 @@
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/924649d9601037a3e6809322af23ac8d/transformed/jetified-firebase-ui-auth-8.0.1/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/924649d9601037a3e6809322af23ac8d/transformed/jetified-firebase-ui-auth-8.0.1/AndroidManifest.xml" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/924649d9601037a3e6809322af23ac8d/transformed/jetified-firebase-ui-auth-8.0.1/res" />
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/924649d9601037a3e6809322af23ac8d/transformed/jetified-firebase-ui-auth-8.0.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/924649d9601037a3e6809322af23ac8d/transformed/jetified-firebase-ui-auth-8.0.1/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/924649d9601037a3e6809322af23ac8d/transformed/jetified-firebase-ui-auth-8.0.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.firebaseui/firebase-ui-auth/8.0.1/8f37f629b34c5f73f75d48a1bcfeaa20df081e3e/firebase-ui-auth-8.0.1-javadoc.jar!/" />

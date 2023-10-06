@@ -10,8 +10,8 @@
         android:id="@+id/mapGps"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floating_action_button"
         android:layout_width="wrap_content"
@@ -20,7 +20,10 @@
         android:layout_alignParentBottom="true"
         android:contentDescription="@string/location"
         app:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/mapGps"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/mapGps"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_baseline_gps_fixed_24" />
 
 

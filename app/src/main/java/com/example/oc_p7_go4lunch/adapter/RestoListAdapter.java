@@ -2,7 +2,10 @@ package com.example.oc_p7_go4lunch.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +24,7 @@ import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 
 import java.util.List;
+import java.util.Locale;
 
 public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyViewHolder> {
 
@@ -43,11 +47,16 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         RestaurantModel restaurantModel = placesList.get(position);
+        TextView distanceTextView = holder.itemView.findViewById(R.id.distance);
+
+        // Imprimer les coordonnées du restaurant
+        Log.d("RestaurantLocation", "Restaurant : " + restaurantModel.getName() + ", Latitude : " + restaurantModel.getGeometry().getLocation().getLat() + ", Longitude : " + restaurantModel.getGeometry().getLocation().getLng());
 
         holder.name.setText(restaurantModel.getName());
         holder.adress.setText(restaurantModel.getVicinity());
-        holder.ratingBar.setNumStars(restaurantModel.getRating().intValue());
+        holder.ratingBar.setRating(restaurantModel.getRating().intValue());
         holder.getDistance(restaurantModel);
+        distanceTextView.setText(String.format(Locale.getDefault(), "%.2f km", restaurantModel.getDistanceFromCurrentLocation() / 1000));
 
         List<Photo> photos = restaurantModel.getPhotos();
         if (photos != null && !photos.isEmpty()) {
@@ -58,17 +67,23 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             }
         }
 
-        String ifOpen;
+
+        String IfOpenOrClosed;
         OpeningHours openingHours = restaurantModel.getOpeningHours();
         if (openingHours != null) {
             if (openingHours.getOpenNow()) {
-                ifOpen = context.getString(R.string.openRest);
+                IfOpenOrClosed = context.getString(R.string.openRest);
+                holder.openhours.setTextColor(Color.GREEN);  // Setting color to Green
+                holder.openhours.setTypeface(null, Typeface.NORMAL);  // Setting Typeface to Normal
             } else {
-                ifOpen = context.getString(R.string.closedRest);
+                IfOpenOrClosed = context.getString(R.string.closedRest);
+                holder.openhours.setTextColor(Color.RED);  // Setting color to Red
+                holder.openhours.setTypeface(null, Typeface.BOLD);  // Setting Typeface to Bold
             }
-            holder.openhours.setText(ifOpen);
+            holder.openhours.setText(IfOpenOrClosed);
         }
-    }  // Cette accolade fermante était manquante
+
+    }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public ImageView logo;
@@ -94,11 +109,25 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             if (MapView.lastKnownLocation != null) {
                 double placeLatitude = itemRestaurant.getGeometry().getLocation().getLat();
                 double placeLongitude = itemRestaurant.getGeometry().getLocation().getLng();
+
+                // Log pour vérifier les coordonnées
+                Log.d("DebugLocation", "User location: Latitude = " + MapView.lastKnownLocation.getLatitude() + ", Longitude = " + MapView.lastKnownLocation.getLongitude());
+                Log.d("DebugLocation", "Restaurant location: Latitude = " + placeLatitude + ", Longitude = " + placeLongitude);
+
                 float[] results = new float[15];
                 Location.distanceBetween(MapView.lastKnownLocation.getLatitude(), MapView.lastKnownLocation.getLongitude(), placeLatitude, placeLongitude, results);
                 float f = results[0];
+
+                // Log pour vérifier la distance en mètres
+                Log.d("DebugLocation", "Calculated distance in meters: " + f);
+
+                // Log pour vérifier la distance en kilomètres
+                Log.d("DebugLocation", "Calculated distance in kilometers: " + f / 1000);
+
                 int distance = (int) f;
                 distanceCalculated.setText("" + distance + " m");
+                Log.d("DebugLocation", "Calculated distance in meters: " + f);
+
             }
         }
     }

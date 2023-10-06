@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.test:core:1.5.0@aar">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d423ca7e7487a0fe693b2a811557a385/transformed/jetified-core-1.5.0/res" />
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d423ca7e7487a0fe693b2a811557a385/transformed/jetified-core-1.5.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d423ca7e7487a0fe693b2a811557a385/transformed/jetified-core-1.5.0/res" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d423ca7e7487a0fe693b2a811557a385/transformed/jetified-core-1.5.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>

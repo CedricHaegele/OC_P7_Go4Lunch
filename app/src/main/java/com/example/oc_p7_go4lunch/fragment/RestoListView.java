@@ -44,6 +44,8 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -88,10 +90,6 @@ public class RestoListView extends Fragment {
         recyclerView = view.findViewById(R.id.list_restos);
         getAutocompletePredictions();
 
-        //drawer Navigation
-        toolbar = (requireActivity()).findViewById(R.id.toolbar);
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        container_autocomplete = toolbar.findViewById(R.id.container_autocomplete);
 
         // Calling the method that configuring click on RecyclerView
         this.configureOnClickRecyclerView();
@@ -199,15 +197,58 @@ public class RestoListView extends Fragment {
                 String json = gson.toJson(response.body());
                 Log.d("TAG", "Contenu de l'objet Places: " + json);
 
-
-
                 if (response.errorBody() == null) {
                     if (response.body() != null) {
                         restaurantList = response.body().getPlacesList();
 
                         // Ajout des logs ici pour vérifier si restaurantList est correctement rempli
                         if (restaurantList != null && restaurantList.size() > 0) {
-                            Log.d("TAG", "Liste de restaurants obtenue: " + restaurantList.size());
+                            // Tri des restaurants par distance
+                            Location currentLocation = new Location("current");
+                            currentLocation.setLatitude(lastKnownLocation.getLatitude());
+                            currentLocation.setLongitude(lastKnownLocation.getLongitude());
+
+                            // Log pour vérifier les latitudes et longitudes
+                            for (RestaurantModel rm : restaurantList) {
+                                Log.d("BeforeSort", "Lat: " + rm.getLatitude() + ", Lng: " + rm.getLongitude());
+                            }
+
+                            Collections.sort(restaurantList, new Comparator<RestaurantModel>() {
+                                public int compare(RestaurantModel r1, RestaurantModel r2) {
+                                    Location loc1 = new Location("");
+                                    loc1.setLatitude(r1.getLatitude());
+                                    loc1.setLongitude(r1.getLongitude());
+
+                                    Location loc2 = new Location("");
+                                    loc2.setLatitude(r2.getLatitude());
+                                    loc2.setLongitude(r2.getLongitude());
+
+                                    float distance1 = currentLocation.distanceTo(loc1);
+                                    float distance2 = currentLocation.distanceTo(loc2);
+
+                                    // Ajout pour stocker la distance dans l'objet RestaurantModel
+                                    r1.setDistanceFromCurrentLocation(distance1);
+                                    r2.setDistanceFromCurrentLocation(distance2);
+
+                                    // Log pour vérifier les distances
+                                    Log.d("Sort", "Distance1: " + distance1 + ", Distance2: " + distance2);
+
+                                    return Float.compare(distance1, distance2);
+                                }
+                            });
+
+                            // Log pour vérifier l'ordre après le tri
+                            for (RestaurantModel rm : restaurantList) {
+                                Location loc = new Location("");
+                                loc.setLatitude(rm.getLatitude());
+                                loc.setLongitude(rm.getLongitude());
+                                float distance = currentLocation.distanceTo(loc);
+                                Log.d("AfterSort", "Distance: " + distance);
+                            }
+                            // Maintenant que restaurantList est triée, vous pouvez la passer à l'adaptateur
+                            restoListAdapter = new RestoListAdapter(restaurantList, getContext());
+                            recyclerView.setAdapter(restoListAdapter);
+
                         } else {
                             Log.d("TAG", "Liste de restaurants vide ou nulle");
                         }
@@ -279,12 +320,16 @@ public class RestoListView extends Fragment {
 
                     // 1 - Get restaurant from adapter
                     RestaurantModel restaurant = restoListAdapter.getPlacesList().get(position);
-                    // 2 - Show result in a Toast
-                    Toast.makeText(getContext(), "You clicked on Restaurant : " + restaurant.getName(), Toast.LENGTH_SHORT).show();
+                    if(restaurant != null) {
+                        // 2 - Show result in a Toast
+                        Toast.makeText(getContext(), "You clicked on Restaurant : " + restaurant.getName(), Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
-                    intent.putExtra("Restaurant", restaurant);
-                    startActivity(intent);
+                        Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
+                        intent.putExtra("Restaurant", restaurant);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(getContext(), "Restaurant data is not available", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 }

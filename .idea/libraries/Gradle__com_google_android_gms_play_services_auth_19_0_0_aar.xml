@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.android.gms:play-services-auth:19.0.0@aar">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/55e14ea3922fe8e209242a411d4f0933/transformed/jetified-play-services-auth-19.0.0/res" />
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/55e14ea3922fe8e209242a411d4f0933/transformed/jetified-play-services-auth-19.0.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/55e14ea3922fe8e209242a411d4f0933/transformed/jetified-play-services-auth-19.0.0/res" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/55e14ea3922fe8e209242a411d4f0933/transformed/jetified-play-services-auth-19.0.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>

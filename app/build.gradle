@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.oc_p7_go4lunch"
-        minSdkVersion 28
+        minSdkVersion 31
         targetSdk 31
         versionCode 1
         versionName "1.0"
@@ -58,8 +58,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:21.0.1'
 
     //Navigation
-    implementation 'androidx.navigation:navigation-fragment:2.7.3'
-    implementation 'androidx.navigation:navigation-ui:2.7.3'
+    implementation 'androidx.navigation:navigation-fragment:2.7.4'
+    implementation 'androidx.navigation:navigation-ui:2.7.4'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.libraries.places:places:3.2.0'

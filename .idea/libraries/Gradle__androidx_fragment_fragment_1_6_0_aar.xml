@@ -4,9 +4,9 @@
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/08261c20993d4d9dcf766cc177716c37/transformed/fragment-1.6.0/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/08261c20993d4d9dcf766cc177716c37/transformed/fragment-1.6.0/AndroidManifest.xml" />
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/08261c20993d4d9dcf766cc177716c37/transformed/fragment-1.6.0/jars/classes.jar!/" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/08261c20993d4d9dcf766cc177716c37/transformed/fragment-1.6.0/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/08261c20993d4d9dcf766cc177716c37/transformed/fragment-1.6.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

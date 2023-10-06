@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.android.gms:play-services-maps:18.1.0@aar">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d771e757844b23b6e64002425f6fb4d8/transformed/jetified-play-services-maps-18.1.0/res" />
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d771e757844b23b6e64002425f6fb4d8/transformed/jetified-play-services-maps-18.1.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d771e757844b23b6e64002425f6fb4d8/transformed/jetified-play-services-maps-18.1.0/res" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d771e757844b23b6e64002425f6fb4d8/transformed/jetified-play-services-maps-18.1.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>

@@ -9,6 +9,15 @@ import com.google.gson.annotations.SerializedName;
 
 public class RestaurantModel implements Serializable
 {
+    private float distanceFromCurrentLocation;
+    public float getDistanceFromCurrentLocation() {
+        return distanceFromCurrentLocation;
+    }
+
+    public void setDistanceFromCurrentLocation(float distanceFromCurrentLocation) {
+        this.distanceFromCurrentLocation = distanceFromCurrentLocation;
+    }
+
     public double getLatitude() {
         return latitude;
     }

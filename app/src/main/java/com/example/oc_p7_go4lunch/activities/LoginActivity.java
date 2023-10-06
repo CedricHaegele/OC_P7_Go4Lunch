@@ -50,7 +50,6 @@ public class LoginActivity extends AppCompatActivity {
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .setTheme(R.style.MyFirebaseUIToolbar)
-                .setLogo(R.drawable.lunch_time)
                 .build();
 
         signInLauncher.launch(signInIntent);
