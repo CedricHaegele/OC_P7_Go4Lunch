@@ -57,34 +57,26 @@ import java.util.Objects;
 
 public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-    GoogleMap map;
-    FloatingActionButton locationBtn;
-    Toolbar toolbar;
-    LinearLayout container_autocomplete;
-    DrawerLayout drawerLayout;
-    ActionBarDrawerToggle toggle;
+    private GoogleMap map;
+    private FloatingActionButton locationBtn;
+    private Toolbar toolbar;
+    private LinearLayout container_autocomplete;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle toggle;
+    private static final String TAG = "MapView";
 
 
-    // two array list for our lat long and location Name;
     private ArrayList<LatLng> latLngArrayList;
     private ArrayList<String> locationNameArraylist;
-
-    List<RestaurantModel> restaurantList = new ArrayList<>();
-
+    private List<RestaurantModel> restaurantList = new ArrayList<>();
 
     private boolean locationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private final LatLng defaultLocation = new LatLng(37.4220, -122.0841);
-
     private static final int DEFAULT_ZOOM = 15;
-
-    // The entry point to the Fused Location Provider.
     private FusedLocationProviderClient fusedLocationProviderClient;
 
-    // The geographical location where the device is currently located. That is, the last-known
-    // location retrieved by the Fused Location Provider.
     public static Location lastKnownLocation;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -103,7 +95,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         // Construct a FusedLocationProviderClient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
-        // initializing our array lists.
+        // Initialize array lists
         latLngArrayList = new ArrayList<>();
         locationNameArraylist = new ArrayList<>();
 
@@ -118,7 +110,6 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         toggle.syncState();
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -127,6 +118,35 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
 
         getDeviceLocation();
         findLocationBtn();
+    }
+
+    private void getDeviceLocation() {
+        try {
+            if (locationPermissionGranted) {
+                Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && map != null) {
+                        lastKnownLocation = task.getResult();
+                        LatLng location;
+                        if (lastKnownLocation != null) {
+                            location = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                            Log.d(TAG, "Latitude: " + MapView.lastKnownLocation.getLatitude() + ", Longitude: " + MapView.lastKnownLocation.getLongitude());
+                            makeRequest(lastKnownLocation);
+                        } else {
+                            location = defaultLocation;
+                        }
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM));
+                    } else {
+                        Log.d(TAG, "Current location is null. Using defaults.");
+                        if (map != null) {
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
+                        }
+                    }
+                });
+            }
+        } catch (SecurityException e) {
+            Log.e(TAG, "Exception: " + e.getMessage(), e);
+        }
     }
 
     public void findLocationBtn() {
@@ -138,7 +158,6 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
     }
 
     public void getAutocompletePredictions() {
-
         String apiKey = getString(R.string.google_maps_key);
 
         if (!Places.isInitialized()) {
@@ -149,7 +168,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 requireActivity().getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
-        //select a country
+        // Select a country
         assert autocompleteFragment != null;
         autocompleteFragment.setCountries("FR");
 
@@ -158,36 +177,83 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
 
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-
-
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                // adding on click listener to marker of google maps.
+                // Add an onClick listener to the Google Maps marker.
                 MarkerOptions markerOptions = new MarkerOptions().position(Objects.requireNonNull(place.getLatLng())).snippet(place.getName());
                 map.addMarker(markerOptions).setTag(place);
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 30));
                 map.setOnMarkerClickListener(MapView.this);
-
             }
 
             @Override
             public void onError(@NonNull Status status) {
-
+                // Handle error
             }
         });
     }
 
-
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        Log.d("Debug", "onMapReady called");
+        Log.d(TAG, "onMapReady called");
         map = googleMap;
 
-        // Votre logique de carte ici ...
+        // Check if location permission is granted
+        if (locationPermissionGranted) {
+            // Check if the last known location is available
+            if (lastKnownLocation != null) {
+                // Get the current latitude and longitude
+                double currentLatitude = lastKnownLocation.getLatitude();
+                double currentLongitude = lastKnownLocation.getLongitude();
 
-        // Calcul de la distance
+                // Create a LatLng object with the current location
+                LatLng currentLocation = new LatLng(currentLatitude, currentLongitude);
+
+                // Move the camera to the current location and zoom in
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, DEFAULT_ZOOM));
+
+                // Set a marker click listener
+                map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        handleMarkerClick(marker);
+                        return true; // Return true to consume the event
+                    }
+
+                    private void handleMarkerClick(Marker marker) {
+                        Object tag = marker.getTag();
+
+                        if (tag instanceof RestaurantModel) {
+                            // Handle clicks on restaurant markers
+                            RestaurantModel restaurant = (RestaurantModel) tag;
+                            Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
+                            intent.putExtra("Restaurant", restaurant);
+                            startActivity(intent);
+                        } else if (tag instanceof Place) {
+                            // Handle clicks on other types of markers, such as places
+                            Place place = (Place) tag;
+
+                            // Example: Display a toast with the name of the place
+                            String placeName = place.getName();
+                            Toast.makeText(requireContext(), "Clicked on place: " + placeName, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            } else {
+                // If the last known location is not available, you can handle it as needed
+                Log.d(TAG, "Last known location is null. Unable to focus on current location.");
+            }
+        } else {
+            // If location permission is not granted, you can handle it as needed
+            Log.d(TAG, "Location permission is not granted. Unable to focus on current location.");
+        }
+
+
+
+
+    // Calculate distance
         double distance = calculateDistance(37.421942, -122.0840597, 37.4144292, -122.0811554);
-        Log.d("Distance", "Distance entre les deux points: " + distance + " km");
+        Log.d("Distance", "Distance between two points: " + distance + " km");
     }
 
     public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
@@ -201,18 +267,11 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         return R * c;
     }
 
-
-    /**
-     * Request location permission, so that we can get the location of the
-     * device. The result of the permission request is handled by a callback,
-     * onRequestPermissionsResult.
-     */
     private void getLocationPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             locationPermissionGranted = true;
-
         } else {
             requestPermissions(
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -220,9 +279,6 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         }
     }
 
-    /**
-     * callback to handle the result of the permission request
-     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -238,13 +294,6 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         updateLocationUI();
     }
 
-
-    /**
-     * method to set the location controls on the map.
-     * If the user has granted location permission,
-     * enable the My Location layer and the related control on the map,
-     * otherwise disable the layer and the control, and set the current location to null:
-     */
     private void updateLocationUI() {
         if (map == null) {
             return;
@@ -264,45 +313,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         }
     }
 
-    /**
-     * Get the best and most recent location of the device, which may be null in rare
-     * cases when a location is not available.
-     */
-    private void getDeviceLocation() {
-        try {
-            if (locationPermissionGranted) {
-                Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && map != null) {
-                        lastKnownLocation = task.getResult();
-                        LatLng location;
-                        if (lastKnownLocation != null) {
-                            location = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                            Log.d("CurrentLocation", "Latitude : " + MapView.lastKnownLocation.getLatitude() + ", Longitude : " + MapView.lastKnownLocation.getLongitude());
-
-                            makeRequest(lastKnownLocation);
-                        } else {
-                            location = defaultLocation;
-                        }
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM));
-                    } else {
-                        Log.d(TAG, "Current location is null. Using defaults.");
-                        if (map != null) {
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
-                        }
-
-                                            }
-                });
-            }
-        } catch (SecurityException e) {
-            Log.e("Exception: %s", e.getMessage(), e);
-        }
-    }
-
-
-
     private void makeRequest(Location location) {
-
         String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
                 + location.getLatitude() + ","
                 + location.getLongitude()
@@ -316,13 +327,10 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
         if (marker.getTag() instanceof RestaurantModel) {
-
             String markerName = marker.getTitle();
             RestaurantModel place = (RestaurantModel) marker.getTag();
-
             Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
             intent.putExtra("Restaurant", place);
-
             Toast.makeText(requireContext(), "The Restaurant clicked is " + markerName, Toast.LENGTH_SHORT).show();
             startActivity(intent);
             return false;
@@ -336,5 +344,4 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         }
         return false;
     }
-
 }

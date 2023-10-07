@@ -13,6 +13,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.libraries.places.api.model.Place;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -21,7 +23,6 @@ import com.bumptech.glide.request.target.Target;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.helper.FirebaseHelper;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
-import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
@@ -43,6 +44,9 @@ public class RestaurantDetail extends AppCompatActivity {
     ImageButton imageChecked;
     RestaurantModel restaurant;
     FirebaseUser firebaseUser;
+    private boolean isButtonChecked = false;
+
+
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +69,22 @@ public class RestaurantDetail extends AppCompatActivity {
 
             Glide.with(this)
                     .load(restaurant.getPhotos().get(0).getPhotoUrl())
+                    .error(com.android.car.ui.R.drawable.car_ui_icon_error) // Placeholder d'erreur personnalisé
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            Log.e("Glide", "Erreur de chargement de l'image", e);
+                            return false; // Retourne false pour laisser Glide gérer l'erreur
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            // L'image a été chargée avec succès
+                            return false; // Retourne false pour laisser Glide gérer l'affichage de l'image
+                        }
+                    })
                     .into(logo);
+
 
         } else if (callingIntent != null && callingIntent.hasExtra("Place")) {
             Place place = callingIntent.getParcelableExtra("Place");
@@ -84,36 +103,20 @@ public class RestaurantDetail extends AppCompatActivity {
                         .addOnSuccessListener(documentSnapshot -> {
                             // Votre code existant
                         });
+
+                // Logique pour changer l'état du bouton
+                if (isButtonChecked) {
+                    imageChecked.setImageResource(R.drawable.baseline_check_circle_outline_24);  // Image pour l'état non-coché (grisé)
+                } else {
+                    imageChecked.setImageResource(R.drawable.ic_button_is_checked);  // Image pour l'état coché (vert)
+                }
+                isButtonChecked = !isButtonChecked;  // Inverser l'état du bouton
+
             } else {
                 // Gérer le cas où firebaseUser est null (utilisateur non connecté)
             }
         });
-
-
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            FirebaseHelper.getUserDocument(firebaseUser.getUid())
-                    .addOnSuccessListener(documentSnapshot -> {
-
-                        if (documentSnapshot.exists()) {
-                            UserModel user = documentSnapshot.toObject(UserModel.class);
-                            assert user != null;
-                            if (restaurant != null) {
-                                user.setRestaurantID(restaurant.getPlaceId());
-                            }
-                            FirebaseHelper.getUsersCollection().document(firebaseUser.getUid()).set(user, SetOptions.merge());
-                            imageChecked.setImageResource(R.drawable.ic_button_is_checked);
-                        } else {
-                            imageChecked.setImageResource(R.drawable.ic_button_unchecked);
-                        }
-                    });
-        } else {
-            Log.d("RestaurantDetail", "Restaurant object: " + restaurant);
-
-
-        }
     }
-
 
     private void fetchPlaceToImage(Place place) {
         PlacesClient placesClient = Places.createClient(this);
@@ -144,24 +147,12 @@ public class RestaurantDetail extends AppCompatActivity {
 
                 bitmap = fetchPhotoResponse.getBitmap();
 
-                Glide.with(this)
-                        .load("https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png")
-                        .addListener(new RequestListener<Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                Log.e("Glide", "Load failed", e);
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                return false;
-                            }
-                        })
-                        .into(logo);
-
+                // Utilisez le bitmap pour définir l'image dans ImageView
+                logo.setImageBitmap(bitmap);
 
             }).addOnFailureListener((exception) -> {
+                // Gestion des erreurs lors du chargement de l'image
+                Log.e("Glide", "Image loading error", exception);
             });
         });
     }

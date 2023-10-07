@@ -155,27 +155,30 @@ public class RestoListView extends Fragment {
                 Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Set the map's camera position to the current location of the device.
                         lastKnownLocation = task.getResult();
                         if (lastKnownLocation != null) {
                             LatLng location = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-
                             makeRequest(lastKnownLocation);
-
                         }
                     } else {
+                        // La localisation actuelle est nulle, vous pouvez gérer ce cas ici
                         Log.d(TAG, "Current location is null. Using defaults.");
                         Log.e(TAG, "Exception: %s", task.getException());
-                        map.moveCamera(CameraUpdateFactory
-                                .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                         map.getUiSettings().setMyLocationButtonEnabled(false);
                     }
                 });
+            } else {
+                // La permission de localisation n'a pas été accordée, demandez-la à l'utilisateur ici.
+                ActivityCompat.requestPermissions(requireActivity(),
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
             }
         } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage(), e);
         }
     }
+
 
     private void makeRequest(Location location) {
 

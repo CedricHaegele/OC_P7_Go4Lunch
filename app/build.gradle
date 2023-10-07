@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.android.material:material:1.10.0'
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
@@ -80,6 +81,7 @@ dependencies {
     //GLIDE
     implementation 'com.github.bumptech.glide:glide:4.13.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
+    implementation 'com.github.bumptech.glide:okhttp3-integration:4.12.0'
 
     implementation 'com.squareup.picasso:picasso:2.71828'
 
@@ -92,10 +94,7 @@ dependencies {
     // FirebaseUI for Firebase Realtime Database
     implementation 'com.firebaseui:firebase-ui-database:8.0.1'
 
-    // FACEBOOK
-    implementation 'com.facebook.android:facebook-android-sdk:13.2.0'
-    implementation 'com.facebook.android:facebook-login:13.2.0'
-
+    implementation 'com.google.android.libraries.places:places:3.2.0'
 
     //RETROFIT Library
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
@@ -111,5 +110,6 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
     implementation 'com.google.code.gson:gson:2.8.9'
+
 
 }
