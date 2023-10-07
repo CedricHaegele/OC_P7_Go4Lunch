@@ -23,18 +23,24 @@ import com.example.oc_p7_go4lunch.model.googleplaces.OpeningHours;
 import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyViewHolder> {
 
     private final Context context;
-    private final List<RestaurantModel> placesList;
+    private List<RestaurantModel> placesList;
 
     public RestoListAdapter(List<RestaurantModel> placesList, Context context) {
         this.context = context;
         this.placesList = placesList;
+
+        updateData(placesList);
+
     }
+
 
     @NonNull
     @Override
@@ -42,6 +48,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_resto_item, parent, false);
         return new MyViewHolder(view);
+
     }
 
     @Override
@@ -85,6 +92,21 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
     }
 
+    public void updateData(List<RestaurantModel> newPlacesList) {
+        this.placesList = newPlacesList;
+
+        // Tri des restaurants par distance
+        Collections.sort(placesList, new Comparator<RestaurantModel>() {
+            @Override
+            public int compare(RestaurantModel r1, RestaurantModel r2) {
+                return Float.compare(r1.getDistanceFromCurrentLocation(), r2.getDistanceFromCurrentLocation());
+            }
+        });
+
+        notifyDataSetChanged();
+    }
+
+
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public ImageView logo;
         TextView name;
@@ -116,7 +138,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
                 float[] results = new float[15];
                 Location.distanceBetween(MapView.lastKnownLocation.getLatitude(), MapView.lastKnownLocation.getLongitude(), placeLatitude, placeLongitude, results);
-                float f = results[0];
+                float f = results[0];  // Maintenant, f contient la distance calculée
 
                 // Log pour vérifier la distance en mètres
                 Log.d("DebugLocation", "Calculated distance in meters: " + f);
@@ -128,6 +150,8 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
                 distanceCalculated.setText("" + distance + " m");
                 Log.d("DebugLocation", "Calculated distance in meters: " + f);
 
+                // Stocker la distance dans RestaurantModel
+                itemRestaurant.setDistanceFromCurrentLocation(f);
             }
         }
     }
