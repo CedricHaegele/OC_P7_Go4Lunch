@@ -9,6 +9,35 @@ import com.google.gson.annotations.SerializedName;
 
 public class RestaurantModel implements Serializable
 {
+    private Photo photo;
+
+    public String getPhotoReference() {
+        return photoReference;
+    }
+    public String getPhotoUrl(String apiKey) {
+        return photo != null ? photo.getPhotoUrl(apiKey) : null;
+    }
+
+
+    public void setPhotoReference(String photoReference) {
+        this.photoReference = photoReference;
+    }
+
+    private String photoReference;
+
+    public Photo getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Photo photo) {
+        this.photo = photo;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    private String photoUrl;
     private float distanceFromCurrentLocation;
     public float getDistanceFromCurrentLocation() {
         return distanceFromCurrentLocation;
@@ -17,6 +46,7 @@ public class RestaurantModel implements Serializable
     public void setDistanceFromCurrentLocation(float distanceFromCurrentLocation) {
         this.distanceFromCurrentLocation = distanceFromCurrentLocation;
     }
+
 
     public double getLatitude() {
         return latitude;
@@ -214,5 +244,6 @@ public class RestaurantModel implements Serializable
     public void setVicinity(String vicinity) {
         this.vicinity = vicinity;
     }
+
 
 }

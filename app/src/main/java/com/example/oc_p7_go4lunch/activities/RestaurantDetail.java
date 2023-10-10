@@ -1,6 +1,9 @@
 package com.example.oc_p7_go4lunch.activities;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -12,8 +15,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.libraries.places.api.model.Place;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -21,7 +24,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.helper.FirebaseHelper;
+import com.example.oc_p7_go4lunch.adapter.UserListAdapter;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.google.android.libraries.places.api.Places;
@@ -32,131 +35,243 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class RestaurantDetail extends AppCompatActivity {
+    private Bitmap bitmap;
 
-    Bitmap bitmap;
-    ImageView logo;
-    ImageButton imageChecked;
-    RestaurantModel restaurant;
-    FirebaseUser firebaseUser;
+    // UI Components
+    private ImageView logo;
+    private ImageButton imageChecked;
+    private TextView Detail, Adress;
+    private RatingBar ratingBar;
+
+    // Data Models
+    private RestaurantModel restaurant;
+    private UserModel currentUser;
+
+    // Firebase User
+    private FirebaseUser firebaseUser;
+
+    // Button state
     private boolean isButtonChecked = false;
 
+    // Combined list of users
+    private final List<UserModel> combinedList = new ArrayList<>();
+
+    // Adapter for user list
+    private UserListAdapter userListAdapter;
+
+    private void updateUserDocument() {
+    }
+
+    private void addUserToFirestore(UserModel user) {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            CollectionReference usersRef = db.collection("users");
 
 
+            usersRef.document(firebaseUser.getUid())
+                    .collection("users")
+                    .add(user)
+                    .addOnSuccessListener(documentReference -> Log.d("Firestore", "Utilisateur ajouté avec succès à Firestore"))
+                    .addOnFailureListener(e -> Log.e("Firestore", "Erreur lors de l'ajout de l'utilisateur à Firestore", e));
+        }
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.restaurant_detail);
 
-        TextView Detail = findViewById(R.id.detail_name);
-        TextView Adress = findViewById(R.id.detail_address);
-        logo = findViewById(R.id.logo);
-        RatingBar ratingBar = findViewById(R.id.ratingDetail);
-        imageChecked = (ImageButton) findViewById(R.id.fab);
+        initUI();  // Initialize UI components
+        setupImageButton();  // Setup image button and its click listener
+        fetchRestaurantData();  // Fetch and display restaurant data
+    }
 
+    /**
+     * Initialize UI components.
+     */
+    private void initUI() {
+        // Initialize UI components
+        Detail = findViewById(R.id.detail_name);
+        Adress = findViewById(R.id.detail_address);
+        logo = findViewById(R.id.logo);
+        ratingBar = findViewById(R.id.ratingDetail);
+        imageChecked = findViewById(R.id.fab);
+
+        RecyclerView userRecyclerView = findViewById(R.id.userRecyclerView);
+        userRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        userListAdapter = new UserListAdapter(combinedList);
+        userRecyclerView.setAdapter(userListAdapter);
+    }
+
+    /**
+     * Setup image button and its click listener.
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    private void setupImageButton() {
+        // Set a click listener for the ImageButton
+        imageChecked.setOnClickListener(view -> {
+            // Fetch the current Firebase user
+            firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+            // Check if the user is signed in
+            if (firebaseUser != null) {
+                // If currentUser is null, add a new user
+                if (currentUser == null) {
+                    currentUser = createUserFromFirebaseUser();
+                    combinedList.add(currentUser);
+
+                    // Add the user to Firestore
+                    addUserToFirestore(currentUser);
+                }
+                // If currentUser is not null, remove the existing user
+                else {
+                    combinedList.remove(currentUser);
+                    currentUser = null;
+
+                    // Update Firestore to reflect the removal of the user
+                    updateUserDocument();
+                }
+
+                // Notify the adapter that the data has changed
+                userListAdapter.notifyDataSetChanged();
+
+                // Toggle the image button's state
+                toggleImageButtonState();
+            }
+        });
+    }
+
+    /**
+     * Fetch restaurant data from the intent or other data sources.
+     */
+    private void fetchRestaurantData() {
+        // Get the calling intent
         Intent callingIntent = getIntent();
 
-        if (callingIntent != null && callingIntent.hasExtra("Restaurant")) {
-            restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
-            Log.d("RestaurantDetail", "Received restaurant: " + restaurant);
+        // Check if the intent has extra data
+        if (callingIntent != null) {
+            // Fetch restaurant data from the intent
+            if (callingIntent.hasExtra("Restaurant")) {
+                restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
+                Log.d("Debug", "Received Restaurant: " + (restaurant != null ? restaurant.toString() : "null"));
+
+                // Debugging
+                Log.d("Debug", "Received Restaurant: " + (restaurant != null ? restaurant.toString() : "null"));
+
+                displayRestaurantData();
+            }
+            // Fetch place data from the intent
+            else if (callingIntent.hasExtra("Place")) {
+                Place place = callingIntent.getParcelableExtra("Place");
+                displayPlaceData(place);
+            }
+        }
+    }
+
+
+
+    private void toggleImageButtonState() {
+        if (isButtonChecked) {
+            imageChecked.setImageResource(R.drawable.baseline_check_circle_outline_24);
+        } else {
+            imageChecked.setImageResource(R.drawable.ic_button_is_checked);
+        }
+        isButtonChecked = !isButtonChecked;
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isButtonChecked", isButtonChecked);
+        editor.apply();
+    }
+
+    private UserModel createUserFromFirebaseUser() {
+        UserModel user = new UserModel();
+        user.setMail(firebaseUser.getEmail());
+        user.setName(firebaseUser.getDisplayName());
+        user.setPhoto(firebaseUser.getPhotoUrl() != null ? firebaseUser.getPhotoUrl().toString() : "");
+        return user;
+    }
+
+    private void displayRestaurantData() {
+        if (restaurant != null) {
             Detail.setText(restaurant.getName());
             Adress.setText(restaurant.getVicinity());
             ratingBar.setNumStars(restaurant.getRating().intValue());
 
-            Glide.with(this)
-                    .load(restaurant.getPhotos().get(0).getPhotoUrl())
-                    .error(com.android.car.ui.R.drawable.car_ui_icon_error) // Placeholder d'erreur personnalisé
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            Log.e("Glide", "Erreur de chargement de l'image", e);
-                            return false; // Retourne false pour laisser Glide gérer l'erreur
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            // L'image a été chargée avec succès
-                            return false; // Retourne false pour laisser Glide gérer l'affichage de l'image
-                        }
-                    })
-                    .into(logo);
-
-
-        } else if (callingIntent != null && callingIntent.hasExtra("Place")) {
-            Place place = callingIntent.getParcelableExtra("Place");
-            Detail.setText(place.getName());
-            Adress.setText(place.getAddress());
-
-            fetchPlaceToImage(place);
+            }
         }
 
 
-        imageChecked.setOnClickListener(view -> {
-            firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (firebaseUser != null) {
-                String uid = firebaseUser.getUid();
-                FirebaseHelper.getUserDocument(uid)
-                        .addOnSuccessListener(documentSnapshot -> {
-                            // Votre code existant
-                        });
+    private void displayPlaceData(Place place) {
+        if (place != null) {
+            Detail.setText(place.getName());
+            Adress.setText(place.getAddress());
+            fetchPlaceToImage(place);
+        }
+    }
 
-                // Logique pour changer l'état du bouton
-                if (isButtonChecked) {
-                    imageChecked.setImageResource(R.drawable.baseline_check_circle_outline_24);  // Image pour l'état non-coché (grisé)
-                } else {
-                    imageChecked.setImageResource(R.drawable.ic_button_is_checked);  // Image pour l'état coché (vert)
-                }
-                isButtonChecked = !isButtonChecked;  // Inverser l'état du bouton
+    private void loadImage(String photoUrl) {
+        Glide.with(this)
+                .load(photoUrl)
+                .error(com.android.car.ui.R.drawable.car_ui_icon_error)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        Log.e("GLIDE", "Load failed", e);
+                        return false;
+                    }
 
-            } else {
-                // Gérer le cas où firebaseUser est null (utilisateur non connecté)
-            }
-        });
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                })
+                .into(logo);
+
     }
 
     private void fetchPlaceToImage(Place place) {
+        if (place == null || place.getId() == null) {
+            Log.e("PlaceInfo", "Place or Place ID is null");
+            return;
+        }
+
         PlacesClient placesClient = Places.createClient(this);
         String placeId = place.getId();
-        // Specify fields. Requests for photos must always have the PHOTO_METADATA field.
         final List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
 
-        // Get a Place object (this example uses fetchPlace(), but you can also use findCurrentPlace())
-        assert placeId != null;
         final FetchPlaceRequest placeRequest = FetchPlaceRequest.newInstance(placeId, fields);
 
-        placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
+        placesClient.fetchPlace(placeRequest).addOnSuccessListener(response -> {
             final Place placeFound = response.getPlace();
-
-            // Get the photo metadata.
             final List<PhotoMetadata> metadata = placeFound.getPhotoMetadatas();
+
             if (metadata == null || metadata.isEmpty()) {
+                Log.e("PlaceInfo", "No metadata for photos");
                 return;
             }
+
             PhotoMetadata placePhoto = metadata.get(0);
 
-            // Create a FetchPhotoRequest.
             final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(placePhoto)
-                    .setMaxWidth(500) // Optional.
-                    .setMaxHeight(300) // Optional.
+                    .setMaxWidth(500)
+                    .setMaxHeight(300)
                     .build();
-            placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
-
+            placesClient.fetchPhoto(photoRequest).addOnSuccessListener(fetchPhotoResponse -> {
                 bitmap = fetchPhotoResponse.getBitmap();
-
-                // Utilisez le bitmap pour définir l'image dans ImageView
                 logo.setImageBitmap(bitmap);
-
-            }).addOnFailureListener((exception) -> {
-                // Gestion des erreurs lors du chargement de l'image
-                Log.e("Glide", "Image loading error", exception);
-            });
+            }).addOnFailureListener(exception -> Log.e("Glide", "Image loading error", exception));
         });
     }
 
+
 }
-
-

@@ -3,6 +3,7 @@ package com.example.oc_p7_go4lunch.fragment;
 import static android.content.ContentValues.TAG;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -68,6 +69,8 @@ public class RestoListView extends Fragment {
     // The entry point to the Places API.
     private PlacesClient placesClient;
 
+    private Context mContext; // Variable pour stocker le contexte
+
     GoogleMap map;
 
     List<RestaurantModel> restaurantList = new ArrayList<>();
@@ -87,16 +90,21 @@ public class RestoListView extends Fragment {
     private Location lastKnownLocation;
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_resto_list, container, false);
 
         recyclerView = view.findViewById(R.id.list_restos);
 
-        restoListAdapter = new RestoListAdapter(new ArrayList<>(), getContext());
+        restoListAdapter = new RestoListAdapter(new ArrayList<>(), mContext);
         recyclerView.setAdapter(restoListAdapter);
 
-        getAutocompletePredictions();
         this.configureOnClickRecyclerView();
 
         // Construct a FusedLocationProviderClient
@@ -104,49 +112,6 @@ public class RestoListView extends Fragment {
         getLocationPermission();
         getDeviceLocation();
         return view;
-    }
-
-    public void getAutocompletePredictions() {
-
-        String apiKey = getString(R.string.google_maps_key);
-
-        if (!com.google.android.libraries.places.api.Places.isInitialized()) {
-            com.google.android.libraries.places.api.Places.initialize(requireActivity().getApplicationContext(), apiKey);
-        }
-
-        // Initialize the AutocompleteSupportFragment.
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                requireActivity().getSupportFragmentManager().findFragmentById(R.id.container_autocomplete);
-
-
-        if (autocompleteFragment == null) {
-            Log.e("TAG", "Autocomplete fragment is null");
-            // Vous pouvez également ajouter une action pour résoudre ce problème, par exemple fermer le fragment ou afficher un message à l'utilisateur.
-            return;
-        }
-
-        autocompleteFragment.setCountries("FR");
-
-        // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS, Place.Field.TYPES));
-
-        // Set up a PlaceSelectionListener to handle the response.
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-
-
-            @Override
-            public void onPlaceSelected(@NonNull Place place) {
-                Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
-                intent.putExtra("Place", place);
-                startActivity(intent);
-
-            }
-
-            @Override
-            public void onError(@NonNull Status status) {
-
-            }
-        });
     }
 
 
@@ -166,7 +131,7 @@ public class RestoListView extends Fragment {
                             makeRequest(lastKnownLocation);
                         }
                     } else {
-                        // La localisation actuelle est nulle, vous pouvez gérer ce cas ici
+
                         Log.d(TAG, "Current location is null. Using defaults.");
                         Log.e(TAG, "Exception: %s", task.getException());
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
@@ -174,7 +139,7 @@ public class RestoListView extends Fragment {
                     }
                 });
             } else {
-                // La permission de localisation n'a pas été accordée, demandez-la à l'utilisateur ici.
+
                 ActivityCompat.requestPermissions(requireActivity(),
                         new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                         PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
@@ -186,86 +151,87 @@ public class RestoListView extends Fragment {
 
 
     private void makeRequest(Location location) {
+        if (isAdded()) {
+            String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
+                    + location.getLatitude() + ","
+                    + location.getLongitude()
+                    + "&radius=" + 1500
+                    + "&type=restaurant"
+                    + "&key=" + getResources().getString(R.string.google_maps_key);
 
-        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
-                + location.getLatitude() + ","
-                + location.getLongitude()
-                + "&radius=" + 1500
-                + "&type=restaurant"
-                + "&key=" + getResources().getString(R.string.google_maps_key);
+            PlaceRetrofit placeRetrofit = RetrofitClient.getRetrofitClient().create(PlaceRetrofit.class);
 
+            placeRetrofit.getAllPlaces(url).enqueue(new Callback<Places>() {
+                @Override
+                public void onResponse(Call<Places> call, Response<Places> response) {
+                    if (isAdded()) {
+                        Gson gson = new Gson();
+                        String json = gson.toJson(response.body());
+                        Log.d("TAG", "Contenu de l'objet Places: " + json);
 
-        PlaceRetrofit placeRetrofit = RetrofitClient.getRetrofitClient().create(PlaceRetrofit.class);
+                        if (response.errorBody() == null) {
+                            if (response.body() != null) {
+                                restaurantList = response.body().getPlacesList();
 
-        placeRetrofit.getAllPlaces(url).enqueue(new Callback<Places>() {
-            @Override
-            public void onResponse(Call<Places> call, Response<Places> response) {
+                                if (restaurantList != null && restaurantList.size() > 0) {
 
-                Gson gson = new Gson();
-                String json = gson.toJson(response.body());
-                Log.d("TAG", "Contenu de l'objet Places: " + json);
+                                    calculateDistances(restaurantList, lastKnownLocation);
 
-                if (response.errorBody() == null) {
-                    if (response.body() != null) {
-                        restaurantList = response.body().getPlacesList();
+                                    restoListAdapter.updateData(restaurantList);
 
-                        if (restaurantList != null && restaurantList.size() > 0) {
-                            // Calculer les distances avant de mettre à jour les données
-                            calculateDistances(restaurantList, lastKnownLocation);
-                            // Maintenant, mets à jour les données dans l'adaptateur
-                            restoListAdapter.updateData(restaurantList);
-                            // Tri des restaurants par distance
-                            Location currentLocation = new Location("current");
-                            currentLocation.setLatitude(lastKnownLocation.getLatitude());
-                            currentLocation.setLongitude(lastKnownLocation.getLongitude());
+                                    // Tri des restaurants par distance
+                                    Location currentLocation = new Location("current");
+                                    currentLocation.setLatitude(lastKnownLocation.getLatitude());
+                                    currentLocation.setLongitude(lastKnownLocation.getLongitude());
 
-                            Collections.sort(restaurantList, (r1, r2) -> {
-                                Location loc1 = new Location("");
-                                loc1.setLatitude(r1.getLatitude());
-                                loc1.setLongitude(r1.getLongitude());
+                                    Collections.sort(restaurantList, (r1, r2) -> {
+                                        Location loc1 = new Location("");
+                                        loc1.setLatitude(r1.getLatitude());
+                                        loc1.setLongitude(r1.getLongitude());
 
-                                Location loc2 = new Location("");
-                                loc2.setLatitude(r2.getLatitude());
-                                loc2.setLongitude(r2.getLongitude());
+                                        Location loc2 = new Location("");
+                                        loc2.setLatitude(r2.getLatitude());
+                                        loc2.setLongitude(r2.getLongitude());
 
-                                float distance1 = currentLocation.distanceTo(loc1);
-                                float distance2 = currentLocation.distanceTo(loc2);
+                                        float distance1 = currentLocation.distanceTo(loc1);
+                                        float distance2 = currentLocation.distanceTo(loc2);
 
-                                return Float.compare(distance1, distance2);
-                            });
+                                        return Float.compare(distance1, distance2);
+                                    });
 
-                            // Mettre à jour l'adaptateur avec la nouvelle liste triée
-                            restoListAdapter.updateData(restaurantList);
-                        } else {
-                            Log.d("TAG", "Liste de restaurants vide ou nulle");
-                            placesList.clear();
-                            if (map != null) {
-                                map.clear();
+                                    // Mettre à jour l'adaptateur avec la nouvelle liste triée
+                                    restoListAdapter.updateData(restaurantList);
+                                } else {
+                                    Log.d("TAG", "Liste de restaurants vide ou nulle");
+                                    placesList.clear();
+                                    if (map != null) {
+                                        map.clear();
+                                    }
+                                }
                             }
                         }
                     }
-
-                }}
-
-            private void calculateDistances(List<RestaurantModel> restaurantList, Location lastKnownLocation) {
-                for (RestaurantModel restaurant : restaurantList) {
-                    double placeLatitude = restaurant.getGeometry().getLocation().getLat();
-                    double placeLongitude = restaurant.getGeometry().getLocation().getLng();
-                    float[] results = new float[1];
-                    Location.distanceBetween(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), placeLatitude, placeLongitude, results);
-                    float distance = results[0];
-                    restaurant.setDistanceFromCurrentLocation(distance);
                 }
-            }
 
+                private void calculateDistances(List<RestaurantModel> restaurantList, Location lastKnownLocation) {
+                    for (RestaurantModel restaurant : restaurantList) {
+                        double placeLatitude = restaurant.getGeometry().getLocation().getLat();
+                        double placeLongitude = restaurant.getGeometry().getLocation().getLng();
+                        float[] results = new float[1];
+                        Location.distanceBetween(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), placeLatitude, placeLongitude, results);
+                        float distance = results[0];
+                        restaurant.setDistanceFromCurrentLocation(distance);
+                    }
+                }
 
-            @Override
-            public void onFailure(Call<Places> call, Throwable t) {
+                @Override
+                public void onFailure(Call<Places> call, Throwable t) {
+                    if (isAdded()) {
 
-            }
-        });
-
-        //RestaurantsCall.getRestaurants(url, restaurantList, map, requireContext());
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -309,16 +275,21 @@ public class RestoListView extends Fragment {
 
                     // 1 - Get restaurant from adapter
                     RestaurantModel restaurant = restoListAdapter.getPlacesList().get(position);
+                  
                     if (restaurant != null) {
                         // 2 - Show result in a Toast
                         Toast.makeText(getContext(), "You clicked on Restaurant : " + restaurant.getName(), Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
                         intent.putExtra("Restaurant", restaurant);
+                        Log.d("Debug", "Sending Restaurant: " + restaurant.toString());
+                        startActivity(intent);
+
                         startActivity(intent);
                     } else {
                         Toast.makeText(getContext(), "Restaurant data is not available", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 }

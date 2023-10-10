@@ -1,6 +1,7 @@
 package com.example.oc_p7_go4lunch.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,8 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -21,13 +20,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.fragment.MapView;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
-import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
@@ -36,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    // UI components
     Toolbar toolbar;
     BottomNavigationView mBottomNavigationView;
     static DrawerLayout drawerLayout;
@@ -50,25 +50,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         FirebaseApp.initializeApp(this);
 
-        toolbar = findViewById(R.id.toolbar);
-        if (getSupportActionBar() == null) {
-            setSupportActionBar(toolbar);
-        }
+        // Initialize UI components
+        initUIComponents();
 
+        // Set up Navigation Drawer and Navigation View
         setUpNavDrawer();
         setUpNavView();
 
+        // Load the initial fragment
         changeFragment(new MapView());
 
-        mBottomNavigationView = findViewById(R.id.bottom_nav);
+        // Set listener for bottom navigation view
         mBottomNavigationView.setOnItemSelectedListener(navy);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.drawer_nav);
+        // Set listener for drawer navigation view
         navigationView.setNavigationItemSelectedListener(this);
+    }
 
+    /**
+     * Initialize UI components.
+     */
+    private void initUIComponents() {
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        mBottomNavigationView = findViewById(R.id.bottom_nav);
+        navigationView = findViewById(R.id.drawer_nav);
         container_autocomplete = toolbar.findViewById(R.id.container_autocomplete);
     }
 
+    /**
+     * Set up Navigation Drawer.
+     */
     public void setUpNavDrawer() {
         drawerLayout = findViewById(R.id.drawer);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
@@ -76,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
     }
 
+    /**
+     * Set up Navigation View.
+     */
     public void setUpNavView() {
         navigationView = findViewById(R.id.drawer_nav);
         View headerView = navigationView.getHeaderView(0);
@@ -89,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mail.setText(user.getEmail());
 
             Uri photoUrl = user.getPhotoUrl();
-
             Log.d("setUpNavView", "Photo URL: " + photoUrl);
 
             if (photo != null) {
@@ -103,25 +118,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Glide.with(this)
                             .load("URL_IMAGE_PAR_DEFAUT")
                             .into(photo);
-
-
                 }
             } else {
                 Log.e("setUpNavView", "ImageView photo est null");
             }
         }
-        // ...
     }
-
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (toggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return toggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Replace the existing fragment with a new one.
+     *
+     * @param fragment The new fragment to display.
+     */
     private void changeFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -129,7 +142,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         transaction.commit();
     }
 
-    public NavigationBarView.OnItemSelectedListener navy = item -> {
+    /**
+     * Handle the item selection in the BottomNavigationView.
+     */
+    public final NavigationBarView.OnItemSelectedListener navy = item -> {
         final int mapview = R.id.mapView;
         final int listView = R.id.listView;
         final int workmates = R.id.workmates;
@@ -139,12 +155,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case mapview:
                 changeFragment(new MapView());
                 container_autocomplete.setVisibility(View.VISIBLE);
+                container_autocomplete.setBackgroundColor(Color.RED);
                 getSupportActionBar().setTitle("I'm Hungry !");
                 break;
 
             case listView:
                 changeFragment(new RestoListView());
-                container_autocomplete.setVisibility(View.VISIBLE);
+                container_autocomplete.setVisibility(View.INVISIBLE);
                 getSupportActionBar().setTitle("I'm Hungry !");
                 break;
 
@@ -178,19 +195,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case logOut:
                 logOut();
                 break;
+
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    /**
+     * Log out the user and navigate back to LoginActivity.
+     */
     private void logOut() {
+        FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        finish();
+        finishAffinity();
     }
 }
+
 
 
 

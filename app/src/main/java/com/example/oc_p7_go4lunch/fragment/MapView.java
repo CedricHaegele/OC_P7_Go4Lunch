@@ -38,6 +38,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -208,6 +209,10 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
 
                 // Create a LatLng object with the current location
                 LatLng currentLocation = new LatLng(currentLatitude, currentLongitude);
+
+                // Activez les boutons de zoom
+                UiSettings uiSettings = map.getUiSettings();
+                uiSettings.setZoomControlsEnabled(true);
 
                 // Move the camera to the current location and zoom in
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, DEFAULT_ZOOM));

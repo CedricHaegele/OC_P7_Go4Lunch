@@ -39,7 +39,6 @@ public class WorkmatesList extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.workmatesList);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         initializeList();
-
         return view;
     }
 
@@ -61,6 +60,11 @@ public class WorkmatesList extends Fragment {
             }
         })
         ;
+    }
+
+    public void addUser(UserModel user) {
+        usersList.add(user);
+        workmatesListAdapter.notifyDataSetChanged();
     }
 }
 

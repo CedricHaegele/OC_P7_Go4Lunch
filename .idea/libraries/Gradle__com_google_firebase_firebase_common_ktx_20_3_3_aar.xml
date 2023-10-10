@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.firebase:firebase-common-ktx:20.3.3@aar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/f68585174a3e64ded6432d074da4c306/transformed/jetified-firebase-common-ktx-20.3.3/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/f68585174a3e64ded6432d074da4c306/transformed/jetified-firebase-common-ktx-20.3.3/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.google.firebase/firebase-common-ktx/20.3.3/ab3f8b19c190283c11ce3727ba366961b2057f8d/firebase-common-ktx-20.3.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

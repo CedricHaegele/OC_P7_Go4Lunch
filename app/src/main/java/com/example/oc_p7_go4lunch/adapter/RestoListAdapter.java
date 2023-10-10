@@ -1,10 +1,10 @@
 package com.example.oc_p7_go4lunch.adapter;
 
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,152 +18,130 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.fragment.MapView;
 import com.example.oc_p7_go4lunch.model.googleplaces.OpeningHours;
 import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyViewHolder> {
 
+    // Member variables
     private final Context context;
     private List<RestaurantModel> placesList;
 
+    // Constructor
     public RestoListAdapter(List<RestaurantModel> placesList, Context context) {
         this.context = context;
-        this.placesList = placesList;
-
         updateData(placesList);
-
     }
 
-
+    // Create new views (invoked by the layout manager)
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.fragment_resto_item, parent, false);
-        return new MyViewHolder(view);
-
+        return new MyViewHolder(view, context);
     }
 
+    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         RestaurantModel restaurantModel = placesList.get(position);
-        TextView distanceTextView = holder.itemView.findViewById(R.id.distance);
-
-        // Imprimer les coordonnées du restaurant
-        Log.d("RestaurantLocation", "Restaurant : " + restaurantModel.getName() + ", Latitude : " + restaurantModel.getGeometry().getLocation().getLat() + ", Longitude : " + restaurantModel.getGeometry().getLocation().getLng());
-
-        holder.name.setText(restaurantModel.getName());
-        holder.adress.setText(restaurantModel.getVicinity());
-        holder.ratingBar.setRating(restaurantModel.getRating().intValue());
-        holder.getDistance(restaurantModel);
-        distanceTextView.setText(String.format(Locale.getDefault(), "%.2f km", restaurantModel.getDistanceFromCurrentLocation() / 1000));
-
-        List<Photo> photos = restaurantModel.getPhotos();
-        if (photos != null && !photos.isEmpty()) {
-            String photoReference = photos.get(0).getPhotoReference();
-            if (photoReference != null) {
-                String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + photoReference + "&key=" + context.getString(R.string.google_maps_key);
-                Glide.with(context).load(photoUrl).into(holder.logo);
-            }
-        }
-
-
-        String IfOpenOrClosed;
-        OpeningHours openingHours = restaurantModel.getOpeningHours();
-        if (openingHours != null) {
-            if (openingHours.getOpenNow()) {
-                IfOpenOrClosed = context.getString(R.string.openRest);
-                holder.openhours.setTextColor(Color.GREEN);  // Setting color to Green
-                holder.openhours.setTypeface(null, Typeface.NORMAL);  // Setting Typeface to Normal
-            } else {
-                IfOpenOrClosed = context.getString(R.string.closedRest);
-                holder.openhours.setTextColor(Color.RED);  // Setting color to Red
-                holder.openhours.setTypeface(null, Typeface.BOLD);  // Setting Typeface to Bold
-            }
-            holder.openhours.setText(IfOpenOrClosed);
-        }
-
+        holder.bindData(restaurantModel);  // Using a separate function to handle data binding
     }
 
+    // Update the dataset and notify the adapter
+    @SuppressLint("NotifyDataSetChanged")
     public void updateData(List<RestaurantModel> newPlacesList) {
         this.placesList = newPlacesList;
 
-        // Tri des restaurants par distance
-        Collections.sort(placesList, new Comparator<RestaurantModel>() {
-            @Override
-            public int compare(RestaurantModel r1, RestaurantModel r2) {
-                return Float.compare(r1.getDistanceFromCurrentLocation(), r2.getDistanceFromCurrentLocation());
-            }
-        });
+        // Sort restaurants by distance
+        placesList.sort((r1, r2) -> Float.compare(r1.getDistanceFromCurrentLocation(), r2.getDistanceFromCurrentLocation()));
 
         notifyDataSetChanged();
     }
 
-
+    // Provide a reference to the views for each data item
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        public ImageView logo;
-        TextView name;
-        TextView adress;
-        TextView openhours;
-        TextView distanceCalculated;
+        // UI Components
+        ImageView logo;
+        TextView name, adress, openhours, distanceCalculated;
         RatingBar ratingBar;
+        Context context;
 
-        public MyViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView, Context context) {
             super(itemView);
-
+            this.context = context;
+            // Initialize UI components
             name = itemView.findViewById(R.id.name);
             adress = itemView.findViewById(R.id.address);
             logo = itemView.findViewById(R.id.photo);
             openhours = itemView.findViewById(R.id.opening_hours);
             ratingBar = itemView.findViewById(R.id.ratingBar);
             distanceCalculated = itemView.findViewById(R.id.distance);
+
         }
 
-        @SuppressLint("SetTextI18n")
-        public void getDistance(RestaurantModel itemRestaurant) {
-            if (MapView.lastKnownLocation != null) {
-                double placeLatitude = itemRestaurant.getGeometry().getLocation().getLat();
-                double placeLongitude = itemRestaurant.getGeometry().getLocation().getLng();
+        // Function to bind data to the UI components
+        public void bindData(RestaurantModel restaurantModel) {
+            // Setting the restaurant name
+            name.setText(restaurantModel.getName());
 
-                // Log pour vérifier les coordonnées
-                Log.d("DebugLocation", "User location: Latitude = " + MapView.lastKnownLocation.getLatitude() + ", Longitude = " + MapView.lastKnownLocation.getLongitude());
-                Log.d("DebugLocation", "Restaurant location: Latitude = " + placeLatitude + ", Longitude = " + placeLongitude);
+            // Setting the restaurant address
+            adress.setText(restaurantModel.getVicinity());
 
-                float[] results = new float[15];
-                Location.distanceBetween(MapView.lastKnownLocation.getLatitude(), MapView.lastKnownLocation.getLongitude(), placeLatitude, placeLongitude, results);
-                float f = results[0];  // Maintenant, f contient la distance calculée
+            // Setting the restaurant rating
+            ratingBar.setRating(restaurantModel.getRating().intValue());
 
-                // Log pour vérifier la distance en mètres
-                Log.d("DebugLocation", "Calculated distance in meters: " + f);
+            // Calculate and set the distance
+            // Assuming the getDistance() function sets the distance inside the RestaurantModel object
+            restaurantModel.getDistance();
+            distanceCalculated.setText(String.format(Locale.getDefault(), "%.2f km", restaurantModel.getDistanceFromCurrentLocation() / 1000));
 
-                // Log pour vérifier la distance en kilomètres
-                Log.d("DebugLocation", "Calculated distance in kilometers: " + f / 1000);
+            // Setting the restaurant image
+            List<Photo> photos = restaurantModel.getPhotos();
+            if (photos != null && !photos.isEmpty()) {
+                String photoReference = photos.get(0).getPhotoReference();
+                Log.d("RestoListAdapter", "Photo Reference: " + photoReference);
+                if (photoReference != null) {
+                    String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + photoReference + "&key=" + context.getString(R.string.google_maps_key);
+                    Glide.with(context).load(photoUrl).into(logo);
+                }
+            }
 
-                int distance = (int) f;
-                distanceCalculated.setText("" + distance + " m");
-                Log.d("DebugLocation", "Calculated distance in meters: " + f);
-
-                // Stocker la distance dans RestaurantModel
-                itemRestaurant.setDistanceFromCurrentLocation(f);
+            // Determine if the restaurant is open or closed and set the text and color accordingly
+            String ifOpenOrClosed;
+            OpeningHours openingHours = restaurantModel.getOpeningHours();
+            if (openingHours != null) {
+                if (openingHours.getOpenNow()) {
+                    ifOpenOrClosed = context.getString(R.string.openRest);
+                    openhours.setTextColor(Color.GREEN);
+                    openhours.setTypeface(null, Typeface.NORMAL);
+                } else {
+                    ifOpenOrClosed = context.getString(R.string.closedRest);
+                    openhours.setTextColor(Color.RED);
+                    openhours.setTypeface(null, Typeface.BOLD);
+                }
+                openhours.setText(ifOpenOrClosed);
             }
         }
+
     }
 
+    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return placesList.size();
     }
 
+    // Get the current places list
     public List<RestaurantModel> getPlacesList() {
         return placesList;
     }
 }
+
 
 

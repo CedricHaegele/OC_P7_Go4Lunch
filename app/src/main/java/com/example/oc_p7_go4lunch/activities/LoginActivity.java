@@ -1,5 +1,7 @@
 package com.example.oc_p7_go4lunch.activities;
 
+// Import statements
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,48 +26,58 @@ import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
-    // Activity Result Launcher for handling sign-in results
+    // Declare variables for handling sign-in results
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
             new FirebaseAuthUIActivityResultContract(),
-            this::onSignInResult
+            this::onSignInResult // Callback function to handle the sign-in result
     );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Set the background drawable resource for this activity
         getWindow().setBackgroundDrawableResource(R.drawable.lunch_time);
+        // Initialize the sign-in process
         init();
     }
 
-    // Initialize the sign-in process
+    /**
+     * Initialize the sign-in process.
+     */
     private void init() {
-        // Choose authentication providers (Email and Google)
+        // Define the list of authentication providers (Email and Google)
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.GoogleBuilder().build()
         );
 
-        // Create and launch sign-in intent
+        // Create and launch the sign-in intent
         Intent signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-                .setTheme(R.style.MyFirebaseUIToolbar)
+                .setAvailableProviders(providers) // List of providers
+                .setTheme(R.style.MyFirebaseUIToolbar) // Custom theme
                 .build();
 
+        // Launch the sign-in process
         signInLauncher.launch(signInIntent);
     }
 
-    // Handle the result of the sign-in process
+    /**
+     * Handle the result of the sign-in process.
+     * @param result contains the result of the sign-in process
+     */
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
+        // Log the result for debugging
         Log.d("LoginActivity", "onSignInResult called. Result code: " + result.getResultCode());
 
+        // Retrieve the response
         IdpResponse response = result.getIdpResponse();
 
         if (result.getResultCode() == RESULT_OK) {
-            // Successfully signed in
+            // Sign-in was successful
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-            // Get user's photo URL
+            // Get the photo URL of the user
             Uri photoProfile = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getPhotoUrl();
 
             // Create a new user model
@@ -76,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
             FirebaseHelper.getUsersCollection();
             FirebaseHelper.createUser(firebaseUser.getUid(), user);
 
-            // Navigate to Main Activity
+            // Navigate to the Main Activity
             Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
             mainActivity.putExtra("user", firebaseUser);
             mainActivity.putExtra("photo", photoProfile);
@@ -89,5 +101,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 }
+
 
 
