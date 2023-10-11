@@ -26,6 +26,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.adapter.UserListAdapter;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
+import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
@@ -43,7 +44,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class RestaurantDetail extends AppCompatActivity {
-    private Bitmap bitmap;
+
+    // Constants
+    private final String apikey = "AIzaSyBg3_iFg4rQwCvWMt9AbwvY2A8GVFTV4Tk";
 
     // UI Components
     private ImageView logo;
@@ -55,144 +58,101 @@ public class RestaurantDetail extends AppCompatActivity {
     private RestaurantModel restaurant;
     private UserModel currentUser;
 
-    // Firebase User
+    // Firebase
     private FirebaseUser firebaseUser;
 
-    // Button state
+    // State
     private boolean isButtonChecked = false;
 
-    // Combined list of users
+    // User List
     private final List<UserModel> combinedList = new ArrayList<>();
-
-    // Adapter for user list
     private UserListAdapter userListAdapter;
-
-    private void updateUserDocument() {
-    }
-
-    private void addUserToFirestore(UserModel user) {
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            CollectionReference usersRef = db.collection("users");
-
-
-            usersRef.document(firebaseUser.getUid())
-                    .collection("users")
-                    .add(user)
-                    .addOnSuccessListener(documentReference -> Log.d("Firestore", "Utilisateur ajouté avec succès à Firestore"))
-                    .addOnFailureListener(e -> Log.e("Firestore", "Erreur lors de l'ajout de l'utilisateur à Firestore", e));
-        }
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.restaurant_detail);
 
-        initUI();  // Initialize UI components
-        setupImageButton();  // Setup image button and its click listener
-        fetchRestaurantData();  // Fetch and display restaurant data
+        // Initialize UI and Data
+        initUI();
+        setupImageButton();
+        fetchRestaurantData();
     }
 
-    /**
-     * Initialize UI components.
-     */
+    // Initialize UI components
     private void initUI() {
-        // Initialize UI components
         Detail = findViewById(R.id.detail_name);
         Adress = findViewById(R.id.detail_address);
         logo = findViewById(R.id.logo);
         ratingBar = findViewById(R.id.ratingDetail);
         imageChecked = findViewById(R.id.fab);
 
+        // Setup RecyclerView
         RecyclerView userRecyclerView = findViewById(R.id.userRecyclerView);
         userRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         userListAdapter = new UserListAdapter(combinedList);
         userRecyclerView.setAdapter(userListAdapter);
     }
 
-    /**
-     * Setup image button and its click listener.
-     */
-    @SuppressLint("NotifyDataSetChanged")
+    // Setup image button and its click listener
     private void setupImageButton() {
-        // Set a click listener for the ImageButton
-        imageChecked.setOnClickListener(view -> {
-            // Fetch the current Firebase user
-            firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-            // Check if the user is signed in
-            if (firebaseUser != null) {
-                // If currentUser is null, add a new user
-                if (currentUser == null) {
-                    currentUser = createUserFromFirebaseUser();
-                    combinedList.add(currentUser);
-
-                    // Add the user to Firestore
-                    addUserToFirestore(currentUser);
-                }
-                // If currentUser is not null, remove the existing user
-                else {
-                    combinedList.remove(currentUser);
-                    currentUser = null;
-
-                    // Update Firestore to reflect the removal of the user
-                    updateUserDocument();
-                }
-
-                // Notify the adapter that the data has changed
-                userListAdapter.notifyDataSetChanged();
-
-                // Toggle the image button's state
-                toggleImageButtonState();
-            }
-        });
+        imageChecked.setOnClickListener(view -> handleImageButtonClick());
     }
 
-    /**
-     * Fetch restaurant data from the intent or other data sources.
-     */
+    // Fetch restaurant or place data from the intent
     private void fetchRestaurantData() {
-        // Get the calling intent
         Intent callingIntent = getIntent();
-
-        // Check if the intent has extra data
         if (callingIntent != null) {
-            // Fetch restaurant data from the intent
             if (callingIntent.hasExtra("Restaurant")) {
                 restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
-                Log.d("Debug", "Received Restaurant: " + (restaurant != null ? restaurant.toString() : "null"));
-
-                // Debugging
-                Log.d("Debug", "Received Restaurant: " + (restaurant != null ? restaurant.toString() : "null"));
-
                 displayRestaurantData();
-            }
-            // Fetch place data from the intent
-            else if (callingIntent.hasExtra("Place")) {
+            } else if (callingIntent.hasExtra("Place")) {
                 Place place = callingIntent.getParcelableExtra("Place");
                 displayPlaceData(place);
             }
         }
     }
 
+    // Handle ImageButton clicks
+    private void handleImageButtonClick() {
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            if (currentUser == null) {
+                currentUser = createUserFromFirebaseUser();
+                combinedList.add(currentUser);
+                addUserToFirestore(currentUser);
+            } else {
+                combinedList.remove(currentUser);
+                currentUser = null;
+                updateUserDocument();
+            }
+            userListAdapter.notifyDataSetChanged();
+            toggleImageButtonState();
 
-
-    private void toggleImageButtonState() {
-        if (isButtonChecked) {
-            imageChecked.setImageResource(R.drawable.baseline_check_circle_outline_24);
-        } else {
-            imageChecked.setImageResource(R.drawable.ic_button_is_checked);
         }
+    }
+
+    private void updateUserDocument() {
+    }
+
+    private void addUserToFirestore(UserModel currentUser) {
+    }
+
+    // Toggle the image button's state
+    private void toggleImageButtonState() {
+        imageChecked.setImageResource(
+                isButtonChecked ? R.drawable.baseline_check_circle_outline_24 : R.drawable.ic_button_is_checked
+        );
         isButtonChecked = !isButtonChecked;
 
+        // Save state
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("isButtonChecked", isButtonChecked);
         editor.apply();
     }
 
+    // Create UserModel from FirebaseUser
     private UserModel createUserFromFirebaseUser() {
         UserModel user = new UserModel();
         user.setMail(firebaseUser.getEmail());
@@ -201,16 +161,16 @@ public class RestaurantDetail extends AppCompatActivity {
         return user;
     }
 
+    // Display restaurant data on the UI
     private void displayRestaurantData() {
         if (restaurant != null) {
             Detail.setText(restaurant.getName());
             Adress.setText(restaurant.getVicinity());
             ratingBar.setNumStars(restaurant.getRating().intValue());
-
-            }
         }
+    }
 
-
+    // Display place data on the UI
     private void displayPlaceData(Place place) {
         if (place != null) {
             Detail.setText(place.getName());
@@ -219,6 +179,7 @@ public class RestaurantDetail extends AppCompatActivity {
         }
     }
 
+    // Load image using Glide
     private void loadImage(String photoUrl) {
         Glide.with(this)
                 .load(photoUrl)
@@ -236,7 +197,6 @@ public class RestaurantDetail extends AppCompatActivity {
                     }
                 })
                 .into(logo);
-
     }
 
     private void fetchPlaceToImage(Place place) {
@@ -252,6 +212,7 @@ public class RestaurantDetail extends AppCompatActivity {
         final FetchPlaceRequest placeRequest = FetchPlaceRequest.newInstance(placeId, fields);
 
         placesClient.fetchPlace(placeRequest).addOnSuccessListener(response -> {
+            Log.d("PlaceInfo", "Fetch successful");
             final Place placeFound = response.getPlace();
             final List<PhotoMetadata> metadata = placeFound.getPhotoMetadatas();
 
@@ -262,15 +223,13 @@ public class RestaurantDetail extends AppCompatActivity {
 
             PhotoMetadata placePhoto = metadata.get(0);
 
-            final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(placePhoto)
-                    .setMaxWidth(500)
-                    .setMaxHeight(300)
-                    .build();
-            placesClient.fetchPhoto(photoRequest).addOnSuccessListener(fetchPhotoResponse -> {
-                bitmap = fetchPhotoResponse.getBitmap();
-                logo.setImageBitmap(bitmap);
-            }).addOnFailureListener(exception -> Log.e("Glide", "Image loading error", exception));
-        });
+            if (placePhoto != null) {
+                String photoUrl = placePhoto.getAttributions();
+                Log.d("PlaceInfo", "Photo URL: " + photoUrl);
+                loadImage(photoUrl);
+            }
+
+        }).addOnFailureListener(e -> Log.e("PlaceInfo", "Fetch failed", e));
     }
 
 

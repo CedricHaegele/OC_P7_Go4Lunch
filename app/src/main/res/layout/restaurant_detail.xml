@@ -17,6 +17,7 @@
             app:srcCompat="@drawable/bolo" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="230dp"
@@ -25,7 +26,7 @@
         <LinearLayout
             android:id="@+id/values"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="20dp"
             android:layout_weight="12"
             android:background="#FF6600"
             android:orientation="vertical">
@@ -59,13 +60,13 @@
 
             <RatingBar
                 android:id="@+id/ratingDetail"
+                style="@style/Widget.AppCompat.RatingBar.Indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                style="@style/Widget.AppCompat.RatingBar.Indicator"
+                android:numStars="5"
                 android:progressTint="@color/teal_700"
-                android:rating="4"
-                android:numStars="5" />
+                android:rating="4" />
 
 
         </LinearLayout>
@@ -78,7 +79,7 @@
             android:orientation="horizontal">
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
+                style="@style/Widget.AppCompat.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -89,7 +90,7 @@
                 android:textColor="#E61000" />
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
+                style="style=@style/Widget.AppCompat.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -100,7 +101,7 @@
                 android:textColor="#E61000" />
 
             <Button
-                style="?android:attr/buttonBarButtonStyle"
+                style="style=@style/Widget.AppCompat.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -113,7 +114,7 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="match_parent"
             android:layout_weight="40">
 
             <androidx.recyclerview.widget.RecyclerView

@@ -14,7 +14,7 @@
     <!-- FirebaseUI -->
     <style name="LoginTheme" parent="FirebaseUI">
         <item name="colorPrimary">#FF3300</item>
-        <item name="colorPrimaryDark">#FFFDFD</item>
+        <item name="colorPrimaryDark">#8A8989</item>
         <item name="colorAccent">@color/colorPrimary</item>
 
         <item name="windowActionBar">false</item>
@@ -28,7 +28,9 @@
 
     <style name="MyFirebaseUIToolbar" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/red</item>
-        <item name="colorPrimaryDark">@color/background_image_background</item>
+        <item name="colorPrimaryDark">#978A8A</item>
+        <item name="android:windowBackground">@drawable/lunch_time</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
     </style>
 
 

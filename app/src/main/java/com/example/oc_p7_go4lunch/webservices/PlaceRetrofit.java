@@ -7,7 +7,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Url;
 
 public interface PlaceRetrofit {
+    // Define a PlaceRetrofit GET request to fetch places data from a specified URL
     @GET
     Call<Places> getAllPlaces(@Url String url);
-
 }

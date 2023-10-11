@@ -6,31 +6,35 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 
-public class Location implements Serializable
-{
+public class Location implements Serializable {
 
+    // Define serialized names for Gson to map the JSON fields "lat" and "lng" to these fields
     @SerializedName("lat")
-    @Expose
     private Double lat;
+
     @SerializedName("lng")
-    @Expose
     private Double lng;
+
+    // Define a serialVersionUID for serializability (optional)
     private final static long serialVersionUID = -6836986616428735551L;
 
+    // Getter method for lat
     public Double getLat() {
         return lat;
     }
 
+    // Setter method for lat
     public void setLat(Double lat) {
         this.lat = lat;
     }
 
+    // Getter method for lng
     public Double getLng() {
         return lng;
     }
 
+    // Setter method for lng
     public void setLng(Double lng) {
         this.lng = lng;
     }
-
 }

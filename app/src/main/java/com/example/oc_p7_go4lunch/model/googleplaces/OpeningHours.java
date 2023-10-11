@@ -6,20 +6,22 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 
-public class OpeningHours implements Serializable
-{
+public class OpeningHours implements Serializable {
 
+    // Define serialized names for Gson to map the JSON field "open_now" to this field
     @SerializedName("open_now")
-    @Expose
     private Boolean openNow;
+
+    // Define a serialVersionUID for serializability (optional)
     private final static long serialVersionUID = 3599790249304381944L;
 
+    // Getter method for openNow
     public Boolean getOpenNow() {
         return openNow;
     }
 
+    // Setter method for openNow
     public void setOpenNow(Boolean openNow) {
         this.openNow = openNow;
     }
-
 }

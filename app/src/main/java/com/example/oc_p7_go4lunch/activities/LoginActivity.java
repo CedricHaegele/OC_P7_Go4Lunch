@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.RelativeLayout;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,9 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Set the background drawable resource for this activity
         getWindow().setBackgroundDrawableResource(R.drawable.lunch_time);
-        // Initialize the sign-in process
         init();
     }
 
@@ -62,8 +61,10 @@ public class LoginActivity extends AppCompatActivity {
         signInLauncher.launch(signInIntent);
     }
 
+
     /**
      * Handle the result of the sign-in process.
+     *
      * @param result contains the result of the sign-in process
      */
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
@@ -93,6 +94,14 @@ public class LoginActivity extends AppCompatActivity {
             mainActivity.putExtra("user", firebaseUser);
             mainActivity.putExtra("photo", photoProfile);
             startActivity(mainActivity);
+
+            // Déconnexion
+            AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener(task -> {
+                        finish();
+                    });
+
         } else {
             // Sign-in failed
             if (response != null) {

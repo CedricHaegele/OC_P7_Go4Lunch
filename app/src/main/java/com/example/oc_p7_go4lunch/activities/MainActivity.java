@@ -27,12 +27,17 @@ import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.fragment.MapView;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
+import com.example.oc_p7_go4lunch.model.googleplaces.Places;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Url;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     // UI components

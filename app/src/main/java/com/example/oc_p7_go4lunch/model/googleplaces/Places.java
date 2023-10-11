@@ -6,16 +6,19 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Places {
+
+    // Field with serialized name for Gson to map JSON field
     @SerializedName("results")
     @Expose
-    List<RestaurantModel> placesList;
+    private List<RestaurantModel> placesList;
 
-
+    // Getter method for placesList
     public List<RestaurantModel> getPlacesList() {
         return placesList;
     }
 
-    public void setRestaurantsList(List<RestaurantModel> restaurantsList) {
-        this.placesList = restaurantsList;
+    // Setter method for placesList
+    public void setPlacesList(List<RestaurantModel> placesList) {
+        this.placesList = placesList;
     }
 }

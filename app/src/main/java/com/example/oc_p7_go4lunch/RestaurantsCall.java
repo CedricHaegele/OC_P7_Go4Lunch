@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
 import com.example.oc_p7_go4lunch.model.googleplaces.Places;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
@@ -48,12 +49,21 @@ public class RestaurantsCall {
 
 
                             for (int i = 0; i < restaurantList.size(); i++) {
+                                RestaurantModel restaurant = restaurantList.get(i);
+                                // Ajoutez le restaurant à la liste des places
+                                placesList.add(restaurant);
 
-                                placesList.add(restaurantList.get(i));
+                                // Ajoutez un marqueur sur la carte pour le restaurant
+                                map.addMarker(addMarker(map, restaurant));
 
-                                map.addMarker(addMarker(map, placesList.get(i)));
+                                // Récupérez la photo du restaurant (en supposant que vous avez un champ 'photo' dans votre modèle)
+                                Photo photo = restaurant.getPhotos() != null ? restaurant.getPhotos().get(0) : null;
+                                if (photo != null) {
+                                    String photoUrl = photo.getPhotoUrl("AIzaSyBg3_iFg4rQwCvWMt9AbwvY2A8GVFTV4Tk");
 
+                                }
                             }
+
                         } else {
                             placesList.clear();
                             Log.d("Debug", "About to call map.clear()");
@@ -97,4 +107,3 @@ public class RestaurantsCall {
 
     }
 }
-

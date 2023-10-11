@@ -275,7 +275,7 @@ public class RestoListView extends Fragment {
 
                     // 1 - Get restaurant from adapter
                     RestaurantModel restaurant = restoListAdapter.getPlacesList().get(position);
-                  
+
                     if (restaurant != null) {
                         // 2 - Show result in a Toast
                         Toast.makeText(getContext(), "You clicked on Restaurant : " + restaurant.getName(), Toast.LENGTH_SHORT).show();
