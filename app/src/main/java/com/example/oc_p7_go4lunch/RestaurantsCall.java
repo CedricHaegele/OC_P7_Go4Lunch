@@ -35,16 +35,17 @@ public class RestaurantsCall {
 
                 if (response.errorBody() == null) {
                     if (response.body() != null) {
+
+
                         restaurantList = response.body().getPlacesList();
 
                         if (restaurantList != null && restaurantList.size() > 0) {
-                            placesList.clear();
-                            Log.d("Debug", "About to call map.clear()");
+
                             if (map != null) {
                                 map.clear();
-                                Log.d("Debug", "Successfully called map.clear()");
+
                             } else {
-                                Log.d("Debug", "map is null");
+
                             }
 
 
@@ -59,25 +60,27 @@ public class RestaurantsCall {
                                 // Récupérez la photo du restaurant (en supposant que vous avez un champ 'photo' dans votre modèle)
                                 Photo photo = restaurant.getPhotos() != null ? restaurant.getPhotos().get(0) : null;
                                 if (photo != null) {
+
                                     String photoUrl = photo.getPhotoUrl("AIzaSyBg3_iFg4rQwCvWMt9AbwvY2A8GVFTV4Tk");
 
                                 }
                             }
 
                         } else {
+
                             placesList.clear();
-                            Log.d("Debug", "About to call map.clear()");
+
                             if (map != null) {
                                 map.clear();
-                                Log.d("Debug", "Successfully called map.clear()");
+
                             } else {
-                                Log.d("Debug", "map is null");
+
                             }
 
                         }
                     }
                 } else {
-                    Log.d("TAG", "onResponse: " + response.errorBody());
+
                     Toast.makeText(context, "Error : " + response.errorBody(), Toast.LENGTH_SHORT).show();
                 }
             }

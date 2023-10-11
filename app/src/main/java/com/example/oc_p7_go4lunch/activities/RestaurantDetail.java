@@ -77,7 +77,28 @@ public class RestaurantDetail extends AppCompatActivity {
         initUI();
         setupImageButton();
         fetchRestaurantData();
+        // Force the initial state of the button
+        updateButtonUI();
+        // Initialize button state (grey by default)
+        loadButtonState();
     }
+
+    // Load button state from SharedPreferences
+    private void loadButtonState() {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        isButtonChecked = sharedPreferences.getBoolean("isButtonChecked", false);
+        updateButtonUI();
+    }
+
+    // Update button UI based on the state
+    private void updateButtonUI() {
+        if (isButtonChecked) {
+            imageChecked.setImageResource(R.drawable.baseline_check_circle_outline_24);
+        } else {
+            imageChecked.setImageResource(R.drawable.ic_button_is_checked);
+        }
+    }
+
 
     // Initialize UI components
     private void initUI() {
@@ -105,52 +126,32 @@ public class RestaurantDetail extends AppCompatActivity {
         if (callingIntent != null) {
             if (callingIntent.hasExtra("Restaurant")) {
                 restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
+
                 displayRestaurantData();
+
+                if (restaurant != null) {
+
+                    String photoUrl = restaurant.getPhotoUrl(apikey);
+
+                    loadImage(photoUrl);
+                }
             } else if (callingIntent.hasExtra("Place")) {
                 Place place = callingIntent.getParcelableExtra("Place");
                 displayPlaceData(place);
+
             }
         }
     }
 
-    // Handle ImageButton clicks
     private void handleImageButtonClick() {
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            if (currentUser == null) {
-                currentUser = createUserFromFirebaseUser();
-                combinedList.add(currentUser);
-                addUserToFirestore(currentUser);
-            } else {
-                combinedList.remove(currentUser);
-                currentUser = null;
-                updateUserDocument();
-            }
-            userListAdapter.notifyDataSetChanged();
-            toggleImageButtonState();
-
-        }
-    }
-
-    private void updateUserDocument() {
-    }
-
-    private void addUserToFirestore(UserModel currentUser) {
-    }
-
-    // Toggle the image button's state
-    private void toggleImageButtonState() {
-        imageChecked.setImageResource(
-                isButtonChecked ? R.drawable.baseline_check_circle_outline_24 : R.drawable.ic_button_is_checked
-        );
         isButtonChecked = !isButtonChecked;
-
-        // Save state
+        updateButtonUI();
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("isButtonChecked", isButtonChecked);
         editor.apply();
     }
+
 
     // Create UserModel from FirebaseUser
     private UserModel createUserFromFirebaseUser() {
@@ -180,14 +181,14 @@ public class RestaurantDetail extends AppCompatActivity {
     }
 
     // Load image using Glide
+
     private void loadImage(String photoUrl) {
         Glide.with(this)
                 .load(photoUrl)
-                .error(com.android.car.ui.R.drawable.car_ui_icon_error)
+                .error(R.drawable.ic_hide_image)
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        Log.e("GLIDE", "Load failed", e);
                         return false;
                     }
 
@@ -200,8 +201,8 @@ public class RestaurantDetail extends AppCompatActivity {
     }
 
     private void fetchPlaceToImage(Place place) {
+
         if (place == null || place.getId() == null) {
-            Log.e("PlaceInfo", "Place or Place ID is null");
             return;
         }
 
@@ -212,12 +213,10 @@ public class RestaurantDetail extends AppCompatActivity {
         final FetchPlaceRequest placeRequest = FetchPlaceRequest.newInstance(placeId, fields);
 
         placesClient.fetchPlace(placeRequest).addOnSuccessListener(response -> {
-            Log.d("PlaceInfo", "Fetch successful");
             final Place placeFound = response.getPlace();
             final List<PhotoMetadata> metadata = placeFound.getPhotoMetadatas();
 
             if (metadata == null || metadata.isEmpty()) {
-                Log.e("PlaceInfo", "No metadata for photos");
                 return;
             }
 
@@ -225,12 +224,10 @@ public class RestaurantDetail extends AppCompatActivity {
 
             if (placePhoto != null) {
                 String photoUrl = placePhoto.getAttributions();
-                Log.d("PlaceInfo", "Photo URL: " + photoUrl);
                 loadImage(photoUrl);
             }
 
         }).addOnFailureListener(e -> Log.e("PlaceInfo", "Fetch failed", e));
     }
-
 
 }

@@ -1,11 +1,12 @@
 package com.example.oc_p7_go4lunch.model.googleplaces;
 
+import android.util.Log;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
 import com.example.oc_p7_go4lunch.model.googleplaces.OpeningHours;
 import com.example.oc_p7_go4lunch.model.googleplaces.Geometry;
-
 
 
 import java.io.Serializable;
@@ -92,8 +93,15 @@ public class RestaurantModel implements Serializable {
     }
 
     public String getPhotoUrl(String apiKey) {
-        return photo != null ? photo.getPhotoUrl(apiKey) : null;
+        if (photos != null && !photos.isEmpty()) {
+            Photo firstPhoto = photos.get(0);  // Prenez la première photo pour simplifier
+            String url = firstPhoto.getPhotoUrl(apiKey);
+            return url;
+        } else {
+            return null;
+        }
     }
+
 
     public void setPhotoReference(String photoReference) {
         this.photoReference = photoReference;
@@ -138,6 +146,7 @@ public class RestaurantModel implements Serializable {
     public void setDistance(int distance) {
         this.distance = distance;
     }
+
     public String getName() {
         return name;
     }
@@ -153,14 +162,14 @@ public class RestaurantModel implements Serializable {
     public List<Photo> getPhotos() {
         return photos;
     }
+
     public OpeningHours getOpeningHours() {
         return openingHours;
     }
+
     public Geometry getGeometry() {
         return geometry;
     }
-
-
 
 
 }

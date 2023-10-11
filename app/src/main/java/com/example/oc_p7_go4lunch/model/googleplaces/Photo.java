@@ -1,5 +1,7 @@
 package com.example.oc_p7_go4lunch.model.googleplaces;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import com.google.gson.annotations.SerializedName;
 
 
 public class Photo implements Serializable {
+
 
     // Fields with serialized names for Gson to map JSON fields
     @SerializedName("height")
@@ -66,7 +69,11 @@ public class Photo implements Serializable {
 
     // Method to generate a photo URL with a given API key
     public String getPhotoUrl(String apiKey) {
+
         String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=";
-        return url + getPhotoReference() + "&key=" + apiKey;
+        String generatedUrl = url + getPhotoReference() + "&key=" + apiKey;
+
+        return generatedUrl;
     }
+
 }

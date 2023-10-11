@@ -131,9 +131,6 @@ public class RestoListView extends Fragment {
                             makeRequest(lastKnownLocation);
                         }
                     } else {
-
-                        Log.d(TAG, "Current location is null. Using defaults.");
-                        Log.e(TAG, "Exception: %s", task.getException());
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                         map.getUiSettings().setMyLocationButtonEnabled(false);
                     }
@@ -145,7 +142,7 @@ public class RestoListView extends Fragment {
                         PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
             }
         } catch (SecurityException e) {
-            Log.e("Exception: %s", e.getMessage(), e);
+
         }
     }
 
@@ -167,7 +164,6 @@ public class RestoListView extends Fragment {
                     if (isAdded()) {
                         Gson gson = new Gson();
                         String json = gson.toJson(response.body());
-                        Log.d("TAG", "Contenu de l'objet Places: " + json);
 
                         if (response.errorBody() == null) {
                             if (response.body() != null) {
@@ -202,7 +198,6 @@ public class RestoListView extends Fragment {
                                     // Mettre à jour l'adaptateur avec la nouvelle liste triée
                                     restoListAdapter.updateData(restaurantList);
                                 } else {
-                                    Log.d("TAG", "Liste de restaurants vide ou nulle");
                                     placesList.clear();
                                     if (map != null) {
                                         map.clear();
@@ -282,7 +277,6 @@ public class RestoListView extends Fragment {
 
                         Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
                         intent.putExtra("Restaurant", restaurant);
-                        Log.d("Debug", "Sending Restaurant: " + restaurant.toString());
                         startActivity(intent);
 
                         startActivity(intent);
