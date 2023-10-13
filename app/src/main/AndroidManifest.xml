@@ -8,6 +8,9 @@
     <!-- Permission for internet access. Necessary for network operations. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+
     <!-- Permission for fine location access. Necessary for features like map pinpointing. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 

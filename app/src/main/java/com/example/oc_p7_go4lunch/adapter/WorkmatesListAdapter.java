@@ -21,6 +21,7 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
 
     private final List<UserModel> userList;
 
+
     public WorkmatesListAdapter(List<UserModel> userModels) {
         this.userList = userModels;
     }
@@ -48,24 +49,39 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
     static class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView img;
         TextView name;
+        TextView restaurantName;
+
 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             img = (CircleImageView) itemView.findViewById(R.id.imageProfile);
             name = (TextView) itemView.findViewById(R.id.textName);
+            restaurantName = (TextView) itemView.findViewById(R.id.textRestaurantName);
+
 
         }
 
         private void setData(UserModel mUser) {
-            name.setText(mUser.getName());
+            if (name != null && mUser != null && mUser.getName() != null) {
+                name.setText(mUser.getName());
+            }
 
-            Glide.with(img.getContext())
-                    .load(mUser.getPhoto())
-                    .placeholder(com.google.android.libraries.places.R.drawable.quantum_ic_cloud_off_vd_theme_24)
-                    .circleCrop()
-                    .error(R.drawable.default_avatar)
-                    .into(img);
+            if (img != null && mUser != null && mUser.getPhoto() != null) {
+                Glide.with(img.getContext())
+                        .load(mUser.getPhoto())
+                        .placeholder(com.google.android.libraries.places.R.drawable.quantum_ic_cloud_off_vd_theme_24)
+                        .circleCrop()
+                        .error(R.drawable.default_avatar)
+                        .into(img);
+            }
+            if (restaurantName != null && mUser != null && mUser.getChosenRestaurantName() != null) {
+                restaurantName.setText(mUser.getChosenRestaurantName());
+            } else {
+                // handle error here
+            }
         }
+
+
     }
 }

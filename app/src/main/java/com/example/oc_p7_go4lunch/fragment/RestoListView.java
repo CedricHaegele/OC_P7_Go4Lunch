@@ -279,7 +279,6 @@ public class RestoListView extends Fragment {
                         intent.putExtra("Restaurant", restaurant);
                         startActivity(intent);
 
-                        startActivity(intent);
                     } else {
                         Toast.makeText(getContext(), "Restaurant data is not available", Toast.LENGTH_SHORT).show();
                     }

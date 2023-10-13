@@ -20,6 +20,7 @@ import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Arrays;
 import java.util.List;
@@ -85,22 +86,29 @@ public class LoginActivity extends AppCompatActivity {
             assert firebaseUser != null;
             UserModel user = new UserModel(firebaseUser.getEmail(), firebaseUser.getDisplayName(), String.valueOf(firebaseUser.getPhotoUrl()));
 
-            // Save the user to Firestore
-            FirebaseHelper.getUsersCollection();
-            FirebaseHelper.createUser(firebaseUser.getUid(), user);
+            // Check if user already exists in Firestore
+            FirebaseHelper.getUsersCollection().document(firebaseUser.getUid()).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document != null && document.exists()) {
+                                Log.d("Firestore", "User already exists");
+                            } else {
+                                // User doesn't exist, create a new one
+                                Log.d("Firestore", "Creating new user");
+                                FirebaseHelper.createUser(firebaseUser.getUid(), user);
+                            }
+                        } else {
+                            Log.d("Firestore", "Failed to get user", task.getException());
+                        }
+                    });
+
 
             // Navigate to the Main Activity
             Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
             mainActivity.putExtra("user", firebaseUser);
             mainActivity.putExtra("photo", photoProfile);
             startActivity(mainActivity);
-
-            // Déconnexion
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(task -> {
-                        finish();
-                    });
 
         } else {
             // Sign-in failed

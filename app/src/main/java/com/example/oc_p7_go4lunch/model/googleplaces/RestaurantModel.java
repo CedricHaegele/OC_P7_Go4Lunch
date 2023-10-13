@@ -47,6 +47,14 @@ public class RestaurantModel implements Serializable {
     @Expose
     private List<Photo> photos = null;
 
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
+    }
+
     @SerializedName("place_id")
     @Expose
     private String placeId;
@@ -83,6 +91,7 @@ public class RestaurantModel implements Serializable {
     private double latitude;
     private double longitude;
     private int distance;
+
 
     // Getter and setter methods for all fields
     // ...

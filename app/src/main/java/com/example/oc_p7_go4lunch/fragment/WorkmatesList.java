@@ -29,11 +29,10 @@ public class WorkmatesList extends Fragment {
     private WorkmatesListAdapter workmatesListAdapter;
     public List<UserModel> usersList = new ArrayList<>();
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //inflate the layout for this fragment
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_workmates_list, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.workmatesList);
@@ -48,6 +47,10 @@ public class WorkmatesList extends Fragment {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
                     UserModel userModel = queryDocumentSnapshot.toObject(UserModel.class);
+                    // Assuming UserModel has a property called chosenRestaurantName
+                    String restaurantName = userModel.getChosenRestaurantName();
+                    Log.d("WorkmatesList", "User: " + userModel.getName() + ", Chosen Restaurant: " + restaurantName);
+
                     usersList.add(userModel);
                 }
                 workmatesListAdapter = new WorkmatesListAdapter(usersList);
@@ -58,8 +61,7 @@ public class WorkmatesList extends Fragment {
             public void onFailure(@NonNull Exception e) {
                 Log.e("ERROR ", e.getMessage());
             }
-        })
-        ;
+        });
     }
 
     public void addUser(UserModel user) {
@@ -67,4 +69,3 @@ public class WorkmatesList extends Fragment {
         workmatesListAdapter.notifyDataSetChanged();
     }
 }
-

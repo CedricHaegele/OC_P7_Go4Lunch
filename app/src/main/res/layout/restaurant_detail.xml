@@ -26,8 +26,8 @@
         <LinearLayout
             android:id="@+id/values"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_weight="12"
+            android:layout_height="70dp"
+            android:layout_weight="3"
             android:background="#FF6600"
             android:orientation="vertical">
 
@@ -75,38 +75,35 @@
             style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="13"
+            android:layout_weight="6"
             android:orientation="horizontal">
 
             <Button
-                style="@style/Widget.AppCompat.Button"
+                android:id="@+id/callButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_margin="1dp"
                 android:layout_weight="1"
-                android:background="@android:color/white"
                 android:drawableTop="@drawable/ic_baseline_local_phone_24"
                 android:text="@string/call"
                 android:textColor="#E61000" />
 
             <Button
-                style="style=@style/Widget.AppCompat.Button"
+                android:id="@+id/likeButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_margin="1dp"
                 android:layout_weight="1"
-                android:background="@android:color/white"
                 android:drawableTop="@drawable/ic_baseline_star_24"
                 android:text="@string/like"
                 android:textColor="#E61000" />
 
             <Button
-                style="style=@style/Widget.AppCompat.Button"
+                android:id="@+id/websiteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_margin="1dp"
                 android:layout_weight="1"
-                android:background="@android:color/white"
                 android:drawableTop="@drawable/ic_baseline_language_24"
                 android:text="@string/website"
                 android:textColor="#E61000" />
@@ -114,13 +111,14 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="40">
+            android:layout_height="wrap_content"
+            android:layout_weight="19">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/userRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="10"
                 android:layout_marginBottom="?android:attr/actionBarSize"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
         </ScrollView>

@@ -41,11 +41,19 @@
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/is_eating"
+            android:text="is_eating in"
             android:letterSpacing="0.07"
             android:textColor="@color/black"
             android:textSize="13sp"/>
 
+        <TextView
+            android:id="@+id/textRestaurantName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Nom du restaurant"
+            android:letterSpacing="0.07"
+            android:textColor="@color/black"
+            android:textSize="13sp"/>
 
     </LinearLayout>
 

@@ -18,7 +18,7 @@ import java.util.List;
     public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserViewHolder> {
 
         // Member variable to hold the list of UserModels
-        private final List<UserModel> userList;
+        private List<UserModel> userList;
 
         // Constructor to initialize the list
         public UserListAdapter(List<UserModel> userList) {
@@ -33,7 +33,10 @@ import java.util.List;
                     .inflate(R.layout.item_user, parent, false);
             return new UserViewHolder(itemView);
         }
-
+        public void updateData(List<UserModel> newData) {
+            this.userList = newData;
+            notifyDataSetChanged();
+        }
         // Bind the user data to the ViewHolder view
         @Override
         public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {

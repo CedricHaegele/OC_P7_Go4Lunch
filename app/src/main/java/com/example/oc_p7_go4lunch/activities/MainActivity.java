@@ -12,6 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.oc_p7_go4lunch.model.firestore.UserModel;
+import com.google.android.libraries.places.api.Places;
+
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,13 +31,14 @@ import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.fragment.MapView;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
-import com.example.oc_p7_go4lunch.model.googleplaces.Places;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -48,11 +53,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView navigationView;
     LinearLayout container_autocomplete;
 
+
+
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.d("MainActivity", "onCreate: MainActivity started");
+
+        // Initialize Places
+        Places.initialize(getApplicationContext(), "YOUR_API_KEY_HERE");
+
+        // Récupérer les données passées via Intent
+        Intent intent = getIntent();
+        FirebaseUser firebaseUser = (FirebaseUser) intent.getSerializableExtra("user");
+        Uri photoProfile = intent.getParcelableExtra("photo");
+
+        // Initialize Firebase
         FirebaseApp.initializeApp(this);
 
         // Initialize UI components
@@ -65,12 +87,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Load the initial fragment
         changeFragment(new MapView());
 
+
         // Set listener for bottom navigation view
         mBottomNavigationView.setOnItemSelectedListener(navy);
 
         // Set listener for drawer navigation view
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+
+                } else {
+                    Log.d("Auth", "L'utilisateur est déconnecté");
+                    // Mettez à jour l'interface utilisateur ici si nécessaire
+
+                }
+            }
+        };
+
+        saveUserToFirestore();
     }
+
+    private void saveUserToFirestore() {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            UserModel userModel = new UserModel();
+            userModel.setMail(firebaseUser.getEmail());
+            userModel.setName(firebaseUser.getDisplayName());
+            userModel.setPhoto(firebaseUser.getPhotoUrl() != null ? firebaseUser.getPhotoUrl().toString() : "");
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document(firebaseUser.getUid())
+                    .set(userModel)
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!"))
+                    .addOnFailureListener(e -> Log.w("Firestore", "Error writing user", e));
+        }
+    }
+
 
     /**
      * Initialize UI components.
@@ -104,31 +163,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView mail = headerView.findViewById(R.id.Mail);
         ImageView photo = headerView.findViewById(R.id.photo_user);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            name.setText(user.getDisplayName());
-            mail.setText(user.getEmail());
-
-            Uri photoUrl = user.getPhotoUrl();
-            Log.d("setUpNavView", "Photo URL: " + photoUrl);
-
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            // Mettre à jour l'interface utilisateur
+            name.setText(firebaseUser.getDisplayName());
+            mail.setText(firebaseUser.getEmail());
+            Uri photoUrl = firebaseUser.getPhotoUrl();
             if (photo != null) {
                 if (photoUrl != null) {
                     Glide.with(this)
                             .load(photoUrl)
                             .into(photo);
                 } else {
-                    Log.e("setUpNavView", "photoProfile est null");
                     // Charger une image par défaut
                     Glide.with(this)
                             .load("URL_IMAGE_PAR_DEFAUT")
                             .into(photo);
                 }
-            } else {
-                Log.e("setUpNavView", "ImageView photo est null");
             }
-        }
-    }
+
+            // Ajouter l'utilisateur à Firestore
+            String email = firebaseUser.getEmail();
+
+            UserModel newUser = new UserModel(email,null, null);
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document(firebaseUser.getUid()).set(newUser)
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!"))
+                    .addOnFailureListener(e -> Log.e("Firestore", "Error writing user", e));
+
+        } else {
+            Log.d("Debug", "FirebaseUser is null. The user is not logged in.");
+        }}
+
+
+
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {

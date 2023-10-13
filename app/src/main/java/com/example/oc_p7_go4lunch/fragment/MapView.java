@@ -1,36 +1,31 @@
 package com.example.oc_p7_go4lunch.fragment;
 
-import static android.content.ContentValues.TAG;
-
-
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.RestaurantsCall;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
+import com.example.oc_p7_go4lunch.viewmodel.MapViewModel;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -48,12 +43,10 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NavigableMap;
 import java.util.Objects;
 
 public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -79,9 +72,11 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
 
     public static Location lastKnownLocation;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("CycleDeVie", "onCreateView appelé");
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapGps);
@@ -89,12 +84,17 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
-
+        toolbar = requireActivity().findViewById(R.id.toolbar);
         drawerNavigation();
         getAutocompletePredictions();
 
-        // Construct a FusedLocationProviderClient
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        if (isAdded()) {
+            // Construct a FusedLocationProviderClient
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+            Log.d(TAG, "FusedLocationProviderClient initialized");
+        }else{
+            Log.e(TAG, "Fragment non attaché à l'activité");
+        }
 
         // Initialize array lists
         latLngArrayList = new ArrayList<>();
@@ -114,6 +114,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d("CycleDeVie", "onViewCreated appelé");
 
         locationBtn = requireActivity().findViewById(R.id.floating_action_button);
 
@@ -132,7 +133,9 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
                         if (lastKnownLocation != null) {
                             location = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                             Log.d(TAG, "Latitude: " + MapView.lastKnownLocation.getLatitude() + ", Longitude: " + MapView.lastKnownLocation.getLongitude());
+                            Log.d(TAG, "About to call makeRequest()");
                             makeRequest(lastKnownLocation);
+                            Log.d(TAG, "makeRequest() called");
                         } else {
                             location = defaultLocation;
                         }
@@ -146,7 +149,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
                 });
             }
         } catch (SecurityException e) {
-            Log.e(TAG, "Exception: " + e.getMessage(), e);
+            Log.e(TAG, "Exception caught: ", e);
         }
     }
 
@@ -159,11 +162,15 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
     }
 
     public void getAutocompletePredictions() {
+        Log.d(TAG, "getAutocompletePredictions called");
         String apiKey = getString(R.string.google_maps_key);
 
         if (!Places.isInitialized()) {
             Places.initialize(requireActivity().getApplicationContext(), apiKey);
-        }
+            Log.d(TAG, "Places API Initialized");
+        } else {
+        Log.d(TAG, "Places API Already Initialized");
+    }
 
         // Initialize the AutocompleteSupportFragment.
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
@@ -180,6 +187,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
+                Log.d(TAG, "Place selected: " + place.getName());
                 // Add an onClick listener to the Google Maps marker.
                 MarkerOptions markerOptions = new MarkerOptions().position(Objects.requireNonNull(place.getLatLng())).snippet(place.getName());
                 map.addMarker(markerOptions).setTag(place);
@@ -190,6 +198,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
             @Override
             public void onError(@NonNull Status status) {
                 // Handle error
+                Log.e(TAG, "Autocomplete error: " + status.getStatusMessage());
             }
         });
     }
@@ -221,6 +230,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
                 map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
+                        Log.d(TAG, "Marker clicked");
                         handleMarkerClick(marker);
                         return true; // Return true to consume the event
                     }
@@ -256,7 +266,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
 
 
 
-    // Calculate distance
+        // Calculate distance
         double distance = calculateDistance(37.421942, -122.0840597, 37.4144292, -122.0811554);
         Log.d("Distance", "Distance between two points: " + distance + " km");
     }
@@ -288,6 +298,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult called");
         locationPermissionGranted = false;
         if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
             if (grantResults.length > 0
