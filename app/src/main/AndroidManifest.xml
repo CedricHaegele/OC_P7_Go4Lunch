@@ -51,7 +51,7 @@
 
         <!-- Settings Activity -->
         <activity
-            android:name=".SettingsActivity"
+            android:name=".fragment.SettingFragment"
             android:exported="false"
             android:label="@string/title_activity_settings" />
 
@@ -60,7 +60,7 @@
         <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="BuildConfig.API_KEY"/>
 
         <!-- Google Play Services Version -->
         <meta-data

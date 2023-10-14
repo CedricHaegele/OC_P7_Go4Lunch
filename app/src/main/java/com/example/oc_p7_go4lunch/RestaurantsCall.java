@@ -1,13 +1,12 @@
 package com.example.oc_p7_go4lunch;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
 import com.example.oc_p7_go4lunch.model.googleplaces.Places;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
-import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
+import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -27,9 +26,9 @@ public class RestaurantsCall {
 
     public static void getRestaurants(String url, List<RestaurantModel> placesList, GoogleMap map, Context context) {
 
-        PlaceRetrofit placeRetrofit = RetrofitClient.getRetrofitClient().create(PlaceRetrofit.class);
+        GooglePlacesApi googlePlacesApi = RetrofitClient.getRetrofitClient().create(GooglePlacesApi.class);
 
-        placeRetrofit.getAllPlaces(url).enqueue(new Callback<Places>() {
+        googlePlacesApi.getAllPlaces(url).enqueue(new Callback<Places>() {
             @Override
             public void onResponse(Call<Places> call, Response<Places> response) {
 
@@ -61,7 +60,7 @@ public class RestaurantsCall {
                                 Photo photo = restaurant.getPhotos() != null ? restaurant.getPhotos().get(0) : null;
                                 if (photo != null) {
 
-                                    String photoUrl = photo.getPhotoUrl("AIzaSyBg3_iFg4rQwCvWMt9AbwvY2A8GVFTV4Tk");
+                                    String photoUrl = photo.getPhotoUrl(BuildConfig.API_KEY);
 
                                 }
                             }

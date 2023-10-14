@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.model.googleplaces.OpeningHours;
 import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
@@ -107,7 +109,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
                 String photoReference = photos.get(0).getPhotoReference();
                 Log.d("RestoListAdapter", "Photo Reference: " + photoReference);
                 if (photoReference != null) {
-                    String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + photoReference + "&key=" + context.getString(R.string.google_maps_key);
+                    String photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + photoReference + "&key=" + BuildConfig.API_KEY;
                     Glide.with(context).load(photoUrl).into(logo);
                 }
             }

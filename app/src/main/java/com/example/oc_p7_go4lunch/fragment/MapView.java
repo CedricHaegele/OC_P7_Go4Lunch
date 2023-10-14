@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.RestaurantsCall;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
@@ -163,7 +164,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
 
     public void getAutocompletePredictions() {
         Log.d(TAG, "getAutocompletePredictions called");
-        String apiKey = getString(R.string.google_maps_key);
+        String apiKey = BuildConfig.API_KEY;
 
         if (!Places.isInitialized()) {
             Places.initialize(requireActivity().getApplicationContext(), apiKey);
@@ -335,7 +336,7 @@ public class MapView extends Fragment implements OnMapReadyCallback, GoogleMap.O
                 + location.getLongitude()
                 + "&radius=" + 1500
                 + "&type=restaurant"
-                + "&key=" + getResources().getString(R.string.google_maps_key);
+                + "&key=" + BuildConfig.API_KEY;
 
         RestaurantsCall.getRestaurants(url, restaurantList, map, requireContext());
     }

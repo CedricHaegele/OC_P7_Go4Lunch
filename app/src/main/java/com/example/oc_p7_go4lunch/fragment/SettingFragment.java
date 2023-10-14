@@ -1,4 +1,4 @@
-package com.example.oc_p7_go4lunch;
+package com.example.oc_p7_go4lunch.fragment;
 
 import android.os.Bundle;
 
@@ -6,12 +6,14 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 
-public class SettingsActivity extends AppCompatActivity {
+import com.example.oc_p7_go4lunch.R;
+
+public class SettingFragment extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_settings);
+        setContentView(R.layout.settings);
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()

@@ -1,15 +1,10 @@
 package com.example.oc_p7_go4lunch.fragment;
 
-import static android.content.ContentValues.TAG;
-
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,34 +18,26 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.adapter.RestoListAdapter;
 import com.example.oc_p7_go4lunch.model.googleplaces.Places;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
-import com.example.oc_p7_go4lunch.webservices.PlaceRetrofit;
+import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -154,11 +141,11 @@ public class RestoListView extends Fragment {
                     + location.getLongitude()
                     + "&radius=" + 1500
                     + "&type=restaurant"
-                    + "&key=" + getResources().getString(R.string.google_maps_key);
+                    + "&key=" + BuildConfig.API_KEY;
 
-            PlaceRetrofit placeRetrofit = RetrofitClient.getRetrofitClient().create(PlaceRetrofit.class);
+            GooglePlacesApi googlePlacesApi = RetrofitClient.getRetrofitClient().create(GooglePlacesApi.class);
 
-            placeRetrofit.getAllPlaces(url).enqueue(new Callback<Places>() {
+            googlePlacesApi.getAllPlaces(url).enqueue(new Callback<Places>() {
                 @Override
                 public void onResponse(Call<Places> call, Response<Places> response) {
                     if (isAdded()) {

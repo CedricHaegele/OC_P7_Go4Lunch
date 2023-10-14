@@ -10,8 +10,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.oc_p7_go4lunch.fragment.SettingFragment;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.google.android.libraries.places.api.Places;
 
@@ -40,10 +40,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Url;
-
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     // UI components
     Toolbar toolbar;
@@ -52,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ActionBarDrawerToggle toggle;
     NavigationView navigationView;
     LinearLayout container_autocomplete;
-
 
 
     private FirebaseAuth mAuth;
@@ -185,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Ajouter l'utilisateur à Firestore
             String email = firebaseUser.getEmail();
 
-            UserModel newUser = new UserModel(email,null, null);
+            UserModel newUser = new UserModel(email, null, null);
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("users").document(firebaseUser.getUid()).set(newUser)
@@ -194,10 +189,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         } else {
             Log.d("Debug", "FirebaseUser is null. The user is not logged in.");
-        }}
-
-
-
+        }
+    }
 
 
     @Override
@@ -252,19 +245,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        final int myLunch = R.id.my_lunch;
-        final int settings = R.id.settings;
+        final int myLunch = R.id.nav_lunch;
+        final int settings = R.id.nav_settings;
         final int logOut = R.id.nav_logout;
 
 
         switch (item.getItemId()) {
 
             case myLunch:
-                Toast.makeText(this, "You clicked", Toast.LENGTH_LONG).show();
                 break;
 
             case settings:
-                Toast.makeText(this, "You clicked on", Toast.LENGTH_LONG).show();
+                SettingFragment.SettingsFragment settingsFragment = new SettingFragment.SettingsFragment();
+                changeFragment(settingsFragment);
                 break;
 
             case logOut:
@@ -288,10 +281,3 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //finishAffinity();
     }
 }
-
-
-
-
-
-
-
