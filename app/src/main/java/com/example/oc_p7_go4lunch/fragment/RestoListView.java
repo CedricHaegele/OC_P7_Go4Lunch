@@ -143,7 +143,7 @@ public class RestoListView extends Fragment {
                     + "&type=restaurant"
                     + "&key=" + BuildConfig.API_KEY;
 
-            GooglePlacesApi googlePlacesApi = RetrofitClient.getRetrofitClient().create(GooglePlacesApi.class);
+            GooglePlacesApi googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
 
             googlePlacesApi.getAllPlaces(url).enqueue(new Callback<Places>() {
                 @Override

@@ -1,13 +1,7 @@
 package com.example.oc_p7_go4lunch.model.googleplaces;
 
-import android.util.Log;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
-import com.example.oc_p7_go4lunch.model.googleplaces.OpeningHours;
-import com.example.oc_p7_go4lunch.model.googleplaces.Geometry;
-
 
 import java.io.Serializable;
 import java.util.List;
@@ -22,10 +16,6 @@ public class RestaurantModel implements Serializable {
     @SerializedName("geometry")
     @Expose
     private Geometry geometry;
-
-    @SerializedName("icon")
-    @Expose
-    private String icon;
 
     @SerializedName("icon_background_color")
     @Expose
@@ -75,10 +65,6 @@ public class RestaurantModel implements Serializable {
     @Expose
     private List<String> types = null;
 
-    @SerializedName("user_ratings_total")
-    @Expose
-    private Integer userRatingsTotal;
-
     @SerializedName("vicinity")
     @Expose
     private String vicinity;
@@ -92,9 +78,6 @@ public class RestaurantModel implements Serializable {
     private double longitude;
     private int distance;
 
-
-    // Getter and setter methods for all fields
-    // ...
 
     // Additional methods
     public String getPhotoReference() {
@@ -110,6 +93,14 @@ public class RestaurantModel implements Serializable {
             return null;
         }
     }
+
+    public void extractCoordinates() {
+        if (this.geometry != null && this.geometry.getLocation() != null) {
+            this.latitude = this.geometry.getLocation().getLat();
+            this.longitude = this.geometry.getLocation().getLng();
+        }
+    }
+
 
 
     public void setPhotoReference(String photoReference) {
@@ -134,10 +125,6 @@ public class RestaurantModel implements Serializable {
 
     public double getLatitude() {
         return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
     }
 
     public double getLongitude() {
@@ -179,6 +166,5 @@ public class RestaurantModel implements Serializable {
     public Geometry getGeometry() {
         return geometry;
     }
-
 
 }

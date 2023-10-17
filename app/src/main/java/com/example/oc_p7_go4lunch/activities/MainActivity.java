@@ -1,5 +1,8 @@
 package com.example.oc_p7_go4lunch.activities;
 
+// Import statements
+// Android-specific imports
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -11,27 +14,33 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.oc_p7_go4lunch.fragment.SettingFragment;
-import com.example.oc_p7_go4lunch.model.firestore.UserModel;
-import com.google.android.libraries.places.api.Places;
-
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.fragment.MapView;
+import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
+import com.example.oc_p7_go4lunch.fragment.SettingFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
-
+import com.example.oc_p7_go4lunch.model.firestore.UserModel;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
@@ -40,146 +49,193 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Arrays;
+
+// Main Activity class
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    // UI components
-    Toolbar toolbar;
-    BottomNavigationView mBottomNavigationView;
-    static DrawerLayout drawerLayout;
-    ActionBarDrawerToggle toggle;
-    NavigationView navigationView;
-    LinearLayout container_autocomplete;
+    // UI components declarations
+    Toolbar toolbar;  // Represents the top bar of the app
+    BottomNavigationView mBottomNavigationView;  // Bottom navigation menu
+    static DrawerLayout drawerLayout;  // Drawer for side navigation
+    ActionBarDrawerToggle toggle;  // Button to toggle drawer
+    NavigationView navigationView;  // Navigation items in drawer
+    LinearLayout container_autocomplete;  // Container for the autocomplete feature
+    private GoogleMap mMap;  // Map object for displaying Google Map
+    private Place place;  // Object to store selected place details
 
-
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-
+    // Firebase authentication
+    private FirebaseAuth mAuth;  // Firebase authentication object
+    private FirebaseAuth.AuthStateListener mAuthListener;  // Listener for auth state changes
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Set the application's theme
         setTheme(R.style.AppTheme);
+
+        // Perform initial setup
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d("MainActivity", "onCreate: MainActivity started");
 
-        // Initialize Places
-        Places.initialize(getApplicationContext(), "YOUR_API_KEY_HERE");
+        // Initialize Places API if it's not already initialized
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
+        }
 
-        // Récupérer les données passées via Intent
+// Initialize the AutocompleteSupportFragment for place suggestions
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete);
+
+// Initialize the SupportMapFragment to display maps
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+
+// Check if the autocompleteFragment is not null
+        if (autocompleteFragment != null) {
+            // Set the fields we want to get for each place suggestion
+            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+
+            // Set a listener that triggers when a place is selected
+            autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+
+                @Override
+                public void onPlaceSelected(@NonNull Place selectedPlace) {
+                    // Log the details of the selected place for debugging purposes
+                    Log.d("Autocomplete", "Place selected: " + selectedPlace.getName() + ", LatLng: " + selectedPlace.getLatLng());
+
+                    // Get the latitude and longitude of the selected place
+                    LatLng selectedLatLng = selectedPlace.getLatLng();
+
+                    // If mMap and selectedLatLng are not null, move the camera to the selected LatLng
+                    if (mMap != null && selectedLatLng != null) {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedLatLng, 18.0f));
+                    }
+                }
+
+                @Override
+                public void onError(@NonNull Status status) {
+                    // Log any errors that occur with place selection
+                    Log.d("Autocomplete", "An error occurred: " + status);
+                }
+            });
+        }
+// Retrieve data passed via Intent
         Intent intent = getIntent();
         FirebaseUser firebaseUser = (FirebaseUser) intent.getSerializableExtra("user");
         Uri photoProfile = intent.getParcelableExtra("photo");
 
-        // Initialize Firebase
+// Initialize Firebase SDK
         FirebaseApp.initializeApp(this);
 
-        // Initialize UI components
+// Initialize UI components
         initUIComponents();
 
-        // Set up Navigation Drawer and Navigation View
+// Configure the Navigation Drawer and Navigation View
         setUpNavDrawer();
         setUpNavView();
 
-        // Load the initial fragment
-        changeFragment(new MapView());
+// Load the initial fragment into view
+        changeFragment(new MapViewFragment());
 
-
-        // Set listener for bottom navigation view
+// Set listener for the bottom navigation view
         mBottomNavigationView.setOnItemSelectedListener(navy);
 
-        // Set listener for drawer navigation view
+// Set listener for the drawer navigation view
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Initialize Firebase Auth
+// Initialize Firebase Authentication
         mAuth = FirebaseAuth.getInstance();
 
+// Listen for changes in the authentication state
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-
+                    // User is signed in
                 } else {
-                    Log.d("Auth", "L'utilisateur est déconnecté");
-                    // Mettez à jour l'interface utilisateur ici si nécessaire
-
+                    // User is signed out
+                    Log.d("Auth", "User is signed out");
                 }
             }
         };
 
+// Save the user to Firestore database
         saveUserToFirestore();
     }
 
     private void saveUserToFirestore() {
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            UserModel userModel = new UserModel();
-            userModel.setMail(firebaseUser.getEmail());
-            userModel.setName(firebaseUser.getDisplayName());
-            userModel.setPhoto(firebaseUser.getPhotoUrl() != null ? firebaseUser.getPhotoUrl().toString() : "");
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser(); // Get the current user from Firebase
+        if (firebaseUser != null) { // Check if user exists
+            UserModel userModel = new UserModel(); // Create a new UserModel object
+            userModel.setMail(firebaseUser.getEmail()); // Set the email from Firebase user
+            userModel.setName(firebaseUser.getDisplayName()); // Set the display name from Firebase user
+            userModel.setPhoto(firebaseUser.getPhotoUrl() != null ? firebaseUser.getPhotoUrl().toString() : ""); // Set the photo URL if available
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("users").document(firebaseUser.getUid())
-                    .set(userModel)
-                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!"))
-                    .addOnFailureListener(e -> Log.w("Firestore", "Error writing user", e));
+            FirebaseFirestore db = FirebaseFirestore.getInstance(); // Get an instance of Firestore database
+            db.collection("users").document(firebaseUser.getUid()) // Access 'users' collection and specify document by User ID
+                    .set(userModel) // Set the UserModel object to Firestore
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!")) // Log success
+                    .addOnFailureListener(e -> Log.w("Firestore", "Error writing user", e)); // Log failure
         }
     }
-
-
     /**
      * Initialize UI components.
      */
     private void initUIComponents() {
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        toolbar = findViewById(R.id.toolbar); // Find the Toolbar view and assign it to 'toolbar' variable
+        setSupportActionBar(toolbar); // Set the toolbar as the app bar
 
-        mBottomNavigationView = findViewById(R.id.bottom_nav);
-        navigationView = findViewById(R.id.drawer_nav);
-        container_autocomplete = toolbar.findViewById(R.id.container_autocomplete);
+        mBottomNavigationView = findViewById(R.id.bottom_nav); // Find the BottomNavigationView and assign it to 'mBottomNavigationView' variable
+        navigationView = findViewById(R.id.drawer_nav); // Find the NavigationView and assign it to 'navigationView' variable
+        container_autocomplete = toolbar.findViewById(R.id.container_autocomplete); // Find the 'container_autocomplete' view within the toolbar and assign it
     }
-
     /**
      * Set up Navigation Drawer.
      */
     public void setUpNavDrawer() {
-        drawerLayout = findViewById(R.id.drawer);
-        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        drawerLayout = findViewById(R.id.drawer); // Locate the DrawerLayout and assign it to the 'drawerLayout' variable
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close); // Create an ActionBarDrawerToggle to handle opening and closing of the navigation drawer
+        drawerLayout.addDrawerListener(toggle); // Attach the toggle object as a DrawerListener to the DrawerLayout
+        toggle.syncState(); // Synchronize the indicator with the state of the linked DrawerLayout
     }
-
     /**
      * Set up Navigation View.
      */
     public void setUpNavView() {
-        navigationView = findViewById(R.id.drawer_nav);
-        View headerView = navigationView.getHeaderView(0);
-        TextView name = headerView.findViewById(R.id.Name);
-        TextView mail = headerView.findViewById(R.id.Mail);
-        ImageView photo = headerView.findViewById(R.id.photo_user);
+        navigationView = findViewById(R.id.drawer_nav); // Locate the NavigationView and assign it to the 'navigationView' variable
+        View headerView = navigationView.getHeaderView(0); // Get the header view of the NavigationView
+        TextView name = headerView.findViewById(R.id.Name); // Find the TextView for name
+        TextView mail = headerView.findViewById(R.id.Mail); // Find the TextView for mail
+        ImageView photo = headerView.findViewById(R.id.photo_user); // Find the ImageView for photo
 
+
+        // Initialize FirebaseUser object by getting the current user
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+// Check if the user is logged in
         if (firebaseUser != null) {
-            // Mettre à jour l'interface utilisateur
+            // Update UI with user's information
             name.setText(firebaseUser.getDisplayName());
             mail.setText(firebaseUser.getEmail());
+
+            // Get user's profile photo URL
             Uri photoUrl = firebaseUser.getPhotoUrl();
+
+            // Check if 'photo' view exists
             if (photo != null) {
+                // Load photo if URL exists
                 if (photoUrl != null) {
                     Glide.with(this)
                             .load(photoUrl)
                             .into(photo);
                 } else {
-                    // Charger une image par défaut
+                    // Load default image if photo URL is null
                     Glide.with(this)
                             .load("URL_IMAGE_PAR_DEFAUT")
                             .into(photo);
                 }
             }
 
-            // Ajouter l'utilisateur à Firestore
+            // Add user to Firestore database
             String email = firebaseUser.getEmail();
-
             UserModel newUser = new UserModel(email, null, null);
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -192,27 +248,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Handle menu item selection
         return toggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Replace the existing fragment with a new one.
-     *
-     * @param fragment The new fragment to display.
-     */
+    // Function to change the current fragment
     private void changeFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.nav_host_fragment, fragment);
         transaction.commit();
     }
-
-    /**
-     * Handle the item selection in the BottomNavigationView.
-     */
+    // Handle the item selection in the BottomNavigationView
     public final NavigationBarView.OnItemSelectedListener navy = item -> {
         final int mapview = R.id.mapView;
         final int listView = R.id.listView;
@@ -221,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
 
             case mapview:
-                changeFragment(new MapView());
+                changeFragment(new MapViewFragment());
                 container_autocomplete.setVisibility(View.VISIBLE);
                 container_autocomplete.setBackgroundColor(Color.RED);
                 getSupportActionBar().setTitle("I'm Hungry !");
@@ -263,21 +312,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case logOut:
                 logOut();
                 break;
-
         }
-
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    /**
-     * Log out the user and navigate back to LoginActivity.
-     */
-    private void logOut() {
+    //Log out the user and navigate back to LoginActivity.
+        private void logOut() {
         FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        //finishAffinity();
+        finishAffinity();
     }
 }

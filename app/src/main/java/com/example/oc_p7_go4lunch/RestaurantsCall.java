@@ -21,39 +21,44 @@ import retrofit2.Response;
 
 public class RestaurantsCall {
 
+    // List to store all restaurant models.
     public static List<RestaurantModel> restaurantList;
 
-
+    // Method to get restaurants.
     public static void getRestaurants(String url, List<RestaurantModel> placesList, GoogleMap map, Context context) {
 
-        GooglePlacesApi googlePlacesApi = RetrofitClient.getRetrofitClient().create(GooglePlacesApi.class);
+        // Create an instance of the GooglePlacesApi.
+        GooglePlacesApi googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
 
+        // Make an API call to get all places.
         googlePlacesApi.getAllPlaces(url).enqueue(new Callback<Places>() {
             @Override
+            // Method that's called when API call is successful.
             public void onResponse(Call<Places> call, Response<Places> response) {
 
+                // Check if there is no error in the response.
                 if (response.errorBody() == null) {
+                    // Check if the response body is not null.
                     if (response.body() != null) {
 
-
+                        // Store received restaurants in the list.
                         restaurantList = response.body().getPlacesList();
 
+                        // Check if the list has restaurants.
                         if (restaurantList != null && restaurantList.size() > 0) {
 
+                            // Clear existing markers on the map.
                             if (map != null) {
                                 map.clear();
-
-                            } else {
-
                             }
 
-
+                            // Loop through the list of restaurants.
                             for (int i = 0; i < restaurantList.size(); i++) {
                                 RestaurantModel restaurant = restaurantList.get(i);
-                                // Ajoutez le restaurant à la liste des places
+                                // Add the restaurant to the places list.
                                 placesList.add(restaurant);
 
-                                // Ajoutez un marqueur sur la carte pour le restaurant
+                                // Add a marker on the map for the restaurant.
                                 map.addMarker(addMarker(map, restaurant));
 
                                 // Récupérez la photo du restaurant (en supposant que vous avez un champ 'photo' dans votre modèle)
@@ -66,31 +71,28 @@ public class RestaurantsCall {
                             }
 
                         } else {
-
+                            // Clear places list and map markers.
                             placesList.clear();
-
                             if (map != null) {
                                 map.clear();
-
-                            } else {
-
                             }
-
                         }
                     }
                 } else {
-
+                    // Show an error toast.
                     Toast.makeText(context, "Error : " + response.errorBody(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
+            // Method that's called when API call fails.
             public void onFailure(Call<Places> call, Throwable t) {
 
             }
         });
     }
 
+    // Method to add a marker on the map for a restaurant.
     public static MarkerOptions addMarker(GoogleMap map, RestaurantModel restaurant) {
         double newLat = restaurant.getGeometry().getLocation().getLat();
         double newLng = restaurant.getGeometry().getLocation().getLng();
