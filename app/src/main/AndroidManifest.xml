@@ -33,7 +33,6 @@
         <!-- Restaurant Detail Activity -->
         <activity
             android:name=".activities.RestaurantDetail"
-            android:theme="@style/AppTheme"
             android:exported="true" />
 
         <!-- Login Activity -->

@@ -27,10 +27,16 @@
     <style name="Theme.OC_P7_Go4Lunch.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="MyFirebaseUIToolbar" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/red</item>
+        <item name="colorPrimary">#FF3300</item>
         <item name="colorPrimaryDark">#978A8A</item>
         <item name="android:windowBackground">@drawable/lunch_time</item>
         <item name="android:textColorPrimary">#FFFFFF</item>
+    </style>
+
+    <!-- Autocomplete search button -->
+    <style name="CustomAutocompleteFragmentStyle" parent="Theme.AppCompat.Light">
+        <!-- Change color of the search icon -->
+        <item name="colorControlNormal">@android:color/white</item>
     </style>
 
 

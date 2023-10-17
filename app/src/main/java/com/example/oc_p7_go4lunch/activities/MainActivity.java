@@ -21,6 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     static DrawerLayout drawerLayout;  // Drawer for side navigation
     ActionBarDrawerToggle toggle;  // Button to toggle drawer
     NavigationView navigationView;  // Navigation items in drawer
-    LinearLayout container_autocomplete;  // Container for the autocomplete feature
+    FragmentContainerView container_autocomplete;  // Container for the autocomplete feature
     private GoogleMap mMap;  // Map object for displaying Google Map
     private Place place;  // Object to store selected place details
 
@@ -176,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .addOnFailureListener(e -> Log.w("Firestore", "Error writing user", e)); // Log failure
         }
     }
+
     /**
      * Initialize UI components.
      */
@@ -185,8 +187,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mBottomNavigationView = findViewById(R.id.bottom_nav); // Find the BottomNavigationView and assign it to 'mBottomNavigationView' variable
         navigationView = findViewById(R.id.drawer_nav); // Find the NavigationView and assign it to 'navigationView' variable
-        container_autocomplete = toolbar.findViewById(R.id.container_autocomplete); // Find the 'container_autocomplete' view within the toolbar and assign it
+        container_autocomplete = toolbar.findViewById(R.id.autocomplete); // Find the 'container_autocomplete' view within the toolbar and assign it
+        // Bonne utilisation
+        FragmentContainerView myFragmentContainer = (FragmentContainerView) findViewById(R.id.autocomplete);
+
+
     }
+
     /**
      * Set up Navigation Drawer.
      */
@@ -196,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle); // Attach the toggle object as a DrawerListener to the DrawerLayout
         toggle.syncState(); // Synchronize the indicator with the state of the linked DrawerLayout
     }
+
     /**
      * Set up Navigation View.
      */
@@ -261,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         transaction.replace(R.id.nav_host_fragment, fragment);
         transaction.commit();
     }
+
     // Handle the item selection in the BottomNavigationView
     public final NavigationBarView.OnItemSelectedListener navy = item -> {
         final int mapview = R.id.mapView;
@@ -318,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //Log out the user and navigate back to LoginActivity.
-        private void logOut() {
+    private void logOut() {
         FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

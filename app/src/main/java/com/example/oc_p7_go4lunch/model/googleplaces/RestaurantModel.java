@@ -69,13 +69,19 @@ public class RestaurantModel implements Serializable {
     @Expose
     private String vicinity;
 
+    @SerializedName("latitude")
+    @Expose
+    private double latitude;
+
+    @SerializedName("longitude")
+    @Expose
+    private double longitude;
+
     // Fields for additional properties
     private Photo photo;
     private String photoReference;
     private String photoUrl;
     private float distanceFromCurrentLocation;
-    private double latitude;
-    private double longitude;
     private int distance;
 
 
