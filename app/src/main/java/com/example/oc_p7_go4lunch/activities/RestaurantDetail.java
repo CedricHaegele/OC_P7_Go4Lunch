@@ -64,7 +64,6 @@ public class RestaurantDetail extends AppCompatActivity {
         @Override
         public void onUserAssociated() {
         }
-
         @Override
         public void onUserDisassociated() {
 

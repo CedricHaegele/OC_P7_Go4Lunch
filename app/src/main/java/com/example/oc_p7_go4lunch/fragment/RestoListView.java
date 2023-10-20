@@ -8,23 +8,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.adapter.RestoListAdapter;
+
 import com.example.oc_p7_go4lunch.model.googleplaces.Places;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
+import com.example.oc_p7_go4lunch.viewmodel.RestoListViewModel;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -33,11 +35,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -46,14 +45,12 @@ import retrofit2.Response;
 
 
 public class RestoListView extends Fragment {
+    private RestoListViewModel viewModel;
     RecyclerView recyclerView;
     List<RestaurantModel> placesList = new ArrayList<>();
     RestoListAdapter restoListAdapter;
-    LinearLayout container_autocomplete;
-    Toolbar toolbar;
     // The entry point to the Places API.
-    private PlacesClient placesClient;
-    private Context mContext; // Variable pour stocker le contexte
+    private Context mContext;
     GoogleMap map;
     List<RestaurantModel> restaurantList = new ArrayList<>();
     // A default location (Sydney, Australia) and default zoom to use when location permission is
@@ -67,11 +64,13 @@ public class RestoListView extends Fragment {
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
     private Location lastKnownLocation;
+
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext = context;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -80,12 +79,24 @@ public class RestoListView extends Fragment {
         restoListAdapter = new RestoListAdapter(new ArrayList<>(), mContext);
         recyclerView.setAdapter(restoListAdapter);
         this.configureOnClickRecyclerView();
+
+        viewModel = new ViewModelProvider(this).get(RestoListViewModel.class);
+
         // Construct a FusedLocationProviderClient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         getLocationPermission();
         getDeviceLocation();
+
+        viewModel.getRestaurants().observe(getViewLifecycleOwner(), new Observer<List<RestaurantModel>>() {
+            @Override
+            public void onChanged(List<RestaurantModel> restaurantModels) {
+                restoListAdapter.updateData(restaurantModels);
+            }
+        });
+
         return view;
     }
+
     /**
      * Get the best and most recent location of the device, which may be null in rare
      * cases when a location is not available.
@@ -98,7 +109,6 @@ public class RestoListView extends Fragment {
                     if (task.isSuccessful()) {
                         lastKnownLocation = task.getResult();
                         if (lastKnownLocation != null) {
-                            LatLng location = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                             makeRequest(lastKnownLocation);
                         }
                     } else {
@@ -112,8 +122,10 @@ public class RestoListView extends Fragment {
                         PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
             }
         } catch (SecurityException e) {
+            throw new RuntimeException(e);
         }
     }
+
     private void makeRequest(Location location) {
         if (isAdded()) {
             String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
@@ -125,10 +137,8 @@ public class RestoListView extends Fragment {
             GooglePlacesApi googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
             googlePlacesApi.getAllPlaces(url).enqueue(new Callback<Places>() {
                 @Override
-                public void onResponse(Call<Places> call, Response<Places> response) {
+                public void onResponse(@NonNull Call<Places> call, @NonNull Response<Places> response) {
                     if (isAdded()) {
-                        Gson gson = new Gson();
-                        String json = gson.toJson(response.body());
                         if (response.errorBody() == null) {
                             if (response.body() != null) {
                                 restaurantList = response.body().getPlacesList();
@@ -139,7 +149,7 @@ public class RestoListView extends Fragment {
                                     Location currentLocation = new Location("current");
                                     currentLocation.setLatitude(lastKnownLocation.getLatitude());
                                     currentLocation.setLongitude(lastKnownLocation.getLongitude());
-                                    Collections.sort(restaurantList, (r1, r2) -> {
+                                    restaurantList.sort((r1, r2) -> {
                                         Location loc1 = new Location("");
                                         loc1.setLatitude(r1.getLatitude());
                                         loc1.setLongitude(r1.getLongitude());
@@ -162,6 +172,7 @@ public class RestoListView extends Fragment {
                         }
                     }
                 }
+
                 private void calculateDistances(List<RestaurantModel> restaurantList, Location lastKnownLocation) {
                     for (RestaurantModel restaurant : restaurantList) {
                         double placeLatitude = restaurant.getGeometry().getLocation().getLat();
@@ -172,15 +183,14 @@ public class RestoListView extends Fragment {
                         restaurant.setDistanceFromCurrentLocation(distance);
                     }
                 }
-                @Override
-                public void onFailure(Call<Places> call, Throwable t) {
-                    if (isAdded()) {
 
-                    }
+                @Override
+                public void onFailure(@NonNull Call<Places> call, @NonNull Throwable t) {
                 }
             });
         }
     }
+
     /**
      * Request location permission, so that we can get the location of the
      * device. The result of the permission request is handled by a callback,
@@ -197,6 +207,7 @@ public class RestoListView extends Fragment {
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
+
     /**
      * callback to handle the result of the permission request
      */
@@ -213,6 +224,7 @@ public class RestoListView extends Fragment {
             }
         }
     }
+
     // Configure item click on RecyclerView
     private void configureOnClickRecyclerView() {
         ItemClickSupport.addTo(recyclerView, R.layout.fragment_resto_list)

@@ -8,13 +8,16 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.adapter.WorkmatesListAdapter;
+import com.example.oc_p7_go4lunch.databinding.FragmentWorkmatesListBinding;
 import com.example.oc_p7_go4lunch.helper.FirebaseHelper;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
+import com.example.oc_p7_go4lunch.viewmodel.WorkmatesListViewModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -24,48 +27,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorkmatesList extends Fragment {
-
-    public RecyclerView recyclerView;
     private WorkmatesListAdapter workmatesListAdapter;
-    public List<UserModel> usersList = new ArrayList<>();
+    private FragmentWorkmatesListBinding binding;
+    private WorkmatesListViewModel viewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_workmates_list, container, false);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.workmatesList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        initializeList();
+        binding = FragmentWorkmatesListBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
+
+        // Initialize ViewModel
+        viewModel = new ViewModelProvider(this).get(WorkmatesListViewModel.class);
+
+        // Observe changes in the users list
+        viewModel.getUsersList().observe(getViewLifecycleOwner(), usersList -> {
+            initializeList(usersList);
+        });
+
+
+        binding.workmatesList.setLayoutManager(new LinearLayoutManager(requireContext()));
+
         return view;
     }
 
-    public void initializeList() {
-        FirebaseHelper.getUsersDocuments().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
-                    UserModel userModel = queryDocumentSnapshot.toObject(UserModel.class);
-                    // Assuming UserModel has a property called chosenRestaurantName
-                    String restaurantName = userModel.getChosenRestaurantName();
-                    Log.d("WorkmatesList", "User: " + userModel.getName() + ", Chosen Restaurant: " + restaurantName);
+    public void initializeList(List<UserModel> usersList) {
 
-                    usersList.add(userModel);
-                }
-                workmatesListAdapter = new WorkmatesListAdapter(usersList);
-                recyclerView.setAdapter(workmatesListAdapter);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("ERROR ", e.getMessage());
-            }
-        });
+        workmatesListAdapter = new WorkmatesListAdapter(usersList);
+        binding.workmatesList.setAdapter(workmatesListAdapter);
     }
 
-    public void addUser(UserModel user) {
-        usersList.add(user);
-        workmatesListAdapter.notifyDataSetChanged();
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
+
 }
+
+

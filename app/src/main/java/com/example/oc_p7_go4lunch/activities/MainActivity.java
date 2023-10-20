@@ -30,6 +30,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
+import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.SettingFragment;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Firebase authentication
     private FirebaseAuth mAuth;  // Firebase authentication object
     private FirebaseAuth.AuthStateListener mAuthListener;  // Listener for auth state changes
+    ActivityMainBinding binding;
 
     public MainActivity() {
 
@@ -77,12 +79,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Set the application's theme
         setTheme(R.style.AppTheme);
-
-        // Perform initial setup
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        initUIComponents();
 
         // Initialize Places API if it's not already initialized
         if (!Places.isInitialized()) {
@@ -208,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mBottomNavigationView = findViewById(R.id.bottom_nav); // Find the BottomNavigationView and assign it to 'mBottomNavigationView' variable
         navigationView = findViewById(R.id.drawer_nav); // Find the NavigationView and assign it to 'navigationView' variable
         container_autocomplete = toolbar.findViewById(R.id.autocomplete); // Find the 'container_autocomplete' view within the toolbar and assign it
-        // Bonne utilisation
+
         FragmentContainerView myFragmentContainer = (FragmentContainerView) findViewById(R.id.autocomplete);
 
 

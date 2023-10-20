@@ -52,6 +52,7 @@
             android:exported="false"
             android:label="@string/title_activity_settings" />
 
+
         <!-- Meta-data Section: This section is for declaring meta-data for the app. -->
 
         <!-- Google Maps API Key -->
