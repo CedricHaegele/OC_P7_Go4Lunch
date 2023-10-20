@@ -3,6 +3,9 @@ package com.example.oc_p7_go4lunch.activities;
 // Import statements
 // Android-specific imports
 
+import static android.app.PendingIntent.getActivity;
+
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -11,7 +14,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,6 +35,7 @@ import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.SettingFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
+import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -68,6 +71,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseAuth mAuth;  // Firebase authentication object
     private FirebaseAuth.AuthStateListener mAuthListener;  // Listener for auth state changes
 
+    public MainActivity() {
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Set the application's theme
@@ -96,6 +103,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Set a listener that triggers when a place is selected
             autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
 
+
+                @Override
+                public void onError(@NonNull Status status) {
+
+                }
+
                 @Override
                 public void onPlaceSelected(@NonNull Place selectedPlace) {
                     // Log the details of the selected place for debugging purposes
@@ -104,17 +117,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Get the latitude and longitude of the selected place
                     LatLng selectedLatLng = selectedPlace.getLatLng();
 
+                    RestaurantModel selectedRestaurant = new RestaurantModel();
+                    selectedRestaurant.setName(selectedPlace.getName());
+                    if (selectedLatLng != null) {
+                        selectedRestaurant.setLatitude(selectedLatLng.latitude);
+                        selectedRestaurant.setLongitude(selectedLatLng.longitude);
+                    }
+
+                    Intent detailIntent = new Intent(MainActivity.this, RestaurantDetail.class);
+                    detailIntent.putExtra("Restaurant", selectedRestaurant);
+                    startActivity(detailIntent);
+
                     // If mMap and selectedLatLng are not null, move the camera to the selected LatLng
                     if (mMap != null && selectedLatLng != null) {
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedLatLng, 18.0f));
                     }
                 }
 
-                @Override
-                public void onError(@NonNull Status status) {
-                    // Log any errors that occur with place selection
-                    Log.d("Autocomplete", "An error occurred: " + status);
-                }
+
             });
         }
 // Retrieve data passed via Intent

@@ -334,7 +334,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$PROJECT_DIR$/../../../../../../flutter/icons/material/materialicons/check_circle_outline/baseline_check_circle_outline_24.xml" />
+                                      <entry key="url" value="file:/$PROJECT_DIR$/../../../../../../flutter/icons/material/materialicons/do_not_disturb/baseline_do_not_disturb_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -344,8 +344,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="615959" />
-                            <entry key="outputName" value="baseline_check_circle_outline_24" />
+                            <entry key="color" value="8a3d3d" />
+                            <entry key="outputName" value="not_found" />
                             <entry key="sourceFile" value="C:\Users\zikce\OneDrive\Documents\ProjectsAndroid\OC_P7_Go4Lunch" />
                           </map>
                         </option>

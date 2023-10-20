@@ -25,6 +25,10 @@ public class RestaurantModel implements Serializable {
     @Expose
     private String iconMaskBaseUri;
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @SerializedName("name")
     @Expose
     private String name;
@@ -68,6 +72,10 @@ public class RestaurantModel implements Serializable {
     @SerializedName("vicinity")
     @Expose
     private String vicinity;
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
 
     @SerializedName("latitude")
     @Expose

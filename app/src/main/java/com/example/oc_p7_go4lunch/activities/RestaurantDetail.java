@@ -118,28 +118,38 @@ public class RestaurantDetail extends AppCompatActivity {
         // Fetch additional restaurant details
         fetchRestaurantDetails();
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(firebaseUser.getUid())
-                .collection("Restaurants")
-                .document(restaurant.getPlaceId())
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                        @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen failed.", e);
-                            return;
-                        }
-                        if (snapshot != null && snapshot.exists()) {
-                            if (snapshot.contains("isButtonChecked")) {
-                                isButtonChecked = snapshot.getBoolean("isButtonChecked");
-                                updateButtonUI();
-                            }
-                        }
-                    }
-                });
+        Intent intent = getIntent();
+        String restaurantName = intent.getStringExtra("Restaurant");
 
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null && restaurant != null) {
+            String userId = firebaseUser.getUid();
+            String placeId = restaurant.getPlaceId();
+
+            if (userId != null && placeId != null) {
+                FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(firebaseUser.getUid())
+                        .collection("Restaurants")
+                        .document(restaurant.getPlaceId())
+                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                                @Nullable FirebaseFirestoreException e) {
+                                if (e != null) {
+                                    Log.w(TAG, "Listen failed.", e);
+                                    return;
+                                }
+                                if (snapshot != null && snapshot.exists()) {
+                                    if (snapshot.contains("isButtonChecked")) {
+                                        isButtonChecked = snapshot.getBoolean("isButtonChecked");
+                                        updateButtonUI();
+                                    }
+                                }
+                            }
+                        });
+            }
+        }
     }
 
     private void initUI() {
@@ -281,18 +291,20 @@ public class RestaurantDetail extends AppCompatActivity {
     }
 
     private void updateButtonStateInFirestore(boolean isButtonChecked) {
-        DocumentReference restaurantDocRef = FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(firebaseUser.getUid())
-                .collection("Restaurants")
-                .document(restaurant.getPlaceId());  // Utilisez l'ID du restaurant comme clé du document
+        if (firebaseUser != null && firebaseUser.getUid() != null && restaurant != null && restaurant.getPlaceId() != null) {
+            DocumentReference restaurantDocRef = FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(firebaseUser.getUid())
+                    .collection("Restaurants")
+                    .document(restaurant.getPlaceId());
 
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("isButtonChecked", isButtonChecked);
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("isButtonChecked", isButtonChecked);
 
-        restaurantDocRef.set(updates)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Button state successfully updated!"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error updating button state", e));
+            restaurantDocRef.set(updates)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Button state successfully updated!"))
+                    .addOnFailureListener(e -> Log.w(TAG, "Error updating button state", e));
+        }
     }
 
     private void updateUsersWhoClicked(boolean isButtonClicked) {
@@ -394,9 +406,17 @@ public class RestaurantDetail extends AppCompatActivity {
         if (restaurant != null) {
             Detail.setText(restaurant.getName());
             Adress.setText(restaurant.getVicinity());
-            ratingBar.setNumStars(restaurant.getRating().intValue());
+
+
+            if (restaurant.getRating() != null) {
+                ratingBar.setNumStars(restaurant.getRating().intValue());
+            } else {
+
+                ratingBar.setNumStars(0);
+            }
         }
     }
+
 
     // Display place data on the UI
     private void displayPlaceData(Place place) {
@@ -411,7 +431,7 @@ public class RestaurantDetail extends AppCompatActivity {
     private void loadImage(String photoUrl) {
         Glide.with(this)
                 .load(photoUrl)
-                .error(R.drawable.ic_hide_image)
+                .error(R.drawable.not_found)
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

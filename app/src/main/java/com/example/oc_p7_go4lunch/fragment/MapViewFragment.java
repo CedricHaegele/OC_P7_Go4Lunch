@@ -1,6 +1,7 @@
 package com.example.oc_p7_go4lunch.fragment;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.oc_p7_go4lunch.MapViewModelFactory;
 import com.example.oc_p7_go4lunch.R;
+import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.model.googleplaces.ApiProvider;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.viewmodel.MapViewModel;
@@ -28,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
@@ -81,10 +84,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                     YOUR_REQUEST_CODE
             );
         }
-
-        // Observe last known location
-        mapViewModel.getLastLocation().observe(getViewLifecycleOwner(), this::updateCameraPosition);
-
         // Observe nearby restaurants
         mapViewModel.getNearbyRestaurants().observe(getViewLifecycleOwner(), this::updateMarkers);
     }
@@ -115,12 +114,17 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private void updateMarkers(List<RestaurantModel> restaurants) {
         if (restaurants != null && mMap != null) {
             mMap.clear();
+            Log.d("MapViewFragment", "Updating markers");
             for (RestaurantModel restaurant : restaurants) {
                 LatLng latLng = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
+                Log.d("MapViewFragment", "Adding marker for " + restaurant.getName());
                 mMap.addMarker(new MarkerOptions().position(latLng).title(restaurant.getName()));
             }
+        } else {
+            Log.d("MapViewFragment", "Either restaurants or mMap is null");
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -138,6 +142,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
+
         // Initialize GoogleMap instance
         mMap = googleMap;
 
@@ -149,15 +154,37 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
         // Observe last known location to update map camera and fetch nearby restaurants
         mapViewModel.getLastLocation().observe(getViewLifecycleOwner(), location -> {
+
             updateCameraPosition(location);
+
             mapViewModel.fetchNearbyRestaurants(location.getLatitude(), location.getLongitude());
             mapViewModel.getNearbyRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
                 if (restaurants != null && !restaurants.isEmpty()) {
-                    RestaurantModel restaurant = restaurants.get(0);
-                    LatLng latLng = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(latLng).title(restaurant.getName()));
+
+                    for (RestaurantModel restaurant : restaurants) {
+                        restaurant.extractCoordinates();
+                        LatLng latLng = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
+
+                        Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(restaurant.getName()));
+                        marker.setTag(restaurant);
+                    }
                 }
             });
+        });
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                RestaurantModel clickedRestaurant = (RestaurantModel) marker.getTag();
+                if (clickedRestaurant != null) {
+                    Intent detailIntent = new Intent(getActivity(), RestaurantDetail.class);
+                    detailIntent.putExtra("Restaurant", clickedRestaurant);
+                    startActivity(detailIntent);
+                } else {
+                    Toast.makeText(getContext(), "Restaurant data is not available", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
         });
     }
 }
