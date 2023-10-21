@@ -25,15 +25,37 @@
             app:titleMarginStart="40dp"
             app:title="I'm Hungry !!!">
 
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/autocomplete"
-                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:backgroundTint="#FF3300"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:theme="@style/CustomAutocompleteFragmentStyle"/>
+                android:padding="8dp">
 
+                <EditText
+                    android:id="@+id/searchEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/searchImageView"
+                    android:layout_toLeftOf="@+id/searchImageView"
+                    android:hint="Rechercher un lieu"
+                    android:backgroundTint="#FF3300"
+                    android:visibility="gone"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/place_suggestion_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible" />
+
+                <ImageView
+                    android:id="@+id/searchImageView"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/ic_search"/>
+
+            </RelativeLayout>
         </androidx.appcompat.widget.Toolbar>
 
         <FrameLayout

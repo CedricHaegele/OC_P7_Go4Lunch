@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,9 +26,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.BuildConfig;
+import com.example.oc_p7_go4lunch.PlaceSuggestion;
+import com.example.oc_p7_go4lunch.PlaceSuggestionAdapter;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
@@ -35,14 +42,20 @@ import com.example.oc_p7_go4lunch.fragment.SettingFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -52,7 +65,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 // Main Activity class
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -62,10 +77,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     static DrawerLayout drawerLayout;  // Drawer for side navigation
     ActionBarDrawerToggle toggle;  // Button to toggle drawer
     NavigationView navigationView;  // Navigation items in drawer
-    FragmentContainerView container_autocomplete;  // Container for the autocomplete feature
     private GoogleMap mMap;  // Map object for displaying Google Map
     private Place place;  // Object to store selected place details
     private FragmentContainerView myFragmentContainer;
+
+    private RecyclerView placeSuggestionRecyclerView;
+    private PlaceSuggestionAdapter placeSuggestionAdapter;
+    private List<PlaceSuggestion> placeSuggestionsList = new ArrayList<>();
 
     // Firebase authentication
     private FirebaseAuth mAuth;  // Firebase authentication object
@@ -83,100 +101,81 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        EditText searchEditText = binding.searchEditText;
+        ImageView searchImageView = binding.searchImageView;
+
+        searchImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (searchEditText.getVisibility() == View.GONE) {
+                    searchEditText.setVisibility(View.VISIBLE);
+                } else {
+                    searchEditText.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        placeSuggestionRecyclerView = binding.placeSuggestionRecyclerView;
+        placeSuggestionAdapter = new PlaceSuggestionAdapter(placeSuggestionsList);
+        placeSuggestionRecyclerView.setAdapter(placeSuggestionAdapter);
+        placeSuggestionRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                fetchAutocompletePlaces(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
         // Initialize Places API if it's not already initialized
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
         }
-
-// Initialize the AutocompleteSupportFragment for place suggestions
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete);
-
-// Check if the autocompleteFragment is not null
-        if (autocompleteFragment != null) {
-            // Set the fields we want to get for each place suggestion
-            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
-
-            // Set a listener that triggers when a place is selected
-            autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-
-
-                @Override
-                public void onError(@NonNull Status status) {
-
-                }
-
-                @Override
-                public void onPlaceSelected(@NonNull Place selectedPlace) {
-                    // Log the details of the selected place for debugging purposes
-                    Log.d("Autocomplete", "Place selected: " + selectedPlace.getName() + ", LatLng: " + selectedPlace.getLatLng());
-
-                    // Get the latitude and longitude of the selected place
-                    LatLng selectedLatLng = selectedPlace.getLatLng();
-
-                    RestaurantModel selectedRestaurant = new RestaurantModel();
-                    selectedRestaurant.setName(selectedPlace.getName());
-                    if (selectedLatLng != null) {
-                        selectedRestaurant.setLatitude(selectedLatLng.latitude);
-                        selectedRestaurant.setLongitude(selectedLatLng.longitude);
-                    }
-
-                    Intent detailIntent = new Intent(MainActivity.this, RestaurantDetail.class);
-                    detailIntent.putExtra("Restaurant", selectedRestaurant);
-                    startActivity(detailIntent);
-
-                    // If mMap and selectedLatLng are not null, move the camera to the selected LatLng
-                    if (mMap != null && selectedLatLng != null) {
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedLatLng, 18.0f));
-                    }
-                }
-
-
-            });
-        }
-// Retrieve data passed via Intent
-        Intent intent = getIntent();
-        FirebaseUser firebaseUser = (FirebaseUser) intent.getSerializableExtra("user");
-        Uri photoProfile = intent.getParcelableExtra("photo");
-
-// Initialize Firebase SDK
-        FirebaseApp.initializeApp(this);
-
-// Initialize UI components
-        initUIComponents();
-
-// Configure the Navigation Drawer and Navigation View
+        saveUserToFirestore();
         setUpNavDrawer();
+        initUIComponents();
         setUpNavView();
 
-// Load the initial fragment into view
-        changeFragment(new MapViewFragment());
-
-// Set listener for the bottom navigation view
         mBottomNavigationView.setOnItemSelectedListener(navy);
-
-// Set listener for the drawer navigation view
         navigationView.setNavigationItemSelectedListener(this);
 
-// Initialize Firebase Authentication
-        mAuth = FirebaseAuth.getInstance();
-
-// Listen for changes in the authentication state
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                } else {
-                    // User is signed out
-                    Log.d("Auth", "User is signed out");
-                }
-            }
-        };
-
-// Save the user to Firestore database
-        saveUserToFirestore();
+        changeFragment(new MapViewFragment());
+        getSupportActionBar().setTitle("I'm Hungry !");
     }
+
+    private void fetchAutocompletePlaces(String query) {
+
+        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                .setSessionToken(token)
+                .setQuery(query)
+                .build();
+
+        PlacesClient placesClient = Places.createClient(this);
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
+            placeSuggestionsList.clear();
+            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+                Log.i("PlacesAPI", prediction.getFullText(null).toString());
+                placeSuggestionsList.add(new PlaceSuggestion(prediction.getFullText(null).toString()));
+            }
+            placeSuggestionAdapter.notifyDataSetChanged();
+        }).addOnFailureListener((exception) -> {
+            if (exception instanceof ApiException) {
+                ApiException apiException = (ApiException) exception;
+                Log.e("PlacesAPI", "Place not found: " + apiException.getStatusCode());
+            }
+        });
+    }
+
 
     private void saveUserToFirestore() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser(); // Get the current user from Firebase
@@ -205,7 +204,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mBottomNavigationView = binding.bottomNav; // Find the BottomNavigationView and assign it to 'mBottomNavigationView' variable
         navigationView = binding.drawerNav; // Find the NavigationView and assign it to 'navigationView' variable
-        container_autocomplete = binding.autocomplete; // Find the 'container_autocomplete' view within the toolbar and assign it
 
     }
 
@@ -259,7 +257,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             .into(headerBinding.photoUser);
                 }
             }
-
             // Add user to Firestore database
             String email = firebaseUser.getEmail();
             UserModel newUser = new UserModel(email, null, null);
@@ -298,20 +295,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case mapview:
                 changeFragment(new MapViewFragment());
-                container_autocomplete.setVisibility(View.VISIBLE);
-                container_autocomplete.setBackgroundColor(Color.RED);
                 getSupportActionBar().setTitle("I'm Hungry !");
                 break;
 
             case listView:
                 changeFragment(new RestoListView());
-                container_autocomplete.setVisibility(View.INVISIBLE);
                 getSupportActionBar().setTitle("I'm Hungry !");
                 break;
 
             case workmates:
                 changeFragment(new WorkmatesList());
-                container_autocomplete.setVisibility(View.INVISIBLE);
                 getSupportActionBar().setTitle("Workmates");
                 break;
         }
