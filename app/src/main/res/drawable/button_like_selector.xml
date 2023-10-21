@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Lorsque le bouton est pressé -->
+    <item android:drawable="@drawable/baseline_star_yes" android:state_pressed="true"/>
+    <!-- L'état normal du bouton -->
+    <item android:drawable="@drawable/ic_baseline_star_24"/>
+</selector>

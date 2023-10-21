@@ -39,7 +39,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/detail_name"
+                    android:id="@+id/restaurantName"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="10dp"
@@ -51,7 +51,7 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/detail_address"
+                android:id="@+id/restaurantAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
@@ -65,8 +65,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:numStars="5"
-                android:progressTint="@color/teal_700"
-                android:rating="4" />
+                android:stepSize="0.1"
+                android:progressTint="#339143"/>
 
 
         </LinearLayout>
@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:layout_weight="1"
-                android:drawableTop="@drawable/ic_baseline_star_24"
+                android:drawableTop="@drawable/button_like_selector"
                 android:text="@string/like"
                 android:textColor="#E61000" />
 

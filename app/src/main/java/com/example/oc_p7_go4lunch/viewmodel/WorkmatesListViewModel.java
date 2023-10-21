@@ -1,12 +1,10 @@
 package com.example.oc_p7_go4lunch.viewmodel;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.oc_p7_go4lunch.helper.FirebaseHelper;
+import com.example.oc_p7_go4lunch.helper.FirestoreHelper;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -27,7 +25,7 @@ public class WorkmatesListViewModel extends ViewModel {
 
 
     private void loadUsers() {
-        FirebaseHelper.getUsersDocuments().addOnSuccessListener(queryDocumentSnapshots -> {
+        FirestoreHelper.getUsersDocuments().addOnSuccessListener(queryDocumentSnapshots -> {
             List<UserModel> tempList = new ArrayList<>();
             for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
                 UserModel userModel = queryDocumentSnapshot.toObject(UserModel.class);

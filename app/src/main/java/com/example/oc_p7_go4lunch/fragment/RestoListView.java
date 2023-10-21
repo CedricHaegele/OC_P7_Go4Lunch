@@ -23,6 +23,7 @@ import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.adapter.RestoListAdapter;
 
+import com.example.oc_p7_go4lunch.databinding.FragmentRestoListBinding;
 import com.example.oc_p7_go4lunch.model.googleplaces.Places;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
@@ -55,6 +56,7 @@ public class RestoListView extends Fragment {
     List<RestaurantModel> restaurantList = new ArrayList<>();
     // A default location (Sydney, Australia) and default zoom to use when location permission is
     // not granted.
+    private FragmentRestoListBinding binding;
     private boolean locationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
@@ -74,8 +76,11 @@ public class RestoListView extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_resto_list, container, false);
-        recyclerView = view.findViewById(R.id.list_restos);
+        binding = FragmentRestoListBinding.inflate(inflater,container,false);
+        View view = binding.getRoot();
+
+        recyclerView = binding.listRestos;
+
         restoListAdapter = new RestoListAdapter(new ArrayList<>(), mContext);
         recyclerView.setAdapter(restoListAdapter);
         this.configureOnClickRecyclerView();

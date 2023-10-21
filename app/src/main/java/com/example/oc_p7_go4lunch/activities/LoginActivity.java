@@ -5,10 +5,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.helper.FirebaseHelper;
+import com.example.oc_p7_go4lunch.helper.FirestoreHelper;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
@@ -33,12 +34,19 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Setting the background drawable for the activity
         getWindow().setBackgroundDrawableResource(R.drawable.lunch_time);
 
-        // Initialize the sign-in process
-        init();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+
+            Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(mainActivity);
+            finish();
+        } else {
+
+            init();
+        }
     }
 
     // Method to initialize the sign-in process
@@ -80,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
             UserModel user = new UserModel(firebaseUser.getEmail(), firebaseUser.getDisplayName(), String.valueOf(firebaseUser.getPhotoUrl()));
 
             // Check if user exists in Firestore
-            FirebaseHelper.getUsersCollection().document(firebaseUser.getUid()).get()
+            FirestoreHelper.getUsersCollection().document(firebaseUser.getUid()).get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
@@ -90,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 // Create new user
                                 Log.d("Firestore", "Creating new user");
-                                FirebaseHelper.createUser(firebaseUser.getUid(), user);
+                                FirestoreHelper.createUser(firebaseUser.getUid(), user);
                             }
                         } else {
                             Log.d("Firestore", "Failed to get user", task.getException());
@@ -109,5 +117,6 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         }
+
     }
 }

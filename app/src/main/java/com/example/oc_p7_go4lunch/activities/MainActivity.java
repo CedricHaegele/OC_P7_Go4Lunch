@@ -1,8 +1,5 @@
 package com.example.oc_p7_go4lunch.activities;
 
-// Import statements
-// Android-specific imports
-
 import static android.app.PendingIntent.getActivity;
 
 import android.content.Context;
@@ -31,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
+import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.SettingFragment;
@@ -67,11 +65,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FragmentContainerView container_autocomplete;  // Container for the autocomplete feature
     private GoogleMap mMap;  // Map object for displaying Google Map
     private Place place;  // Object to store selected place details
+    private FragmentContainerView myFragmentContainer;
 
     // Firebase authentication
     private FirebaseAuth mAuth;  // Firebase authentication object
     private FirebaseAuth.AuthStateListener mAuthListener;  // Listener for auth state changes
-    ActivityMainBinding binding;
+    private ActivityMainBinding binding;
 
     public MainActivity() {
 
@@ -84,8 +83,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        initUIComponents();
-
         // Initialize Places API if it's not already initialized
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
@@ -93,9 +90,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 // Initialize the AutocompleteSupportFragment for place suggestions
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete);
-
-// Initialize the SupportMapFragment to display maps
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
 // Check if the autocompleteFragment is not null
         if (autocompleteFragment != null) {
@@ -204,15 +198,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Initialize UI components.
      */
     private void initUIComponents() {
-        toolbar = findViewById(R.id.toolbar); // Find the Toolbar view and assign it to 'toolbar' variable
+
+
+        toolbar = binding.toolbar; // Find the Toolbar view and assign it to 'toolbar' variable
         setSupportActionBar(toolbar); // Set the toolbar as the app bar
 
-        mBottomNavigationView = findViewById(R.id.bottom_nav); // Find the BottomNavigationView and assign it to 'mBottomNavigationView' variable
-        navigationView = findViewById(R.id.drawer_nav); // Find the NavigationView and assign it to 'navigationView' variable
-        container_autocomplete = toolbar.findViewById(R.id.autocomplete); // Find the 'container_autocomplete' view within the toolbar and assign it
-
-        FragmentContainerView myFragmentContainer = (FragmentContainerView) findViewById(R.id.autocomplete);
-
+        mBottomNavigationView = binding.bottomNav; // Find the BottomNavigationView and assign it to 'mBottomNavigationView' variable
+        navigationView = binding.drawerNav; // Find the NavigationView and assign it to 'navigationView' variable
+        container_autocomplete = binding.autocomplete; // Find the 'container_autocomplete' view within the toolbar and assign it
 
     }
 
@@ -220,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Set up Navigation Drawer.
      */
     public void setUpNavDrawer() {
-        drawerLayout = findViewById(R.id.drawer); // Locate the DrawerLayout and assign it to the 'drawerLayout' variable
+        drawerLayout = binding.drawer; // Locate the DrawerLayout and assign it to the 'drawerLayout' variable
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close); // Create an ActionBarDrawerToggle to handle opening and closing of the navigation drawer
         drawerLayout.addDrawerListener(toggle); // Attach the toggle object as a DrawerListener to the DrawerLayout
         toggle.syncState(); // Synchronize the indicator with the state of the linked DrawerLayout
@@ -230,11 +223,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Set up Navigation View.
      */
     public void setUpNavView() {
-        navigationView = findViewById(R.id.drawer_nav); // Locate the NavigationView and assign it to the 'navigationView' variable
-        View headerView = navigationView.getHeaderView(0); // Get the header view of the NavigationView
-        TextView name = headerView.findViewById(R.id.Name); // Find the TextView for name
-        TextView mail = headerView.findViewById(R.id.Mail); // Find the TextView for mail
-        ImageView photo = headerView.findViewById(R.id.photo_user); // Find the ImageView for photo
+
+        HeaderNavigationDrawerBinding headerBinding = HeaderNavigationDrawerBinding.bind(binding.drawerNav.getHeaderView(0));
+        headerBinding.Name.setText("Ton nom"); // Find the TextView for name
+        headerBinding.Mail.setText("Ton email"); // Find the TextView for mail
+
+        Glide.with(this)
+                .load("URL_DE_TON_IMAGE")
+                .into(headerBinding.photoUser); // Find the ImageView for photo
 
 
         // Initialize FirebaseUser object by getting the current user
@@ -243,24 +239,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 // Check if the user is logged in
         if (firebaseUser != null) {
             // Update UI with user's information
-            name.setText(firebaseUser.getDisplayName());
-            mail.setText(firebaseUser.getEmail());
+            headerBinding.Name.setText(firebaseUser.getDisplayName());
+            headerBinding.Mail.setText(firebaseUser.getEmail());
 
             // Get user's profile photo URL
             Uri photoUrl = firebaseUser.getPhotoUrl();
 
             // Check if 'photo' view exists
-            if (photo != null) {
+            if (photoUrl != null) {
                 // Load photo if URL exists
                 if (photoUrl != null) {
                     Glide.with(this)
                             .load(photoUrl)
-                            .into(photo);
+                            .into(headerBinding.photoUser);
                 } else {
                     // Load default image if photo URL is null
                     Glide.with(this)
                             .load("URL_IMAGE_PAR_DEFAUT")
-                            .into(photo);
+                            .into(headerBinding.photoUser);
                 }
             }
 

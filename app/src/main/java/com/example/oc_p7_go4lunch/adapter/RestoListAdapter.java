@@ -74,7 +74,13 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         public void bindData(RestaurantModel restaurantModel) {
             binding.name.setText(restaurantModel.getName());
             binding.address.setText(restaurantModel.getVicinity());
-            binding.ratingBar.setRating(restaurantModel.getRating().intValue());
+            Double rating = restaurantModel.getRating();
+            if (rating != null) {
+                binding.ratingBar.setRating(rating.floatValue());
+            } else {
+                binding.ratingBar.setRating(0);
+            }
+
             String photoUrl = restaurantModel.getPhotoUrl(BuildConfig.API_KEY);
 
             if (photoUrl != null) {
