@@ -1,6 +1,8 @@
 package com.example.oc_p7_go4lunch.activities;
 
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -44,6 +46,10 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 
 import java.util.ArrayList;
@@ -74,17 +80,61 @@ public class RestaurantDetail extends AppCompatActivity {
         binding = RestaurantDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         initRecyclerView();
-
-        fetchRestaurantData();
         updateButtonUI();
+        fetchRestaurantData();
         fetchRestaurantDetails();
-
-        //Button add Restaurant
+        firestoreHelper = new FirestoreHelper();
+        String restaurantId = restaurant.getPlaceId();
+        firestoreHelper.getRestaurantDocument(restaurantId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Boolean buttonState = documentSnapshot.getBoolean("isButtonChecked");
+                        Boolean likeState = documentSnapshot.getBoolean("isLiked");
+                        if (buttonState != null) {
+                            isButtonChecked = buttonState;
+                            updateButtonUI();
+                        }
+                        if (likeState != null) {
+                            isLiked = likeState;
+                            updateLikeButtonUI();
+                        }
+                    }
+                });
+//Button add Restaurant
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 isButtonChecked = !isButtonChecked;
                 updateButtonUI();
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser != null) {
+                    String userId = currentUser.getUid();
+                    String restaurantId = restaurant.getPlaceId();
+                    firestoreHelper.getRestaurantDocument(restaurantId).get()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    if (document != null && document.exists()) {
+                                        firestoreHelper.updateRestaurant(restaurantId, isButtonChecked, userId);
+                                        if (isButtonChecked) {
+                                            firestoreHelper.addUserToRestaurantList(restaurantId, userId);
+                                            combinedList.add(new UserModel(userId, "Nom par défaut"));
+                                        } else {
+                                            firestoreHelper.removeUserFromRestaurantList(restaurantId, userId);
+                                            combinedList.remove(new UserModel(userId, "Nom par défaut"));
+                                        }
+                                        userListAdapter.notifyDataSetChanged();
+                                    } else {
+                                        firestoreHelper.addRestaurant(restaurantId, isButtonChecked, userId);
+                                        if (isButtonChecked) {
+                                            firestoreHelper.addUserToRestaurantList(restaurantId, userId);
+                                        }
+                                    }
+                                } else {
+
+                                }
+                            });
+                }
             }
         });
         //Button like Restaurant
@@ -92,10 +142,22 @@ public class RestaurantDetail extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isLiked = !isLiked;
-                if (isLiked) {
-                    binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_yes, 0, 0);
-                } else {
-                    binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_baseline_star_24, 0, 0);
+                updateLikeButtonUI();
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser != null) {
+                    String userId = currentUser.getUid();
+                    String restaurantId = restaurant.getPlaceId();
+                    firestoreHelper.getRestaurantDocument(restaurantId).get()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    DocumentSnapshot document = task.getResult();
+                                    if (document != null && document.exists()) {
+                                        firestoreHelper.updateRestaurantLike(restaurantId, isLiked, userId); // Mettre à jour le restaurant avec le nouveau statut "isLiked"
+                                    } else {
+                                        firestoreHelper.addRestaurantWithLike(restaurantId, isLiked, userId); // Ajouter un nouveau restaurant avec le statut "isLiked"
+                                    }
+                                }
+                            });
                 }
             }
         });
@@ -119,6 +181,36 @@ public class RestaurantDetail extends AppCompatActivity {
                 }
             }
         });
+
+        DocumentReference docRef = firestoreHelper.getRestaurantDocument(restaurantId);
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+                if (snapshot != null && snapshot.exists()) {
+                    List<String> userIds = (List<String>) snapshot.get("users");
+                    if (userIds != null) {
+                        combinedList.clear();
+                        for (String userId : userIds) {
+                            UserModel userModel = new UserModel(userIds.toString(), "Nom par défaut");
+                            combinedList.add(userModel);
+                        }
+                        userListAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.d(TAG, "Current data: null");
+                    }
+                }
+            };
+        });
+    }
+
+    private void updateLikeButtonUI() {
+        int drawableRes = isLiked ? R.drawable.baseline_star_yes : R.drawable.ic_baseline_star_24;
+        binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, drawableRes, 0, 0);
     }
 
     // Initialize RecyclerView using View Binding
@@ -146,8 +238,6 @@ public class RestaurantDetail extends AppCompatActivity {
                         binding.ratingDetail.setRating(0);
                     }
                 }
-            } else if (callingIntent.hasExtra("Place")) {
-                Place place = callingIntent.getParcelableExtra("Place");
             }
         }
     }
@@ -158,48 +248,49 @@ public class RestaurantDetail extends AppCompatActivity {
     }
 
     private void fetchRestaurantDetails() {
-        GooglePlacesApi googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
-        Call<RestoInformations> call = googlePlacesApi.getRestaurantDetails(
-                restaurant.getPlaceId(),
-                "formatted_phone_number,website,like",
-                apikey
-        );
-        call.enqueue(new Callback<RestoInformations>() {
-            @Override
-            public void onResponse(@NonNull Call<RestoInformations> call, @NonNull Response<RestoInformations> response) {
-                if (response.isSuccessful()) {
-                    RestoInformations details = response.body();
-                    if (details != null) {
-                        if (details.getFormattedPhoneNumber() != null) {
-                            phoneNumber = details.getFormattedPhoneNumber();
-                            binding.callButton.setText(phoneNumber);
+        if (restaurant != null) {
+            GooglePlacesApi googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
+            Call<RestoInformations> call = googlePlacesApi.getRestaurantDetails(
+                    restaurant.getPlaceId(),
+                    "formatted_phone_number,website,like",
+                    apikey
+            );
+            call.enqueue(new Callback<RestoInformations>() {
+                @Override
+                public void onResponse(@NonNull Call<RestoInformations> call, @NonNull Response<RestoInformations> response) {
+                    if (response.isSuccessful()) {
+                        RestoInformations details = response.body();
+                        if (details != null) {
+                            if (details.getFormattedPhoneNumber() != null) {
+                                phoneNumber = details.getFormattedPhoneNumber();
+                                binding.callButton.setText(phoneNumber);
+                            }
+                            if (details.getWebsite() != null) {
+                                websiteUrl = details.getWebsite(); // Met à jour la variable
+                                binding.websiteButton.setText(websiteUrl);
+                            }
                         }
                         if (details.getWebsite() != null) {
-                            websiteUrl = details.getWebsite(); // Met à jour la variable
-                            binding.websiteButton.setText(websiteUrl);
-                        }
-                    }
-                    if (details.getWebsite() != null) {
-                        if (details != null) {
-                            if (details.isLiked()) {
-                                binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_baseline_star_24, 0, 0);
+                            if (details != null) {
+                                if (details.isLiked()) {
+                                    binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_baseline_star_24, 0, 0);
+                                } else {
+                                    binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_yes, 0, 0);
+                                }
                             } else {
-                                binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_yes, 0, 0);
+                                Toast.makeText(RestaurantDetail.this, "Les détails du restaurant ne sont pas disponibles", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(RestaurantDetail.this, "Les détails du restaurant ne sont pas disponibles", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RestaurantDetail.this, "Échec de l'appel API : " + response.message(), Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        Toast.makeText(RestaurantDetail.this, "Échec de l'appel API : " + response.message(), Toast.LENGTH_SHORT).show();
-
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<RestoInformations> call, @NonNull Throwable t) {
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<RestoInformations> call, @NonNull Throwable t) {
+                }
+            });
+        }
     }
 
     // Load image using Glide

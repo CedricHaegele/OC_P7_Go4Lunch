@@ -13,8 +13,11 @@ import java.util.List;
 
 public class WorkmatesListViewModel extends ViewModel {
     private MutableLiveData<List<UserModel>> usersList;
+    private FirestoreHelper firestoreHelper;
+
 
     public WorkmatesListViewModel() {
+        firestoreHelper = new FirestoreHelper();
         usersList = new MutableLiveData<>();
         loadUsers();
     }
@@ -25,16 +28,23 @@ public class WorkmatesListViewModel extends ViewModel {
 
 
     private void loadUsers() {
-        FirestoreHelper.getUsersDocuments().addOnSuccessListener(queryDocumentSnapshots -> {
-            List<UserModel> tempList = new ArrayList<>();
-            for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
-                UserModel userModel = queryDocumentSnapshot.toObject(UserModel.class);
-                tempList.add(userModel);
-            }
-            usersList.setValue(tempList);
-        }).addOnFailureListener(e -> {
-
-        });
+        firestoreHelper.getUsersCollection()
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        // Handle error here
+                        return;
+                    }
+                    if (value != null) {
+                        List<UserModel> tempList = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : value) {
+                            UserModel userModel = doc.toObject(UserModel.class);
+                            tempList.add(userModel);
+                        }
+                        usersList.setValue(tempList);
+                    }
+                });
     }
+
+
 
 }

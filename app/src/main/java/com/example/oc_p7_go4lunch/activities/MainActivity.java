@@ -1,10 +1,6 @@
 package com.example.oc_p7_go4lunch.activities;
 
-import static android.app.PendingIntent.getActivity;
-
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -14,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -41,32 +36,23 @@ import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.SettingFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
-
 import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 // Main Activity class
@@ -80,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private GoogleMap mMap;  // Map object for displaying Google Map
     private Place place;  // Object to store selected place details
     private FragmentContainerView myFragmentContainer;
+
 
     private RecyclerView placeSuggestionRecyclerView;
     private PlaceSuggestionAdapter placeSuggestionAdapter;
@@ -149,6 +136,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         changeFragment(new MapViewFragment());
         getSupportActionBar().setTitle("I'm Hungry !");
+
+
+        placeSuggestionAdapter.setOnItemClickListener(new PlaceSuggestionAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(PlaceSuggestion suggestion) {
+
+                EditText searchEditText = findViewById(R.id.searchEditText);
+                searchEditText.setText(suggestion.getPlaceName());
+
+
+                placeSuggestionRecyclerView.setVisibility(View.GONE);
+            }
+
+        });
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
     }
 
     private void fetchAutocompletePlaces(String query) {

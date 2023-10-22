@@ -24,6 +24,7 @@ import java.util.Objects;
 
 // LoginActivity class extends AppCompatActivity, which is the base class for activities in Android
 public class LoginActivity extends AppCompatActivity {
+    private FirestoreHelper firestoreHelper;
 
     // Variable to handle the sign-in result
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
@@ -34,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        firestoreHelper = new FirestoreHelper();
         // Setting the background drawable for the activity
         getWindow().setBackgroundDrawableResource(R.drawable.lunch_time);
 
@@ -88,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
             UserModel user = new UserModel(firebaseUser.getEmail(), firebaseUser.getDisplayName(), String.valueOf(firebaseUser.getPhotoUrl()));
 
             // Check if user exists in Firestore
-            FirestoreHelper.getUsersCollection().document(firebaseUser.getUid()).get()
+            firestoreHelper.getUsersCollection().document(firebaseUser.getUid()).get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
@@ -98,12 +100,13 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 // Create new user
                                 Log.d("Firestore", "Creating new user");
-                                FirestoreHelper.createUser(firebaseUser.getUid(), user);
+                                firestoreHelper.addUser(firebaseUser.getUid(), firebaseUser.getDisplayName());
                             }
                         } else {
                             Log.d("Firestore", "Failed to get user", task.getException());
                         }
                     });
+
 
             // Navigate to MainActivity
             Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);

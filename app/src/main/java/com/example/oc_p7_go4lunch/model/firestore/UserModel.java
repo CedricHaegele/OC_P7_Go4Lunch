@@ -1,14 +1,21 @@
 package com.example.oc_p7_go4lunch.model.firestore;
+
 import java.io.Serializable;
+import java.util.Objects;
 
 public class UserModel implements Serializable {
-    public String mail, name, photo, restaurantID, chosenRestaurantName;
+    public String userId, mail, name, photo, restaurantID, chosenRestaurantName;
 
     public UserModel() {
-        // Constructeur vide pour Firestore
     }
 
-    public UserModel(String mail, String name, String photo, String restaurantID, String chosenRestaurantName) {
+    public UserModel(String userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
+
+    public UserModel(String userId, String mail, String name, String photo, String restaurantID, String chosenRestaurantName) {
+        this.userId = userId;
         this.mail = mail;
         this.name = name;
         this.photo = photo;
@@ -16,11 +23,20 @@ public class UserModel implements Serializable {
         this.chosenRestaurantName = chosenRestaurantName;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public UserModel(String email, String displayName, String valueOf) {
         this.mail = email;
         this.name = displayName;
 
     }
+
     public String getMail() {
         return mail;
     }
@@ -68,12 +84,15 @@ public class UserModel implements Serializable {
 
         UserModel userModel = (UserModel) o;
 
-        return mail != null ? mail.equals(userModel.mail) : userModel.mail == null;
+        if (!Objects.equals(userId, userModel.userId))
+            return false;
+        return Objects.equals(mail, userModel.mail);
     }
 
     @Override
     public int hashCode() {
-        return mail != null ? mail.hashCode() : 0;
+        int result = userId != null ? userId.hashCode() : 0;
+        result = 31 * result + (mail != null ? mail.hashCode() : 0);
+        return result;
     }
-
 }

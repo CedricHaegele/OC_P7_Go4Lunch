@@ -71,8 +71,13 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
                     .circleCrop()
                     .error(R.drawable.default_avatar)
                     .into(binding.imageProfile);
-
             binding.textRestaurantName.setText(mUser.getChosenRestaurantName());
+
+            if (mUser.getChosenRestaurantName() != null && !mUser.getChosenRestaurantName().isEmpty()) {
+                binding.textRestaurantName.setText(mUser.getName() + " is eating at " + mUser.getChosenRestaurantName());
+            } else {
+                binding.textRestaurantName.setText(mUser.getName() + " has not chosen a restaurant");
+            }
         }
     }
 }
