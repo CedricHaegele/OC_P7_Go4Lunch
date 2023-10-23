@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class UserModel implements Serializable {
     public String userId, mail, name, photo, restaurantID, chosenRestaurantName;
+    public boolean isVisible;
 
     public UserModel() {
     }
@@ -81,13 +82,11 @@ public class UserModel implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         UserModel userModel = (UserModel) o;
-
-        if (!Objects.equals(userId, userModel.userId))
-            return false;
-        return Objects.equals(mail, userModel.mail);
+        return Objects.equals(userId, userModel.userId);
     }
+
+
 
     @Override
     public int hashCode() {

@@ -1,4 +1,4 @@
-package com.example.oc_p7_go4lunch;
+package com.example.oc_p7_go4lunch.autocomplete;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
+import com.example.oc_p7_go4lunch.R;
 
 import java.util.List;
 

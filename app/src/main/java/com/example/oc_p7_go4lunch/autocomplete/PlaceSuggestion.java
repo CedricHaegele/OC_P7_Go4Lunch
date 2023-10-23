@@ -1,4 +1,4 @@
-package com.example.oc_p7_go4lunch;
+package com.example.oc_p7_go4lunch.autocomplete;
 
 // PlaceSuggestion.java
 

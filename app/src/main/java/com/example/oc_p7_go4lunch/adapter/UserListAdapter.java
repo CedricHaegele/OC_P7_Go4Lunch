@@ -1,5 +1,6 @@
 package com.example.oc_p7_go4lunch.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,41 +34,60 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         ItemUserBinding binding = ItemUserBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new UserViewHolder(binding);
     }
+
     public void updateData(List<UserModel> newData) {
         this.userList = newData;
         notifyDataSetChanged();
     }
+
     // Bind the user data to the ViewHolder view
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         UserModel user = userList.get(position);
+        Log.d("Debug", "Binding user at position " + position + ": " + user.toString());
         holder.bind(user);
     }
+
 
     // Get the number of items in the list
     @Override
     public int getItemCount() {
-        return userList.size();
+        if (userList != null) {
+            Log.d("Debug", "getItemCount() called, size: " + userList.size());
+            return userList.size();
+        } else {
+            Log.d("Debug", "getItemCount() called, but userList is null");
+            return 0;
+        }
     }
+
 
     // ViewHolder class to hold the views for each list item
     public static class UserViewHolder extends RecyclerView.ViewHolder {
 
         private final ItemUserBinding binding;
 
-         // Constructor to initialize the UI components
-         public UserViewHolder(@NonNull ItemUserBinding binding) {
-             super(binding.getRoot());
-             this.binding = binding;
-         }
+        // Constructor to initialize the UI components
+        public UserViewHolder(@NonNull ItemUserBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+
+        }
 
         // Function to bind data to the UI components
         public void bind(UserModel user) {
-
-            // Use a library like Glide to load the user's photo into userPhoto
-            Glide.with(binding.getRoot())
-                    .load(user.getPhoto())
-                    .into(binding.userPhoto);
+            if (user != null) {
+                if (user.isVisible && user.getPhoto() != null) {
+                    if (user.isVisible) {
+                        Glide.with(binding.getRoot())
+                                .load(user.getPhoto())
+                                .into(binding.userPhoto);
+                        binding.getRoot().setVisibility(View.VISIBLE);
+                    } else {
+                        binding.getRoot().setVisibility(View.GONE);
+                    }
+                }
+            }
         }
     }
 }

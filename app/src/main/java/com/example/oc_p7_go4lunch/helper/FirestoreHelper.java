@@ -148,9 +148,8 @@ public class FirestoreHelper {
                 });
     }
 
-
-
-
-
+    public DocumentReference getUserDocument(String userId) {
+        return db.collection("users").document(userId);
+    }
 
 }

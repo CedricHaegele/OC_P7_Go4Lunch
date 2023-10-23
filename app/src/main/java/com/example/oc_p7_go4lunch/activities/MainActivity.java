@@ -26,8 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.BuildConfig;
-import com.example.oc_p7_go4lunch.PlaceSuggestion;
-import com.example.oc_p7_go4lunch.PlaceSuggestionAdapter;
+import com.example.oc_p7_go4lunch.autocomplete.PlaceSuggestion;
+import com.example.oc_p7_go4lunch.autocomplete.PlaceSuggestionAdapter;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onItemClick(PlaceSuggestion suggestion) {
 
-                EditText searchEditText = findViewById(R.id.searchEditText);
+                EditText searchEditText = binding.searchEditText;
                 searchEditText.setText(suggestion.getPlaceName());
 
 
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         });
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
 
     }
