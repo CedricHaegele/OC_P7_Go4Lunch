@@ -40,11 +40,12 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         notifyDataSetChanged();
     }
 
+
     // Bind the user data to the ViewHolder view
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         UserModel user = userList.get(position);
-        Log.d("Debug", "Binding user at position " + position + ": " + user.toString());
+
         holder.bind(user);
     }
 
@@ -53,14 +54,13 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
     @Override
     public int getItemCount() {
         if (userList != null) {
-            Log.d("Debug", "getItemCount() called, size: " + userList.size());
+
             return userList.size();
         } else {
-            Log.d("Debug", "getItemCount() called, but userList is null");
+
             return 0;
         }
     }
-
 
     // ViewHolder class to hold the views for each list item
     public static class UserViewHolder extends RecyclerView.ViewHolder {
@@ -76,18 +76,28 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
 
         // Function to bind data to the UI components
         public void bind(UserModel user) {
+            Log.d("UserListAdapter", "Binding user: " + user.getName());
             if (user != null) {
-                if (user.isVisible && user.getPhoto() != null) {
-                    if (user.isVisible) {
-                        Glide.with(binding.getRoot())
-                                .load(user.getPhoto())
-                                .into(binding.userPhoto);
-                        binding.getRoot().setVisibility(View.VISIBLE);
-                    } else {
-                        binding.getRoot().setVisibility(View.GONE);
-                    }
+                // Set user name
+                binding.userName.setText(user.getName());
+                binding.description.setText(" is joigning");
+
+                // Set user photo
+                if (user.getPhoto() != null) {
+                    Glide.with(binding.getRoot())
+                            .load(user.getPhoto())
+                            .into(binding.userPhoto);
+                }
+
+                // Set visibility based on 'isVisible' field
+                if (user.isVisible) {
+                    binding.getRoot().setVisibility(View.VISIBLE);
+                } else {
+                    binding.getRoot().setVisibility(View.GONE);
                 }
             }
         }
+
+
     }
 }

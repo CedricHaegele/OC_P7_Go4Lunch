@@ -1,5 +1,7 @@
 package com.example.oc_p7_go4lunch.helper;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,7 +30,7 @@ public class FirestoreHelper {
         // Create a new user with a first and last name
         // Use a HashMap to store data
         Map<String, Object> user = new HashMap<>();
-        user.put("userId", userId);
+        user.put("userIds", userId);
         user.put("userName", userName);
 
         // Add a new document with a generated ID
@@ -44,7 +46,7 @@ public class FirestoreHelper {
 
     // Get the reference to the "users" collection
     public CollectionReference getUsersCollection() {
-        return db.collection("users");
+        return db.collection("userIds");
     }
 
     // Get the reference to a specific restaurant document
@@ -58,7 +60,7 @@ public class FirestoreHelper {
         restaurant.put("isButtonChecked", isButtonChecked);
         List<String> usersList = new ArrayList<>();
         usersList.add(userId);
-        restaurant.put("users", usersList);
+        restaurant.put("userIds", usersList);
 
         db.collection("restaurants").document(restaurantId)
                 .set(restaurant)
@@ -73,26 +75,21 @@ public class FirestoreHelper {
     public void updateRestaurant(String restaurantId, boolean isButtonChecked, String userId) {
         DocumentReference restaurantRef = db.collection("restaurants").document(restaurantId);
 
-        // Update the isButtonChecked field
-        restaurantRef
-                .update("isButtonChecked", isButtonChecked)
-                .addOnSuccessListener(aVoid -> {
-                    // Successfully updated
-                })
-                .addOnFailureListener(e -> {
-                    // Failed to update
-                });
+        // Prepare the updates in a Map
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("isButtonChecked", isButtonChecked);
+        updates.put("userIds", FieldValue.arrayUnion(userId));
 
-        // Add the user to the list of users who have clicked the button
-        restaurantRef
-                .update("users", FieldValue.arrayUnion(userId))
+        // Perform the update
+        restaurantRef.update(updates)
                 .addOnSuccessListener(aVoid -> {
-                    // Successfully updated
+                    Log.d("Debug", "Successfully updated restaurant.");
                 })
                 .addOnFailureListener(e -> {
-                    // Failed to update
+                    Log.e("Debug", "Failed to update restaurant.", e);
                 });
     }
+
 
     public void updateRestaurantLike(String restaurantId, boolean isLiked, String userId) {
         Map<String, Object> data = new HashMap<>();
@@ -117,13 +114,13 @@ public class FirestoreHelper {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-
+                        Log.d("Debug", "Successfully added user to restaurant list");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        Log.e("Debug", "Failed to add user from restaurant list.", e);
                     }
                 });
     }
@@ -137,19 +134,20 @@ public class FirestoreHelper {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-
+                        Log.d("Debug", "Successfully removed user to restaurant list");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        Log.e("Debug", "Failed to remove user from restaurant list.", e);
                     }
                 });
     }
 
     public DocumentReference getUserDocument(String userId) {
-        return db.collection("users").document(userId);
+        return FirebaseFirestore.getInstance().collection("users").document(userId);
     }
+
 
 }

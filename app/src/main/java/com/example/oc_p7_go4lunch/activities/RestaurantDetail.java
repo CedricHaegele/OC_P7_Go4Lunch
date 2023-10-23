@@ -306,7 +306,7 @@ public class RestaurantDetail extends AppCompatActivity {
                                 binding.callButton.setText(phoneNumber);
                             }
                             if (details.getWebsite() != null) {
-                                websiteUrl = details.getWebsite(); // Met à jour la variable
+                                websiteUrl = details.getWebsite();
                                 binding.websiteButton.setText(websiteUrl);
                             }
                         }
@@ -343,7 +343,6 @@ public class RestaurantDetail extends AppCompatActivity {
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
                         return false;
                     }
-
                     @Override
                     public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
                         return false;

@@ -1,6 +1,7 @@
 package com.example.oc_p7_go4lunch.fragment;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -18,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.oc_p7_go4lunch.MapFragmentListener;
 import com.example.oc_p7_go4lunch.MapViewModelFactory;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
@@ -42,6 +44,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     // ViewModel to manage data logic
     private MapViewModel mapViewModel;
+    private MapFragmentListener mListener;
 
     // Constants for default zoom and permission request code
     private static final float DEFAULT_ZOOM = 15.0f;
@@ -72,6 +75,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
 
         // Request location permission
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -186,5 +190,16 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 return true;
             }
         });
+
     }
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof MapFragmentListener) {
+            mListener = (MapFragmentListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement MapFragmentListener");
+        }
+    }
+
 }

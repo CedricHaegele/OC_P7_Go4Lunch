@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.BuildConfig;
+import com.example.oc_p7_go4lunch.MapFragmentListener;
 import com.example.oc_p7_go4lunch.autocomplete.PlaceSuggestion;
 import com.example.oc_p7_go4lunch.autocomplete.PlaceSuggestionAdapter;
 import com.example.oc_p7_go4lunch.R;
@@ -37,12 +38,15 @@ import com.example.oc_p7_go4lunch.fragment.SettingFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -53,10 +57,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 // Main Activity class
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MapFragmentListener {
     // UI components declarations
     Toolbar toolbar;  // Represents the top bar of the app
     BottomNavigationView mBottomNavigationView;  // Bottom navigation menu
@@ -66,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private GoogleMap mMap;  // Map object for displaying Google Map
     private Place place;  // Object to store selected place details
     private FragmentContainerView myFragmentContainer;
+    private MapFragmentListener mListener;
+
 
 
     private RecyclerView placeSuggestionRecyclerView;
@@ -114,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                placeSuggestionRecyclerView.setVisibility(View.VISIBLE);
                 fetchAutocompletePlaces(s.toString());
             }
 
@@ -145,10 +153,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 EditText searchEditText = binding.searchEditText;
                 searchEditText.setText(suggestion.getPlaceName());
 
-
+                String placeId = suggestion.getPlaceId();
+                if (placeId != null) {
+                    zoomToPlace(placeId);
+                }
                 placeSuggestionRecyclerView.setVisibility(View.GONE);
             }
-
         });
 
         Toolbar toolbar = binding.toolbar;
@@ -156,8 +166,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private void fetchAutocompletePlaces(String query) {
+    @Override
+    public void onAttachFragment(@NonNull Fragment fragment) {
+        super.onAttachFragment(fragment);
+        if (fragment instanceof MapFragmentListener) {
+            mListener = (MapFragmentListener) fragment;
+        }
+    }
 
+
+    private void fetchAutocompletePlaces(String query) {
         AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
         FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
                 .setTypeFilter(TypeFilter.ESTABLISHMENT)
@@ -169,8 +187,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
             placeSuggestionsList.clear();
             for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
-                Log.i("PlacesAPI", prediction.getFullText(null).toString());
-                placeSuggestionsList.add(new PlaceSuggestion(prediction.getFullText(null).toString()));
+                PlaceSuggestion suggestion = new PlaceSuggestion(prediction.getFullText(null).toString());
+                suggestion.setPlaceId(prediction.getPlaceId());  // Cette ligne fixe le placeId
+                placeSuggestionsList.add(suggestion);
             }
             placeSuggestionAdapter.notifyDataSetChanged();
         }).addOnFailureListener((exception) -> {
@@ -180,6 +199,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
+
+   @Override
+    public void zoomToPlaceFromActivity(String placeId) {
+        zoomToPlace(placeId);
+       if (mListener != null) {
+           mListener.zoomToPlaceFromActivity(placeId);
+       }
+    }
+
+    public void zoomToPlace(String placeId) {
+
+        PlacesClient placesClient = Places.createClient(this);
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.LAT_LNG);
+
+        FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
+
+        placesClient.fetchPlace(request).addOnSuccessListener(response -> {
+            Place place = response.getPlace();
+            LatLng latLng = place.getLatLng();
+            if (latLng != null && mMap != null) {
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
+            } else {
+
+        }
+
+        }).addOnFailureListener(exception -> {
+            if (exception instanceof ApiException) {
+                Log.e("PlacesAPI", "Place not found: " + ((ApiException) exception).getStatusCode());
+            }
+        });
+    }
+
+
 
 
     private void saveUserToFirestore() {
@@ -350,4 +403,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
         finishAffinity();
     }
+
+
 }

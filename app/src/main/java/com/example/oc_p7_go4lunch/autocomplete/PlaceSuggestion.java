@@ -5,7 +5,15 @@ package com.example.oc_p7_go4lunch.autocomplete;
 public class PlaceSuggestion {
     private String fullText;
     private String placeName;
+    private String placeId;
 
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
+    }
 
     public PlaceSuggestion(String fullText) {
         this.fullText = fullText;
