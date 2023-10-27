@@ -1,4 +1,4 @@
-package com.example.oc_p7_go4lunch.fragment;
+package com.example.oc_p7_go4lunch.activities;
 
 import android.os.Bundle;
 
@@ -8,7 +8,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.example.oc_p7_go4lunch.R;
 
-public class SettingFragment extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

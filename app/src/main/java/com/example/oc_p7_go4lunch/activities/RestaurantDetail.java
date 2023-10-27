@@ -89,6 +89,7 @@ public class RestaurantDetail extends AppCompatActivity {
 
         fetchRestaurantData();
 
+
         if (restaurant != null) {
             String restaurantId = restaurant.getPlaceId();
 

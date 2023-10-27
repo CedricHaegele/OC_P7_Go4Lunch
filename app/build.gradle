@@ -36,9 +36,6 @@ android {
     }
     namespace 'com.example.oc_p7_go4lunch'
 
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 dependencies {

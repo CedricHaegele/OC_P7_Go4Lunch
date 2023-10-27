@@ -1,6 +1,7 @@
 package com.example.oc_p7_go4lunch;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,6 +20,7 @@ public class MapViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
+        Log.d("MapViewModelFactory", "create called");
         return (T) new MapViewModel(mApplication, mGooglePlacesApi);
     }
 }

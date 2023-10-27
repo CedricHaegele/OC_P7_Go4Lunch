@@ -20,8 +20,12 @@ import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantResponse;
 import com.example.oc_p7_go4lunch.repositories.MapRepository;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+import android.os.Looper;
 import android.util.Log;
 
 import java.util.List;
@@ -32,6 +36,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MapViewModel extends AndroidViewModel {
+
+    public LocationRequest locationRequest;
+    public LocationCallback locationCallback;
+
+    private final MutableLiveData<Boolean> isLocationReady = new MutableLiveData<>(false);
+
     // FusedLocationProviderClient instance for interacting with Google Play services' location APIs.
     private final FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -47,6 +57,7 @@ public class MapViewModel extends AndroidViewModel {
     // ViewModel Constructor
     public MapViewModel(@NonNull Application application, GooglePlacesApi googlePlacesApi) {
         super(application);
+        Log.d("MapViewModel", "Constructor called");
         // Initialize FusedLocationProviderClient.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(application);
 
@@ -59,18 +70,60 @@ public class MapViewModel extends AndroidViewModel {
 
     // Method to fetch the last known location.
     private void fetchLastLocation() {
+        Log.d("MapViewModel", "fetchLastLocation called");
         try {
             fusedLocationProviderClient.getLastLocation()
                     .addOnSuccessListener(location -> {
+                        Log.d("MapViewModel", "Location retrieved: " + location);
                         if (location != null) {
                             locationData.setValue(location);
+                            isLocationReady.setValue(true);
                         }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("MapViewModel", "Failed to retrieve location", e);
                     });
         } catch (SecurityException e) {
-            Log.e("MapViewModel", "SecurityException: ", e);
-        }
+            Log.d("MapViewModel", "SecurityException", e);
 
+
+            if (locationData.getValue() == null);
+                //requestLocationUpdates();
+        }
     }
+
+    /**public void requestLocationUpdates() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        locationRequest.setInterval(10000);  // Set the interval in milliseconds
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    // Update your LiveData with the new location
+                    locationData.setValue(location);
+                isLocationReady.setValue(true);
+            }
+                // Stop location updates to save battery
+                fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+            }
+        };
+
+        try {
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        } catch (SecurityException e) {
+            Log.d("MapViewModel", "SecurityException", e);
+        }
+    }*/
+
+    public LiveData<Boolean> isLocationReady() {
+        return isLocationReady;
+    }
+
 
     // Method to get the last known location as LiveData.
     public LiveData<Location> getLastLocation() {

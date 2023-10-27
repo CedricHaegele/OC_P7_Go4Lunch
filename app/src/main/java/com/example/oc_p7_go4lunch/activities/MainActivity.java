@@ -3,8 +3,6 @@ package com.example.oc_p7_go4lunch.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -21,34 +20,30 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.BuildConfig;
-import com.example.oc_p7_go4lunch.MapFragmentListener;
-import com.example.oc_p7_go4lunch.autocomplete.PlaceSuggestion;
-import com.example.oc_p7_go4lunch.autocomplete.PlaceSuggestionAdapter;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
-import com.example.oc_p7_go4lunch.fragment.SettingFragment;
+
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
@@ -56,13 +51,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 // Main Activity class
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MapFragmentListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     // UI components declarations
+    final int AUTOCOMPLETE_REQUEST_CODE = 1;
     Toolbar toolbar;  // Represents the top bar of the app
     BottomNavigationView mBottomNavigationView;  // Bottom navigation menu
     static DrawerLayout drawerLayout;  // Drawer for side navigation
@@ -71,18 +66,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private GoogleMap mMap;  // Map object for displaying Google Map
     private Place place;  // Object to store selected place details
     private FragmentContainerView myFragmentContainer;
-    private MapFragmentListener mListener;
-
-
-
-    private RecyclerView placeSuggestionRecyclerView;
-    private PlaceSuggestionAdapter placeSuggestionAdapter;
-    private List<PlaceSuggestion> placeSuggestionsList = new ArrayList<>();
 
     // Firebase authentication
     private FirebaseAuth mAuth;  // Firebase authentication object
     private FirebaseAuth.AuthStateListener mAuthListener;  // Listener for auth state changes
     private ActivityMainBinding binding;
+
 
     public MainActivity() {
 
@@ -95,38 +84,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        EditText searchEditText = binding.searchEditText;
         ImageView searchImageView = binding.searchImageView;
-
         searchImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (searchEditText.getVisibility() == View.GONE) {
-                    searchEditText.setVisibility(View.VISIBLE);
-                } else {
-                    searchEditText.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        placeSuggestionRecyclerView = binding.placeSuggestionRecyclerView;
-        placeSuggestionAdapter = new PlaceSuggestionAdapter(placeSuggestionsList);
-        placeSuggestionRecyclerView.setAdapter(placeSuggestionAdapter);
-        placeSuggestionRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                placeSuggestionRecyclerView.setVisibility(View.VISIBLE);
-                fetchAutocompletePlaces(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+                List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+                        .build(MainActivity.this);
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
             }
         });
 
@@ -134,105 +99,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
         }
+
+        // UI Component Initializations
+        setSupportActionBar(toolbar);
+        setUpNavView();
+
+        // Change the fragment and set the action bar title
+        changeFragment(new MapViewFragment());
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("I'm Hungry !");
+        }
+
+
         saveUserToFirestore();
         setUpNavDrawer();
         initUIComponents();
-        setUpNavView();
 
+
+        mBottomNavigationView = binding.bottomNav;
+        mBottomNavigationView.setSelectedItemId(R.id.mapView);
         mBottomNavigationView.setOnItemSelectedListener(navy);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        changeFragment(new MapViewFragment());
-        getSupportActionBar().setTitle("I'm Hungry !");
-
-
-        placeSuggestionAdapter.setOnItemClickListener(new PlaceSuggestionAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(PlaceSuggestion suggestion) {
-
-                EditText searchEditText = binding.searchEditText;
-                searchEditText.setText(suggestion.getPlaceName());
-
-                String placeId = suggestion.getPlaceId();
-                if (placeId != null) {
-                    zoomToPlace(placeId);
-                }
-                placeSuggestionRecyclerView.setVisibility(View.GONE);
-            }
-        });
-
-        Toolbar toolbar = binding.toolbar;
-        setSupportActionBar(toolbar);
 
     }
 
     @Override
-    public void onAttachFragment(@NonNull Fragment fragment) {
-        super.onAttachFragment(fragment);
-        if (fragment instanceof MapFragmentListener) {
-            mListener = (MapFragmentListener) fragment;
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i("PlaceAPI", "Place: " + place.getName() + ", " + place.getId() + ", " + place.getLatLng());
+
+
+                Intent intent = new Intent(MainActivity.this, RestaurantDetail.class);
+
+                intent.putExtra("place_id", "some_place_id_here");
+                intent.putExtra("place_name", "some_place_name_here");
+                intent.putExtra("photo", "some_photo_url_here");
+
+                startActivity(intent);
+
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("PlaceAPI", status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+
+            }
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
-
-
-    private void fetchAutocompletePlaces(String query) {
-        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
-        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                .setTypeFilter(TypeFilter.ESTABLISHMENT)
-                .setSessionToken(token)
-                .setQuery(query)
-                .build();
-
-        PlacesClient placesClient = Places.createClient(this);
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
-            placeSuggestionsList.clear();
-            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
-                PlaceSuggestion suggestion = new PlaceSuggestion(prediction.getFullText(null).toString());
-                suggestion.setPlaceId(prediction.getPlaceId());  // Cette ligne fixe le placeId
-                placeSuggestionsList.add(suggestion);
-            }
-            placeSuggestionAdapter.notifyDataSetChanged();
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                ApiException apiException = (ApiException) exception;
-                Log.e("PlacesAPI", "Place not found: " + apiException.getStatusCode());
-            }
-        });
-    }
-
-   @Override
-    public void zoomToPlaceFromActivity(String placeId) {
-        zoomToPlace(placeId);
-       if (mListener != null) {
-           mListener.zoomToPlaceFromActivity(placeId);
-       }
-    }
-
-    public void zoomToPlace(String placeId) {
-
-        PlacesClient placesClient = Places.createClient(this);
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.LAT_LNG);
-
-        FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
-
-        placesClient.fetchPlace(request).addOnSuccessListener(response -> {
-            Place place = response.getPlace();
-            LatLng latLng = place.getLatLng();
-            if (latLng != null && mMap != null) {
-
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
-            } else {
-
-        }
-
-        }).addOnFailureListener(exception -> {
-            if (exception instanceof ApiException) {
-                Log.e("PlacesAPI", "Place not found: " + ((ApiException) exception).getStatusCode());
-            }
-        });
-    }
-
-
 
 
     private void saveUserToFirestore() {
@@ -255,13 +170,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Initialize UI components.
      */
     private void initUIComponents() {
-
-
         toolbar = binding.toolbar; // Find the Toolbar view and assign it to 'toolbar' variable
         setSupportActionBar(toolbar); // Set the toolbar as the app bar
-
-        mBottomNavigationView = binding.bottomNav; // Find the BottomNavigationView and assign it to 'mBottomNavigationView' variable
-        navigationView = binding.drawerNav; // Find the NavigationView and assign it to 'navigationView' variable
+        mBottomNavigationView = binding.bottomNav;
+        navigationView = binding.drawerNav;
 
     }
 
@@ -281,18 +193,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void setUpNavView() {
 
         HeaderNavigationDrawerBinding headerBinding = HeaderNavigationDrawerBinding.bind(binding.drawerNav.getHeaderView(0));
-        headerBinding.Name.setText("Ton nom"); // Find the TextView for name
-        headerBinding.Mail.setText("Ton email"); // Find the TextView for mail
-
-        Glide.with(this)
-                .load("URL_DE_TON_IMAGE")
-                .into(headerBinding.photoUser); // Find the ImageView for photo
-
 
         // Initialize FirebaseUser object by getting the current user
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-// Check if the user is logged in
+        // Check if the user is logged in
         if (firebaseUser != null) {
             // Update UI with user's information
             headerBinding.Name.setText(firebaseUser.getDisplayName());
@@ -301,33 +206,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Get user's profile photo URL
             Uri photoUrl = firebaseUser.getPhotoUrl();
 
-            // Check if 'photo' view exists
+            // Load the profile photo if it exists
             if (photoUrl != null) {
-                // Load photo if URL exists
-                if (photoUrl != null) {
-                    Glide.with(this)
-                            .load(photoUrl)
-                            .into(headerBinding.photoUser);
-                } else {
-                    // Load default image if photo URL is null
-                    Glide.with(this)
-                            .load("URL_IMAGE_PAR_DEFAUT")
-                            .into(headerBinding.photoUser);
-                }
+                Glide.with(this)
+                        .load(photoUrl)
+                        .into(headerBinding.photoUser);
+            } else {
+                // Load a default image if photo URL is null
+                headerBinding.photoUser.setImageResource(R.drawable.profil_user);
             }
-            // Add user to Firestore database
-            String email = firebaseUser.getEmail();
-            UserModel newUser = new UserModel(email, null, null);
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("users").document(firebaseUser.getUid()).set(newUser)
-                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!"))
-                    .addOnFailureListener(e -> Log.e("Firestore", "Error writing user", e));
+            // Add user to Firestore database
+            addUserToFirestore(firebaseUser);
 
         } else {
             Log.d("Debug", "FirebaseUser is null. The user is not logged in.");
         }
     }
+
+    private void addUserToFirestore(FirebaseUser firebaseUser) {
+        String email = firebaseUser.getEmail();
+        UserModel newUser = new UserModel(email, null, null);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(firebaseUser.getUid()).set(newUser)
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!"))
+                .addOnFailureListener(e -> Log.e("Firestore", "Error writing user", e));
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -345,30 +251,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // Handle the item selection in the BottomNavigationView
     public final NavigationBarView.OnItemSelectedListener navy = item -> {
-        final int mapview = R.id.mapView;
-        final int listView = R.id.listView;
-        final int workmates = R.id.workmates;
+        ImageView searchImageView = binding.searchImageView;
 
         switch (item.getItemId()) {
-
-            case mapview:
+            case R.id.mapView:
                 changeFragment(new MapViewFragment());
                 getSupportActionBar().setTitle("I'm Hungry !");
+                searchImageView.setVisibility(View.VISIBLE);
                 break;
-
-            case listView:
+            case R.id.listView:
                 changeFragment(new RestoListView());
                 getSupportActionBar().setTitle("I'm Hungry !");
+                searchImageView.setVisibility(View.GONE);
                 break;
-
-            case workmates:
+            case R.id.workmates:
                 changeFragment(new WorkmatesList());
-                getSupportActionBar().setTitle("Workmates");
+                getSupportActionBar().setTitle(" Workmates");
+                searchImageView.setVisibility(View.GONE);
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     };
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -382,10 +287,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case myLunch:
                 break;
 
-            case settings:
-                SettingFragment.SettingsFragment settingsFragment = new SettingFragment.SettingsFragment();
-                changeFragment(settingsFragment);
-                break;
 
             case logOut:
                 logOut();
@@ -403,6 +304,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
         finishAffinity();
     }
-
-
 }

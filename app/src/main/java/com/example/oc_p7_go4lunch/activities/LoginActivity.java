@@ -1,6 +1,5 @@
 package com.example.oc_p7_go4lunch.activities;
 
-// Importing the necessary Android and Firebase classes
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +7,7 @@ import android.util.Log;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.helper.FirestoreHelper;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
@@ -18,12 +18,15 @@ import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 // LoginActivity class extends AppCompatActivity, which is the base class for activities in Android
 public class LoginActivity extends AppCompatActivity {
+    private static final int RC_SIGN_IN = 123;
     private FirestoreHelper firestoreHelper;
 
     // Variable to handle the sign-in result
@@ -36,39 +39,39 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         firestoreHelper = new FirestoreHelper();
+
         // Setting the background drawable for the activity
         getWindow().setBackgroundDrawableResource(R.drawable.lunch_time);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-
             Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(mainActivity);
             finish();
         } else {
-
-            init();
+            startSignInActivity();
         }
     }
 
     // Method to initialize the sign-in process
-    private void init() {
-        // Define list of identity providers like Email and Google
+    private void startSignInActivity() {
+        // Choose authentication providers
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.GoogleBuilder().build()
         );
 
-        // Build the sign-in intent
+        // Create and launch sign-in intent using ActivityResultLauncher
         Intent signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
-                .setAvailableProviders(providers)  // Set authentication providers
-                .setTheme(R.style.MyFirebaseUIToolbar)  // Set custom theme
+                .setTheme(R.style.MyFirebaseUIToolbar)
+                .setAvailableProviders(providers)
+                .setIsSmartLockEnabled(false, true)
                 .build();
 
-        // Launch sign-in intent
         signInLauncher.launch(signInIntent);
     }
+
 
     // Method to handle the result of the sign-in process
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
