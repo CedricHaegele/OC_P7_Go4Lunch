@@ -76,6 +76,8 @@ public class RestaurantDetail extends AppCompatActivity {
     private final List<UserModel> combinedList = new ArrayList<>();
     private UserListAdapter userListAdapter;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +91,17 @@ public class RestaurantDetail extends AppCompatActivity {
 
         fetchRestaurantData();
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            String placeName = intent.getStringExtra("place_name");
+            String placeAddress= intent.getStringExtra("place_address");
+            double placeRating = intent.getDoubleExtra("place_rating", 0.0);
+
+            binding.restaurantName.setText(placeName);
+            binding.restaurantAddress.setText(placeAddress);
+            binding.ratingDetail.setRating(Float.parseFloat(String.valueOf(placeRating)));
+
+    }
 
         if (restaurant != null) {
             String restaurantId = restaurant.getPlaceId();
@@ -103,6 +116,8 @@ public class RestaurantDetail extends AppCompatActivity {
             } else {
                 binding.ratingDetail.setRating(0);
             }
+
+
             firestoreHelper.getRestaurantDocument(restaurantId).
                     get().addOnSuccessListener(documentSnapshot ->
                     {

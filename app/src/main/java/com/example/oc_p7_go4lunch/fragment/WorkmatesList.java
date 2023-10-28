@@ -1,6 +1,7 @@
 package com.example.oc_p7_go4lunch.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ public class WorkmatesList extends Fragment {
 
         // Observe changes in the users list
         viewModel.getUsersList().observe(getViewLifecycleOwner(), usersList -> {
+            Log.d("WorkmatesList", "Received users list update.");
             initializeList(usersList);
         });
 
@@ -43,7 +45,7 @@ public class WorkmatesList extends Fragment {
     }
 
     public void initializeList(List<UserModel> usersList) {
-
+        Log.d("WorkmatesList", "Initializing list with size: " + usersList.size());
         workmatesListAdapter = new WorkmatesListAdapter(usersList);
         binding.workmatesList.setAdapter(workmatesListAdapter);
     }

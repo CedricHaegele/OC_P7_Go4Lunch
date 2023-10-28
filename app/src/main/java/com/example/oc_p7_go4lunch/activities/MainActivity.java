@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -17,10 +16,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.BuildConfig;
@@ -29,18 +26,11 @@ import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
-
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
@@ -63,18 +53,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     static DrawerLayout drawerLayout;  // Drawer for side navigation
     ActionBarDrawerToggle toggle;  // Button to toggle drawer
     NavigationView navigationView;  // Navigation items in drawer
-    private GoogleMap mMap;  // Map object for displaying Google Map
-    private Place place;  // Object to store selected place details
-    private FragmentContainerView myFragmentContainer;
-
-    // Firebase authentication
-    private FirebaseAuth mAuth;  // Firebase authentication object
-    private FirebaseAuth.AuthStateListener mAuthListener;  // Listener for auth state changes
     private ActivityMainBinding binding;
 
-
     public MainActivity() {
-
     }
 
     @Override
@@ -83,16 +64,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        Log.d("MainActivity", "API_KEY: " + BuildConfig.API_KEY);
+
+        navigationView = binding.navigationView;
+
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this);
+        } else {
+            Log.e("MainActivity", "NavigationView is null");
+        }
+
+        setSupportActionBar(binding.toolbar);
 
         ImageView searchImageView = binding.searchImageView;
-        searchImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
-                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
-                        .build(MainActivity.this);
-                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
-            }
+        searchImageView.setOnClickListener(v -> {
+            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+            Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+                    .build(MainActivity.this);
+            startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
         });
 
         // Initialize Places API if it's not already initialized
@@ -127,14 +116,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i("PlaceAPI", "Place: " + place.getName() + ", " + place.getId() + ", " + place.getLatLng());
-
 
                 Intent intent = new Intent(MainActivity.this, RestaurantDetail.class);
+                intent.putExtra("place_name", place.getName());
+                intent.putExtra("place_address", place.getAddress());
+                intent.putExtra("place_rating", place.getRating());
+                intent.putExtra("photo", (CharSequence) place.getPhotoMetadatas());
 
-                intent.putExtra("place_id", "some_place_id_here");
-                intent.putExtra("place_name", "some_place_name_here");
-                intent.putExtra("photo", "some_photo_url_here");
+                Log.i("PlaceAPI", "Adresse: " + place.getAddress());
+                Log.i("PlaceAPI", "Rating: " + place.getRating());
 
                 startActivity(intent);
 
@@ -142,8 +132,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 Status status = Autocomplete.getStatusFromIntent(data);
                 Log.i("PlaceAPI", status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED) {
-
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -173,8 +161,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toolbar = binding.toolbar; // Find the Toolbar view and assign it to 'toolbar' variable
         setSupportActionBar(toolbar); // Set the toolbar as the app bar
         mBottomNavigationView = binding.bottomNav;
-        navigationView = binding.drawerNav;
-
     }
 
     /**
@@ -192,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     public void setUpNavView() {
 
-        HeaderNavigationDrawerBinding headerBinding = HeaderNavigationDrawerBinding.bind(binding.drawerNav.getHeaderView(0));
+        HeaderNavigationDrawerBinding headerBinding = HeaderNavigationDrawerBinding.bind(binding.navigationView.getHeaderView(0));
 
         // Initialize FirebaseUser object by getting the current user
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -222,6 +208,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             Log.d("Debug", "FirebaseUser is null. The user is not logged in.");
         }
+        navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     private void addUserToFirestore(FirebaseUser firebaseUser) {
@@ -289,6 +277,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
             case logOut:
+                Log.d("MainActivity", "LogOut Selected");
                 logOut();
                 break;
         }
@@ -298,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //Log out the user and navigate back to LoginActivity.
     private void logOut() {
+        Log.d("MainActivity", "LogOut method called");
         FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

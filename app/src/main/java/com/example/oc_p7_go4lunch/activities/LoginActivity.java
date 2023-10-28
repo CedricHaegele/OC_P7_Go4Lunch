@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,8 @@ import java.util.Objects;
 
 // LoginActivity class extends AppCompatActivity, which is the base class for activities in Android
 public class LoginActivity extends AppCompatActivity {
+    public static final String TAG = "LoginActivity";
+    public static final String USERS_COLLECTION = "users";
     private static final int RC_SIGN_IN = 123;
     private FirestoreHelper firestoreHelper;
 
@@ -85,12 +88,21 @@ public class LoginActivity extends AppCompatActivity {
             // Successful sign-in
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-            // Fetching photo URL of user
-            Uri photoProfile = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getPhotoUrl();
+            // Null check before proceeding
+            if (firebaseUser == null) {
+                showSignInError("User data is not available. Please try again.");
+                return;
+            }
+
+            // Fetching photo URL of user and performing null check
+            Uri photoProfile = firebaseUser.getPhotoUrl();
+            if (photoProfile == null) {
+                showSignInError("Profile photo is not available.");
+                return;
+            }
 
             // Creating a user model object
-            assert firebaseUser != null;
-            UserModel user = new UserModel(firebaseUser.getEmail(), firebaseUser.getDisplayName(), String.valueOf(firebaseUser.getPhotoUrl()));
+            UserModel user = new UserModel(firebaseUser.getEmail(), firebaseUser.getDisplayName(), photoProfile.toString());
 
             // Check if user exists in Firestore
             firestoreHelper.getUsersCollection().document(firebaseUser.getUid()).get()
@@ -118,11 +130,17 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(mainActivity);
 
         } else {
-            // Sign-in failed
-            if (response != null) {
-                finish();
+            // Handle the error case
+            if (response == null) {
+                showSignInError("Sign-in was canceled.");
+            } else if (response.getError() != null) {
+                Log.e("LoginActivity", "Sign-in error: ", response.getError());
+                showSignInError("Failed to sign in. Please try again.");
             }
         }
+    }
 
+    private void showSignInError(String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
     }
 }

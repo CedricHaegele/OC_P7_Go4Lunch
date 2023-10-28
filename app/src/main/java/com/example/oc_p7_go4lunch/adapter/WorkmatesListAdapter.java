@@ -1,5 +1,6 @@
 package com.example.oc_p7_go4lunch.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,22 +63,25 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
         }
 
         private void setData(UserModel mUser) {
-
-            binding.textName.setText(mUser.getName());
+            Log.d("ViewHolder", "Setting data for: " + mUser.getName());
 
             Glide.with(binding.imageProfile.getContext())
                     .load(mUser.getPhoto())
                     .placeholder(com.google.android.libraries.places.R.drawable.quantum_ic_cloud_off_vd_theme_24)
                     .circleCrop()
-                    .error(R.drawable.default_avatar)
+                    .error(R.drawable.profil_user)
                     .into(binding.imageProfile);
-            binding.textRestaurantName.setText(mUser.getChosenRestaurantName());
 
             if (mUser.getChosenRestaurantName() != null && !mUser.getChosenRestaurantName().isEmpty()) {
-                binding.textRestaurantName.setText(mUser.getName() + " is eating at " + mUser.getChosenRestaurantName());
+                String text = mUser.getName() + " is eating at " + mUser.getChosenRestaurantName();
+                Log.d("ViewHolder", "Setting restaurant text to: " + text);
+                binding.textRestaurantName.setText(text);
             } else {
-                binding.textRestaurantName.setText(mUser.getName() + " has not chosen a restaurant");
+                String text = mUser.getName() + " has not chosen a restaurant";
+                Log.d("ViewHolder", "Setting restaurant text to: " + text);
+                binding.textRestaurantName.setText(text);
             }
+
         }
     }
 }

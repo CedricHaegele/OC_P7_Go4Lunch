@@ -103,32 +103,35 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         // Observe isLocationReady
         mapViewModel.isLocationReady().observe(getViewLifecycleOwner(), isReady -> {
             Log.d("MapViewFragment", "isLocationReady observed: " + isReady);
-            if (isReady) {
-                // Init Google Map
+            if (isReady && mMap == null) {
+                // Init Google Map only if mMap is null
                 SupportMapFragment mapFragment = new SupportMapFragment();
                 getChildFragmentManager().beginTransaction().replace(R.id.map_container, mapFragment).commit();
                 mapFragment.getMapAsync(this);
             }
         });
+
     }
 
 
     private void enableLocationFeatures() {
         if (mMap != null) {
+            Log.d("MapViewFragment", "mMap is initialized");
             try {
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) {
                     mMap.setMyLocationEnabled(true);
                     mMap.getUiSettings().setMyLocationButtonEnabled(true);
-
-
-                   // mapViewModel.requestLocationUpdates();
+                    // mapViewModel.requestLocationUpdates();
                 }
             } catch (SecurityException e) {
                 Log.d("MapViewFragment", "Permission not granted for location features");
             }
+        } else {
+            Log.d("MapViewFragment", "mMap is null");
         }
     }
+
 
 
     private void updateCameraPosition(Location location) {
@@ -169,7 +172,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-
+        Log.d("MapViewFragment", "onMapReady called");
         // Initialize GoogleMap instance
         mMap = googleMap;
 

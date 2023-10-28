@@ -6,8 +6,10 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -44,9 +46,13 @@ public class FirestoreHelper {
                 });
     }
 
+    public Task<DocumentSnapshot> getUser(String userId) {
+        return db.collection("users").document(userId).get();
+    }
+
     // Get the reference to the "users" collection
     public CollectionReference getUsersCollection() {
-        return db.collection("userIds");
+        return db.collection("users");
     }
 
     // Get the reference to a specific restaurant document

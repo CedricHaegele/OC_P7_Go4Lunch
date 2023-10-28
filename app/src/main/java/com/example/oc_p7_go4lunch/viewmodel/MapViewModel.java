@@ -92,35 +92,7 @@ public class MapViewModel extends AndroidViewModel {
         }
     }
 
-    /**public void requestLocationUpdates() {
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        locationRequest.setInterval(10000);  // Set the interval in milliseconds
-
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    // Update your LiveData with the new location
-                    locationData.setValue(location);
-                isLocationReady.setValue(true);
-            }
-                // Stop location updates to save battery
-                fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-            }
-        };
-
-        try {
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-        } catch (SecurityException e) {
-            Log.d("MapViewModel", "SecurityException", e);
-        }
-    }*/
-
-    public LiveData<Boolean> isLocationReady() {
+       public LiveData<Boolean> isLocationReady() {
         return isLocationReady;
     }
 
