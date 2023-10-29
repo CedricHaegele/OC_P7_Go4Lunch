@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +32,7 @@ import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
@@ -78,15 +80,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         ImageView searchImageView = binding.searchImageView;
         searchImageView.setOnClickListener(v -> {
-            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING,Place.Field.PHOTO_METADATAS);
             Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
                     .build(MainActivity.this);
             startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+
         });
 
         // Initialize Places API if it's not already initialized
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
+            // Create a new Places client instance.
+            PlacesClient placesClient = Places.createClient(this);
         }
 
         // UI Component Initializations
@@ -118,14 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Place place = Autocomplete.getPlaceFromIntent(data);
 
                 Intent intent = new Intent(MainActivity.this, RestaurantDetail.class);
-                intent.putExtra("place_name", place.getName());
-                intent.putExtra("place_address", place.getAddress());
-                intent.putExtra("place_rating", place.getRating());
-                intent.putExtra("photo", (CharSequence) place.getPhotoMetadatas());
-
-                Log.i("PlaceAPI", "Adresse: " + place.getAddress());
-                Log.i("PlaceAPI", "Rating: " + place.getRating());
-
+                intent.putExtra("place_id", place.getId());
                 startActivity(intent);
 
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {

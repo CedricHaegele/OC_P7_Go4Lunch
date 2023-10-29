@@ -4,6 +4,7 @@ package com.example.oc_p7_go4lunch.activities;
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,11 +40,13 @@ import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,6 +58,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -83,29 +87,23 @@ public class RestaurantDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = RestaurantDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
 
         firestoreHelper = new FirestoreHelper();
 
         initRecyclerView();
         updateButtonUI();
-
         fetchRestaurantData();
 
         Intent intent = getIntent();
-        if (intent != null) {
-            String placeName = intent.getStringExtra("place_name");
-            String placeAddress= intent.getStringExtra("place_address");
-            double placeRating = intent.getDoubleExtra("place_rating", 0.0);
+        String placeId = intent.getStringExtra("place_id");
 
-            binding.restaurantName.setText(placeName);
-            binding.restaurantAddress.setText(placeAddress);
-            binding.ratingDetail.setRating(Float.parseFloat(String.valueOf(placeRating)));
-
-    }
+        if (placeId != null) {
+            fetchPlaceDetails(placeId);
+        }
 
         if (restaurant != null) {
             String restaurantId = restaurant.getPlaceId();
-
             Double rating = restaurant.getRating();
             String photoUrl = restaurant.getPhotoUrl(apikey);
             loadImage(photoUrl);
@@ -275,6 +273,57 @@ public class RestaurantDetail extends AppCompatActivity {
 
     }
 
+    private void fetchPlaceDetails(String placeId) {
+        Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
+        PlacesClient placesClient = Places.createClient(this);
+
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
+
+        FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
+
+        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+            Place place = response.getPlace();
+            // Update UI with place details
+            binding.restaurantName.setText(place.getName());
+            binding.restaurantAddress.setText(place.getAddress());
+            if (place.getRating() != null) {
+                binding.ratingDetail.setRating(place.getRating().floatValue());
+            }
+
+            // Get photo metadata
+            List<PhotoMetadata> photoMetadataList = place.getPhotoMetadatas();
+            if (photoMetadataList != null && !photoMetadataList.isEmpty()) {
+                PhotoMetadata photoMetadata = photoMetadataList.get(0);
+
+                // Create a FetchPhotoRequest
+                FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                        .setMaxWidth(500)
+                        .setMaxHeight(300)
+                        .build();
+
+                // Fetch photo and update UI
+                placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+                    Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                    binding.logo.setImageBitmap(bitmap);
+                }).addOnFailureListener((exception) -> {
+                    if (exception instanceof ApiException) {
+                        ApiException apiException = (ApiException) exception;
+                        Log.e("PlaceAPI", "Place not found: " + exception.getMessage());
+                    }
+                });
+            }
+
+        }).addOnFailureListener((exception) -> {
+            if (exception instanceof ApiException) {
+                ApiException apiException = (ApiException) exception;
+                Log.e("PlaceAPI", "Place not found: " + exception.getMessage());
+            }
+        });
+    }
+
+
+
+
     private void updateLikeButtonUI() {
         int drawableRes = isLiked ? R.drawable.baseline_star_yes : R.drawable.ic_baseline_star_24;
         binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, drawableRes, 0, 0);
@@ -334,10 +383,10 @@ public class RestaurantDetail extends AppCompatActivity {
                                     binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_yes, 0, 0);
                                 }
                             } else {
-                                Toast.makeText(RestaurantDetail.this, "Les détails du restaurant ne sont pas disponibles", Toast.LENGTH_SHORT).show();
+
                             }
                         } else {
-                            Toast.makeText(RestaurantDetail.this, "Échec de l'appel API : " + response.message(), Toast.LENGTH_SHORT).show();
+
                         }
                     }
                 }

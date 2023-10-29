@@ -13,8 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="230dp"
             android:contentDescription="@string/restaurant_photo"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/bolo" />
+            android:scaleType="centerCrop"/>
 
     <LinearLayout
         android:id="@+id/linearLayout"
