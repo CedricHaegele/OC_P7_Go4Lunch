@@ -1,5 +1,7 @@
 package com.example.oc_p7_go4lunch.model.firestore;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -59,6 +61,7 @@ public class UserModel implements Serializable {
     }
 
     public void setPhoto(String photo) {
+        Log.d("UserModel", "setPhoto: " + photo);
         this.photo = photo;
     }
 

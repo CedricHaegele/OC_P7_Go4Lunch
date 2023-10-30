@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4sp"
-            android:text="@string/angelina"
+            android:text=""
             android:letterSpacing="0.1"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
@@ -42,7 +42,7 @@
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="is_joigning"
+            android:text=""
             android:letterSpacing="0.07"
             android:textColor="@color/black"
             android:textSize="13sp"/>

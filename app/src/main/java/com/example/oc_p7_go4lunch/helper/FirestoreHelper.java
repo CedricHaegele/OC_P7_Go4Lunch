@@ -2,14 +2,9 @@ package com.example.oc_p7_go4lunch.helper;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -20,47 +15,53 @@ import java.util.Map;
 
 public class FirestoreHelper {
 
-    // Define Firestore database instance
+    // Listener for user data retrieval
+    private OnUserDataReceivedListener listener;
+
+    // Initialize Firestore database instance
     private final FirebaseFirestore db;
 
+    // Constructor with listener
+    public FirestoreHelper(OnUserDataReceivedListener listener) {
+        this.listener = listener;
+        db = FirebaseFirestore.getInstance();
+    }
+
+    // Default constructor
     public FirestoreHelper() {
         db = FirebaseFirestore.getInstance();
     }
 
-    // Method to add user to Firestore
-    public void addUser(String userId, String userName) {
-        // Create a new user with a first and last name
-        // Use a HashMap to store data
+    // Method to add a user to Firestore
+    public void addUser(String userId, String userName, String photoUrl) {
+        // Create a new user using a HashMap
         Map<String, Object> user = new HashMap<>();
         user.put("userIds", userId);
         user.put("userName", userName);
+        user.put("photo", photoUrl); // Add photo URL
 
-        // Add a new document with a generated ID
+        // Add new document to Firestore
         db.collection("users")
                 .add(user)
                 .addOnSuccessListener(documentReference -> {
-                    // Code to execute if the operation was successful
+                    // Code to run if successful
                 })
                 .addOnFailureListener(e -> {
-                    // Code to execute if the operation failed
+                    // Code to run if failed
                 });
     }
 
-    public Task<DocumentSnapshot> getUser(String userId) {
-        return db.collection("users").document(userId).get();
-    }
-
-    // Get the reference to the "users" collection
+    // Method to get reference to "users" collection
     public CollectionReference getUsersCollection() {
         return db.collection("users");
     }
 
-    // Get the reference to a specific restaurant document
+    // Method to get reference to a specific restaurant document
     public DocumentReference getRestaurantDocument(String restaurantId) {
         return db.collection("restaurants").document(restaurantId);
     }
 
-    // Add a new restaurant to Firestore
+    // Method to add a new restaurant to Firestore
     public void addRestaurant(String restaurantId, boolean isButtonChecked, String userId) {
         Map<String, Object> restaurant = new HashMap<>();
         restaurant.put("isButtonChecked", isButtonChecked);
@@ -77,7 +78,8 @@ public class FirestoreHelper {
                     // Failed to add
                 });
     }
-    // Update an existing restaurant in Firestore
+
+    // Method to update an existing restaurant in Firestore
     public void updateRestaurant(String restaurantId, boolean isButtonChecked, String userId) {
         DocumentReference restaurantRef = db.collection("restaurants").document(restaurantId);
 
@@ -88,23 +90,18 @@ public class FirestoreHelper {
 
         // Perform the update
         restaurantRef.update(updates)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("Debug", "Successfully updated restaurant.");
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Debug", "Failed to update restaurant.", e);
-                });
+                .addOnSuccessListener(aVoid -> Log.d("Debug", "Successfully updated restaurant."))
+                .addOnFailureListener(e -> Log.e("Debug", "Failed to update restaurant.", e));
     }
 
-
-    public void updateRestaurantLike(String restaurantId, boolean isLiked, String userId) {
+    public void updateRestaurantLike(String restaurantId, boolean isLiked) {
         Map<String, Object> data = new HashMap<>();
         data.put("isLiked", isLiked);
 
         db.collection("restaurants").document(restaurantId).update(data);
     }
 
-    public void addRestaurantWithLike(String restaurantId, boolean isLiked, String userId) {
+    public void addRestaurantWithLike(String restaurantId, boolean isLiked) {
         Map<String, Object> data = new HashMap<>();
         data.put("isLiked", isLiked);
 
@@ -115,45 +112,44 @@ public class FirestoreHelper {
 
         DocumentReference restaurantRef = db.collection("restaurants").document(restaurantId);
 
-
         restaurantRef.update("userIds", FieldValue.arrayUnion(userId))
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Debug", "Successfully added user to restaurant list");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("Debug", "Failed to add user from restaurant list.", e);
-                    }
-                });
+                .addOnSuccessListener(aVoid -> Log.d("Debug", "Successfully added user to restaurant list"))
+                .addOnFailureListener(e -> Log.e("Debug", "Failed to add user from restaurant list.", e));
     }
 
     public void removeUserFromRestaurantList(String restaurantId, String userId) {
 
         DocumentReference restaurantRef = db.collection("restaurants").document(restaurantId);
 
-
         restaurantRef.update("userIds", FieldValue.arrayRemove(userId))
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Debug", "Successfully removed user to restaurant list");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("Debug", "Failed to remove user from restaurant list.", e);
-                    }
-                });
+                .addOnSuccessListener(aVoid -> Log.d("Debug", "Successfully removed user to restaurant list"))
+                .addOnFailureListener(e -> Log.e("Debug", "Failed to remove user from restaurant list.", e));
     }
 
     public DocumentReference getUserDocument(String userId) {
         return FirebaseFirestore.getInstance().collection("users").document(userId);
     }
 
+    public void getUserData(String userId) {
+        getUserDocument(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
 
+                        String name = documentSnapshot.getString("name");
+                        String photoUrl = documentSnapshot.getString("photo");
+                        Log.d("FirestoreHelper", "Photo URL: " + photoUrl);
+                        UserModel userModel = new UserModel(userId, name, photoUrl);
+                        listener.onUserDataReceived(userModel);
+                    } else {
+                        Log.e("Firestore", "No user data found for userId: " + userId);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Firestore Error", "Error fetching user data: " + e.getMessage()));
+    }
+
+    // Callback interface when user data is received
+    public interface OnUserDataReceivedListener {
+        void onUserDataReceived(UserModel userModel);
+    }
 }

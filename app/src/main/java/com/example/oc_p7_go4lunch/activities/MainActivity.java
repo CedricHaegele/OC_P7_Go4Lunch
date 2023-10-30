@@ -27,6 +27,7 @@ import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
+import com.example.oc_p7_go4lunch.fragment.SettingsFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.google.android.gms.common.api.Status;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ActionBarDrawerToggle toggle;  // Button to toggle drawer
     NavigationView navigationView;  // Navigation items in drawer
     private ActivityMainBinding binding;
+    private FirebaseFirestore db;
 
     public MainActivity() {
     }
@@ -67,8 +69,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Log.d("MainActivity", "API_KEY: " + BuildConfig.API_KEY);
-
+        db = FirebaseFirestore.getInstance();
         navigationView = binding.navigationView;
+
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        addOrUpdateUserToFirestore(firebaseUser);
+
 
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
@@ -80,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         ImageView searchImageView = binding.searchImageView;
         searchImageView.setOnClickListener(v -> {
-            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING,Place.Field.PHOTO_METADATAS);
+            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
             Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
                     .build(MainActivity.this);
             startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
@@ -104,17 +110,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportActionBar().setTitle("I'm Hungry !");
         }
 
-
-        saveUserToFirestore();
         setUpNavDrawer();
         initUIComponents();
-
 
         mBottomNavigationView = binding.bottomNav;
         mBottomNavigationView.setSelectedItemId(R.id.mapView);
         mBottomNavigationView.setOnItemSelectedListener(navy);
 
     }
+
+    private void addOrUpdateUserToFirestore(FirebaseUser firebaseUser) {
+        if (firebaseUser != null) {
+            UserModel userModel = new UserModel();
+
+            if (firebaseUser.getEmail() != null) {
+                userModel.setMail(firebaseUser.getEmail());
+            }
+
+            if (firebaseUser.getDisplayName() != null) {
+                userModel.setName(firebaseUser.getDisplayName());
+            }
+
+            if (firebaseUser.getPhotoUrl() != null) {
+                userModel.setPhoto(firebaseUser.getPhotoUrl().toString());
+            }
+
+            db.collection("users").document(firebaseUser.getUid())
+                    .set(userModel)
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!"))
+                    .addOnFailureListener(e -> Log.w("Firestore", "Error writing user", e));
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -135,22 +162,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-
-    private void saveUserToFirestore() {
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser(); // Get the current user from Firebase
-        if (firebaseUser != null) { // Check if user exists
-            UserModel userModel = new UserModel(); // Create a new UserModel object
-            userModel.setMail(firebaseUser.getEmail()); // Set the email from Firebase user
-            userModel.setName(firebaseUser.getDisplayName()); // Set the display name from Firebase user
-            userModel.setPhoto(firebaseUser.getPhotoUrl() != null ? firebaseUser.getPhotoUrl().toString() : ""); // Set the photo URL if available
-
-            FirebaseFirestore db = FirebaseFirestore.getInstance(); // Get an instance of Firestore database
-            db.collection("users").document(firebaseUser.getUid()) // Access 'users' collection and specify document by User ID
-                    .set(userModel) // Set the UserModel object to Firestore
-                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!")) // Log success
-                    .addOnFailureListener(e -> Log.w("Firestore", "Error writing user", e)); // Log failure
-        }
-    }
 
     /**
      * Initialize UI components.
@@ -180,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Initialize FirebaseUser object by getting the current user
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        addOrUpdateUserToFirestore(firebaseUser);
 
         // Check if the user is logged in
         if (firebaseUser != null) {
@@ -200,24 +212,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 headerBinding.photoUser.setImageResource(R.drawable.profil_user);
             }
 
-            // Add user to Firestore database
-            addUserToFirestore(firebaseUser);
 
         } else {
             Log.d("Debug", "FirebaseUser is null. The user is not logged in.");
         }
         navigationView.setNavigationItemSelectedListener(this);
 
-    }
-
-    private void addUserToFirestore(FirebaseUser firebaseUser) {
-        String email = firebaseUser.getEmail();
-        UserModel newUser = new UserModel(email, null, null);
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(firebaseUser.getUid()).set(newUser)
-                .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!"))
-                .addOnFailureListener(e -> Log.e("Firestore", "Error writing user", e));
     }
 
 
@@ -271,6 +271,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
 
             case myLunch:
+                break;
+
+            case settings:
+                changeFragment(new SettingsFragment.PreferencesFragment());
                 break;
 
 

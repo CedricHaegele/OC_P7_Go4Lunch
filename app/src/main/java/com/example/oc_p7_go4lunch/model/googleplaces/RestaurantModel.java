@@ -100,7 +100,7 @@ public class RestaurantModel implements Serializable {
 
     public String getPhotoUrl(String apiKey) {
         if (photos != null && !photos.isEmpty()) {
-            Photo firstPhoto = photos.get(0);  // Prenez la première photo pour simplifier
+            Photo firstPhoto = photos.get(0);
             String url = firstPhoto.getPhotoUrl(apiKey);
             return url;
         } else {

@@ -43,18 +43,11 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
 
     @Override
     public int getItemCount() {
-        return userList.size();
-    }
-
-    public void updateData(List<UserModel> newUsersList) {
-        this.userList = newUsersList;
-        notifyDataSetChanged();
+        return userList == null ? 0 : userList.size();
     }
 
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-
-
         private final FragmentWorkmateItemBinding binding;
 
         public ViewHolder(@NonNull FragmentWorkmateItemBinding binding) {
@@ -63,7 +56,6 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
         }
 
         private void setData(UserModel mUser) {
-            Log.d("ViewHolder", "Setting data for: " + mUser.getName());
 
             Glide.with(binding.imageProfile.getContext())
                     .load(mUser.getPhoto())
@@ -74,11 +66,9 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
 
             if (mUser.getChosenRestaurantName() != null && !mUser.getChosenRestaurantName().isEmpty()) {
                 String text = mUser.getName() + " is eating at " + mUser.getChosenRestaurantName();
-                Log.d("ViewHolder", "Setting restaurant text to: " + text);
                 binding.textRestaurantName.setText(text);
             } else {
-                String text = mUser.getName() + " has not chosen a restaurant";
-                Log.d("ViewHolder", "Setting restaurant text to: " + text);
+                String text = mUser.getName() + " hasn't decided yet";
                 binding.textRestaurantName.setText(text);
             }
 

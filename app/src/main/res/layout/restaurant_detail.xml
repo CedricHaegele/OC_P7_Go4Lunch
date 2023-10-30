@@ -26,7 +26,7 @@
             android:id="@+id/values"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:layout_weight="3"
+            android:layout_weight="2"
             android:background="#FF3300"
             android:orientation="vertical">
 
@@ -74,7 +74,7 @@
             style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="6"
+            android:layout_weight="5"
             android:orientation="horizontal">
 
             <Button
@@ -108,19 +108,13 @@
                 android:textColor="#E61000" />
         </LinearLayout>
 
-        <ScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/userRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="15">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/userRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="?android:attr/actionBarSize"
-                android:layout_weight="10"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-        </ScrollView>
+            android:layout_weight="5"
+            android:layout_marginBottom="?android:attr/actionBarSize"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     </LinearLayout>
 

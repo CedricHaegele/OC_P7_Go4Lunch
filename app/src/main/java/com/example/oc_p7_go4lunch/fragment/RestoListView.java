@@ -165,7 +165,7 @@ public class RestoListView extends Fragment {
                                         float distance2 = currentLocation.distanceTo(loc2);
                                         return Float.compare(distance1, distance2);
                                     });
-                                    // Mettre à jour l'adaptateur avec la nouvelle liste triée
+
                                     restoListAdapter.updateData(restaurantList);
                                 } else {
                                     placesList.clear();

@@ -34,18 +34,13 @@ public class WorkmatesList extends Fragment {
 
         // Observe changes in the users list
         viewModel.getUsersList().observe(getViewLifecycleOwner(), usersList -> {
-            Log.d("WorkmatesList", "Received users list update.");
             initializeList(usersList);
         });
-
-
         binding.workmatesList.setLayoutManager(new LinearLayoutManager(requireContext()));
-
         return view;
     }
 
     public void initializeList(List<UserModel> usersList) {
-        Log.d("WorkmatesList", "Initializing list with size: " + usersList.size());
         workmatesListAdapter = new WorkmatesListAdapter(usersList);
         binding.workmatesList.setAdapter(workmatesListAdapter);
     }

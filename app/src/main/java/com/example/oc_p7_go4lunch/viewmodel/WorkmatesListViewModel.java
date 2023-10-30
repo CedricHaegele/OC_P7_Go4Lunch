@@ -31,7 +31,7 @@ public class WorkmatesListViewModel extends ViewModel {
         firestoreHelper.getUsersCollection()
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
-                        // Handle error here
+
                         return;
                     }
                     if (value != null) {

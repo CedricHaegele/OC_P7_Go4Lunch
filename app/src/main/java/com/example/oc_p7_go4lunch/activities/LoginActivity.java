@@ -21,15 +21,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 // LoginActivity class extends AppCompatActivity, which is the base class for activities in Android
 public class LoginActivity extends AppCompatActivity {
     public static final String TAG = "LoginActivity";
-    public static final String USERS_COLLECTION = "users";
-    private static final int RC_SIGN_IN = 123;
     private FirestoreHelper firestoreHelper;
 
     // Variable to handle the sign-in result
@@ -101,9 +97,6 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            // Creating a user model object
-            UserModel user = new UserModel(firebaseUser.getEmail(), firebaseUser.getDisplayName(), photoProfile.toString());
-
             // Check if user exists in Firestore
             firestoreHelper.getUsersCollection().document(firebaseUser.getUid()).get()
                     .addOnCompleteListener(task -> {
@@ -115,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 // Create new user
                                 Log.d("Firestore", "Creating new user");
-                                firestoreHelper.addUser(firebaseUser.getUid(), firebaseUser.getDisplayName());
+                                firestoreHelper.addUser(firebaseUser.getUid(), firebaseUser.getDisplayName(), String.valueOf(firebaseUser.getPhotoUrl()));
                             }
                         } else {
                             Log.d("Firestore", "Failed to get user", task.getException());

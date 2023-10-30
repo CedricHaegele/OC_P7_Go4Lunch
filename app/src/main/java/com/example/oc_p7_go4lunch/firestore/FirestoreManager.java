@@ -49,20 +49,20 @@ public class FirestoreManager {
 
         DocumentReference docRef = db.collection("restaurants").document(placeId);
 
-        // Log pour vérifier la valeur de placeId
+
         Log.e("MyApp", "Valeur de placeId: " + placeId);
 
         docRef.get().addOnCompleteListener(task -> {
-            // Log pour vérifier si la tâche est terminée
+
             Log.e("MyApp", "Tâche Firestore terminée");
 
             if (task.isSuccessful()) {
-                // Log pour dire que la tâche a réussi
+
                 Log.e("MyApp", "Tâche Firestore réussie");
 
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    // Log pour dire que le document existe
+
                     Log.e("MyApp", "Le document restaurant existe");
 
                     // Update the user list associated with the restaurant
@@ -75,7 +75,7 @@ public class FirestoreManager {
                             })
                             .addOnFailureListener(e -> Log.e("MyApp", "Failed to associate user with restaurant", e));
                 } else {
-                    // Log pour dire que le document n'existe pas
+
                     Log.e("MyApp", "Le document restaurant n'existe pas");
 
                     // Create the restaurant document first, if it does not exist

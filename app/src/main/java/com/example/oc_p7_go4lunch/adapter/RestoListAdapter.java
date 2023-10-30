@@ -44,7 +44,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Utilisez ViewBinding pour gonfler la vue
+
         FragmentRestoItemBinding binding = FragmentRestoItemBinding.inflate(layoutInflater, parent, false);
         return new MyViewHolder(binding);
     }
@@ -59,11 +59,14 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     public void updateData(List<RestaurantModel> newPlacesList) {
         this.placesList = newPlacesList;
         placesList.sort((r1, r2) -> Float.compare(r1.getDistanceFromCurrentLocation(), r2.getDistanceFromCurrentLocation()));
+        Log.d("AdapterUpdate", "About to call notifyDataSetChanged");
         notifyDataSetChanged();
+        Log.d("AdapterUpdate", "Called notifyDataSetChanged");
+
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        // Utilisez ViewBinding pour les composants de l'interface utilisateur
+
         private final FragmentRestoItemBinding binding;
 
         public MyViewHolder(@NonNull FragmentRestoItemBinding binding) {

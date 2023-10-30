@@ -25,6 +25,12 @@
     <string name="open">Open navigation</string>
     <string name="close">Close navigation</string>
 
+    <!-- RESTAURANT DETAILS ACTIVITY -->
+    <string name="no_phone_number">No phone number</string>
+    <string name="no_phone_number_message">The restaurant does not have a phone number </string>
+    <string name="tel">tel:</string>
+    <string name="no_website">The restaurant does not have a website </string>
+
 
     <string name="title_activity_maps">MapsActivity</string>
 
