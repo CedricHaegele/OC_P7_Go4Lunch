@@ -40,6 +40,8 @@ public class MapViewModel extends AndroidViewModel {
     public LocationRequest locationRequest;
     public LocationCallback locationCallback;
 
+    private MutableLiveData<Boolean> isLocationPermissionGranted = new MutableLiveData<>();
+
     private final MutableLiveData<Boolean> isLocationReady = new MutableLiveData<>(false);
 
     // FusedLocationProviderClient instance for interacting with Google Play services' location APIs.
@@ -57,7 +59,7 @@ public class MapViewModel extends AndroidViewModel {
     // ViewModel Constructor
     public MapViewModel(@NonNull Application application, GooglePlacesApi googlePlacesApi) {
         super(application);
-        Log.d("MapViewModel", "Constructor called");
+
         // Initialize FusedLocationProviderClient.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(application);
 
@@ -68,13 +70,15 @@ public class MapViewModel extends AndroidViewModel {
         fetchLastLocation();
     }
 
+
+
     // Method to fetch the last known location.
     private void fetchLastLocation() {
-        Log.d("MapViewModel", "fetchLastLocation called");
+
         try {
             fusedLocationProviderClient.getLastLocation()
                     .addOnSuccessListener(location -> {
-                        Log.d("MapViewModel", "Location retrieved: " + location);
+
                         if (location != null) {
                             locationData.setValue(location);
                             isLocationReady.setValue(true);

@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Places {
+public class MyPlaces {
 
     // Field with serialized name for Gson to map JSON field
     @SerializedName("results")

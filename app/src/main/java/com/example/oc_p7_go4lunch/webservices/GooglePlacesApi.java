@@ -1,8 +1,7 @@
 package com.example.oc_p7_go4lunch.webservices;
 
 import com.example.oc_p7_go4lunch.RestoInformations;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
-import com.example.oc_p7_go4lunch.model.googleplaces.Places;
+import com.example.oc_p7_go4lunch.model.googleplaces.MyPlaces;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantResponse;
 
 import retrofit2.Call;
@@ -24,7 +23,7 @@ public interface GooglePlacesApi {
                                                  @Query("fields") String fields,
                                                  @Query("key") String apiKey);
     @GET
-    Call<Places> getAllPlaces(@Url String url);
+    Call<MyPlaces> getAllPlaces(@Url String url);
 
 
 }

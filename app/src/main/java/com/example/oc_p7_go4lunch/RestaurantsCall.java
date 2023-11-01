@@ -4,7 +4,7 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
-import com.example.oc_p7_go4lunch.model.googleplaces.Places;
+import com.example.oc_p7_go4lunch.model.googleplaces.MyPlaces;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
@@ -31,10 +31,10 @@ public class RestaurantsCall {
         GooglePlacesApi googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
 
         // Make an API call to get all places.
-        googlePlacesApi.getAllPlaces(url).enqueue(new Callback<Places>() {
+        googlePlacesApi.getAllPlaces(url).enqueue(new Callback<MyPlaces>() {
             @Override
             // Method that's called when API call is successful.
-            public void onResponse(Call<Places> call, Response<Places> response) {
+            public void onResponse(Call<MyPlaces> call, Response<MyPlaces> response) {
 
                 // Check if there is no error in the response.
                 if (response.errorBody() == null) {
@@ -86,7 +86,7 @@ public class RestaurantsCall {
 
             @Override
             // Method that's called when API call fails.
-            public void onFailure(Call<Places> call, Throwable t) {
+            public void onFailure(Call<MyPlaces> call, Throwable t) {
 
             }
         });

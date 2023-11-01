@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
@@ -29,6 +30,7 @@ import com.example.oc_p7_go4lunch.databinding.RestaurantDetailBinding;
 import com.example.oc_p7_go4lunch.helper.FirestoreHelper;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
+import com.example.oc_p7_go4lunch.viewmodel.RestaurantDetailViewModel;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.gms.common.api.ApiException;
@@ -71,20 +73,84 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         setContentView(binding.getRoot());
 
         Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
-
+        PlacesClient placesClient = Places.createClient(this);
         firestoreHelper = new FirestoreHelper(this);
 
         initRecyclerView();
         updateButtonUI();
-        fetchRestaurantData();
+
+        RestaurantDetailViewModel viewModel = new ViewModelProvider(this).get(RestaurantDetailViewModel.class);
+
+        viewModel.restaurantName.observe(this, name -> {
+            binding.restaurantName.setText(name);
+        });
+
+        viewModel.restaurantAddress.observe(this, address -> {
+            binding.restaurantAddress.setText(address);
+        });
+
+        viewModel.restaurantRating.observe(this, rating -> {
+            binding.ratingDetail.setRating(rating);
+        });
+
+        //viewModel.isButtonChecked.observe(this, this::updateButtonUI);
+        //viewModel.isLiked.observe(this, this::updateLikeButtonUI);
+
+        // Instanciation du ViewModel
+        RestaurantDetailViewModel restaurantDetailViewModel = new ViewModelProvider(this).get(RestaurantDetailViewModel.class);
+        restaurantDetailViewModel.getPlacesData().observe(this, places -> {
+            // Mise à jour de l'UI avec les données de 'places'
+        });
+
+        restaurantDetailViewModel.getError().observe(this, exception -> {
+            // Gestion des erreurs
+        });
+
+        // Récupération des données de l'intent
+        Intent callingIntent = getIntent();
+        restaurantDetailViewModel.fetchRestaurantData(callingIntent);
+
+        // Observateur sur le restaurant
+        restaurantDetailViewModel.restaurant.observe(this, newRestaurantData -> {
+
+            binding.restaurantName.setText(newRestaurantData.getName());
+            binding.restaurantAddress.setText(newRestaurantData.getVicinity());
+            if (newRestaurantData.getRating() != null) {
+                binding.ratingDetail.setRating(newRestaurantData.getRating().floatValue());
+            } else {
+                binding.ratingDetail.setRating(0);
+            }
+        });
+
+        // Observer les LiveData
+        restaurantDetailViewModel.phoneNumber.observe(this, number -> {
+            binding.callButton.setText(number);
+        });
+
+        restaurantDetailViewModel.websiteUrl.observe(this, url -> {
+            binding.websiteButton.setText(url);
+        });
+
+        restaurantDetailViewModel.isLiked.observe(this, liked -> {
+            if (liked) {
+                binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_baseline_star_24, 0, 0);
+            } else {
+                binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_yes, 0, 0);
+            }
+        });
+
+        // Appeler la méthode pour récupérer les détails
+        String placeId = "place_id";
+        restaurantDetailViewModel.fetchRestaurantDetails(placeId, apikey);
 
         Intent intent = getIntent();
-        String placeId = intent.getStringExtra("place_id");
+        String intentPlaceId = intent.getStringExtra("place_id");
         updatedList = new ArrayList<>();
 
-        if (placeId != null) {
-            fetchPlaceDetails(placeId);
+        if (intentPlaceId != null) {
+            restaurantDetailViewModel.fetchPlaceDetails(placesClient, intentPlaceId);
         }
+
 
         if (restaurant != null) {
             String restaurantId = restaurant.getPlaceId();
@@ -98,7 +164,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
             } else {
                 binding.ratingDetail.setRating(0);
             }
-
 
             firestoreHelper.getRestaurantDocument(restaurantId).
                     get().addOnSuccessListener(documentSnapshot ->
@@ -139,7 +204,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 }
             });
         }
-        fetchRestaurantDetails();
 
         //Button add Restaurant
         binding.fab.setOnClickListener(v -> {
@@ -155,12 +219,12 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                                 DocumentSnapshot document = task.getResult();
                                 if (document != null && document.exists()) {
                                     firestoreHelper.updateRestaurant(restaurantId, isButtonChecked, userId);
-                                    UserModel userModel = new UserModel(userId,currentUser.getDisplayName());
+                                    UserModel userModel = new UserModel(userId, currentUser.getDisplayName());
                                     if (isButtonChecked) {
                                         firestoreHelper.addUserToRestaurantList(restaurantId, userId);
                                         combinedList.add(userModel);
-                                        for(int i=0;i<combinedList.size();i++){
-                                            Log.d("User : " + i , combinedList.get(i).name);
+                                        for (int i = 0; i < combinedList.size(); i++) {
+                                            Log.d("User : " + i, combinedList.get(i).name);
                                         }
 
                                         userListAdapter.notifyDataSetChanged();
@@ -247,50 +311,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
     }
 
 
-    private void fetchPlaceDetails(String placeId) {
-        PlacesClient placesClient = Places.createClient(this);
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
-        FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
-
-        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-            Place place = response.getPlace();
-            // Update UI with place details
-            binding.restaurantName.setText(place.getName());
-            binding.restaurantAddress.setText(place.getAddress());
-            if (place.getRating() != null) {
-                binding.ratingDetail.setRating(place.getRating().floatValue());
-            }
-
-            // Get photo metadata
-            List<PhotoMetadata> photoMetadataList = place.getPhotoMetadatas();
-            if (photoMetadataList != null && !photoMetadataList.isEmpty()) {
-                PhotoMetadata photoMetadata = photoMetadataList.get(0);
-
-                // Create a FetchPhotoRequest
-                FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                        .setMaxWidth(500)
-                        .setMaxHeight(300)
-                        .build();
-
-                // Fetch photo and update UI
-                placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
-                    Bitmap bitmap = fetchPhotoResponse.getBitmap();
-                    binding.logo.setImageBitmap(bitmap);
-                }).addOnFailureListener((exception) -> {
-                    if (exception instanceof ApiException) {
-                        Log.e("PlaceAPI", "Place not found: " + exception.getMessage());
-                    }
-                });
-            }
-
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                Log.e("PlaceAPI", "Place not found: " + exception.getMessage());
-            }
-        });
-    }
-
-
     private void updateLikeButtonUI() {
         int drawableRes = isLiked ? R.drawable.baseline_star_yes : R.drawable.ic_baseline_star_24;
         binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, drawableRes, 0, 0);
@@ -303,16 +323,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         binding.userRecyclerView.setAdapter(userListAdapter);
     }
 
-    // Fetch restaurant or place data from the intent
-    private void fetchRestaurantData() {
-        Intent callingIntent = getIntent();
-        if (callingIntent != null) {
-            if (callingIntent.hasExtra("Restaurant")) {
-                restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
-
-            }
-        }
-    }
 
     private void updateButtonUI() {
         int imageRes = isButtonChecked ? R.drawable.ic_button_is_checked : R.drawable.baseline_check_circle_outline_24;
@@ -320,48 +330,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
 
     }
 
-
-    private void fetchRestaurantDetails() {
-        if (restaurant != null) {
-            GooglePlacesApi googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
-            Call<RestoInformations> call = googlePlacesApi.getRestaurantDetails(
-                    restaurant.getPlaceId(),
-                    "formatted_phone_number,website,like",
-                    apikey
-            );
-            call.enqueue(new Callback<RestoInformations>() {
-                @Override
-                public void onResponse(@NonNull Call<RestoInformations> call, @NonNull Response<RestoInformations> response) {
-                    if (response.isSuccessful()) {
-                        RestoInformations details = response.body();
-                        if (details != null) {
-                            if (details.getFormattedPhoneNumber() != null) {
-                                phoneNumber = details.getFormattedPhoneNumber();
-                                binding.callButton.setText(phoneNumber);
-                            }
-                            if (details.getWebsite() != null) {
-                                websiteUrl = details.getWebsite();
-                                binding.websiteButton.setText(websiteUrl);
-                            }
-                        }
-                        assert details != null;
-                        if (details.getWebsite() != null) {
-                            if (details.isLiked()) {
-                                binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_baseline_star_24, 0, 0);
-                            } else {
-                                binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_yes, 0, 0);
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<RestoInformations> call, @NonNull Throwable t) {
-                    Log.e("API Error", "Error fetching restaurant details: " + t.getMessage());
-                }
-            });
-        }
-    }
 
     // Load image using Glide
     private void loadImage(String photoUrl) {
@@ -388,5 +356,4 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         Log.d(TAG, "onUserDataReceived: User added, new list size: " + combinedList.size());
         runOnUiThread(() -> userListAdapter.notifyDataSetChanged());
     }
-
 }

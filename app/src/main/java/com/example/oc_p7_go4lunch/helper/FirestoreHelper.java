@@ -36,7 +36,7 @@ public class FirestoreHelper {
     public void addUser(String userId, String userName, String photoUrl) {
         // Create a new user using a HashMap
         Map<String, Object> user = new HashMap<>();
-        user.put("userIds", userId);
+        user.put("userId", userId);
         user.put("userName", userName);
         user.put("photo", photoUrl); // Add photo URL
 
@@ -67,7 +67,7 @@ public class FirestoreHelper {
         restaurant.put("isButtonChecked", isButtonChecked);
         List<String> usersList = new ArrayList<>();
         usersList.add(userId);
-        restaurant.put("userIds", usersList);
+        restaurant.put("userId", usersList);
 
         db.collection("restaurants").document(restaurantId)
                 .set(restaurant)
@@ -86,7 +86,7 @@ public class FirestoreHelper {
         // Prepare the updates in a Map
         Map<String, Object> updates = new HashMap<>();
         updates.put("isButtonChecked", isButtonChecked);
-        updates.put("userIds", FieldValue.arrayUnion(userId));
+        updates.put("userId", FieldValue.arrayUnion(userId));
 
         // Perform the update
         restaurantRef.update(updates)
@@ -112,7 +112,7 @@ public class FirestoreHelper {
 
         DocumentReference restaurantRef = db.collection("restaurants").document(restaurantId);
 
-        restaurantRef.update("userIds", FieldValue.arrayUnion(userId))
+        restaurantRef.update("userId", FieldValue.arrayUnion(userId))
                 .addOnSuccessListener(aVoid -> Log.d("Debug", "Successfully added user to restaurant list"))
                 .addOnFailureListener(e -> Log.e("Debug", "Failed to add user from restaurant list.", e));
     }
@@ -121,7 +121,7 @@ public class FirestoreHelper {
 
         DocumentReference restaurantRef = db.collection("restaurants").document(restaurantId);
 
-        restaurantRef.update("userIds", FieldValue.arrayRemove(userId))
+        restaurantRef.update("userId", FieldValue.arrayRemove(userId))
                 .addOnSuccessListener(aVoid -> Log.d("Debug", "Successfully removed user to restaurant list"))
                 .addOnFailureListener(e -> Log.e("Debug", "Failed to remove user from restaurant list.", e));
     }

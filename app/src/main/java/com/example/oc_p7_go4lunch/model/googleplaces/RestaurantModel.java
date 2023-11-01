@@ -25,6 +25,25 @@ public class RestaurantModel implements Serializable {
     @Expose
     private String iconMaskBaseUri;
 
+    public RestaurantModel(String id, String name, String address, Float aFloat) {
+        this.placeId = id;
+        this.name = name;
+        this.vicinity = address;
+        this.rating = rating != null ? rating.doubleValue() : null;
+    }
+
+    public RestaurantModel() {
+
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
+    public void setVicinity(String vicinity) {
+        this.vicinity = vicinity;
+    }
+
     public void setName(String name) {
         this.name = name;
     }

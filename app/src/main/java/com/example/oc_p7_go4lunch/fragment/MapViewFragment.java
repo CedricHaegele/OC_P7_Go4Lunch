@@ -66,6 +66,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -74,7 +75,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
         // Ask permission first
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d("MapViewFragment", "Requesting location permission");
+
             ActivityCompat.requestPermissions(
                     requireActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
@@ -90,7 +91,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     private void initMapAndViewModel() {
         Log.d("MapViewFragment", "initMapAndViewModel called");
-        // Initialize Google Places API
+        // Initialize Google MyPlaces API
         GooglePlacesApi googlePlacesApiInstance = ApiProvider.getGooglePlacesApi();
 
         // Initialize ViewModel using a factory to pass in additional dependencies

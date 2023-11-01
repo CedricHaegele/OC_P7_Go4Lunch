@@ -87,5 +87,10 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
             }
         }
     }
+
+    public void updateList(List<UserModel> newUserList) {
+        this.userList = newUserList;
+        notifyDataSetChanged();
+    }
 }
 

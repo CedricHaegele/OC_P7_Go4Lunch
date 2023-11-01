@@ -93,10 +93,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         });
 
-        // Initialize Places API if it's not already initialized
+        // Initialize MyPlaces API if it's not already initialized
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
-            // Create a new Places client instance.
+            // Create a new MyPlaces client instance.
             PlacesClient placesClient = Places.createClient(this);
         }
 

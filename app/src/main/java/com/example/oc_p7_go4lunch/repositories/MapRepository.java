@@ -25,10 +25,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MapRepository {
-    // Instance variable for Google Places API
+    // Instance variable for Google MyPlaces API
     private final GooglePlacesApi googlePlacesApi;
 
-    // Constructor to initialize Google Places API instance
+    // Constructor to initialize Google MyPlaces API instance
     public MapRepository(GooglePlacesApi googlePlacesApi) {
         this.googlePlacesApi = googlePlacesApi;
     }

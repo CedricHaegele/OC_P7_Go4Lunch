@@ -24,7 +24,7 @@ import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.adapter.RestoListAdapter;
 
 import com.example.oc_p7_go4lunch.databinding.FragmentRestoListBinding;
-import com.example.oc_p7_go4lunch.model.googleplaces.Places;
+import com.example.oc_p7_go4lunch.model.googleplaces.MyPlaces;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
 import com.example.oc_p7_go4lunch.viewmodel.RestoListViewModel;
@@ -50,7 +50,7 @@ public class RestoListView extends Fragment {
     RecyclerView recyclerView;
     List<RestaurantModel> placesList = new ArrayList<>();
     RestoListAdapter restoListAdapter;
-    // The entry point to the Places API.
+    // The entry point to the MyPlaces API.
     private Context mContext;
     GoogleMap map;
     List<RestaurantModel> restaurantList = new ArrayList<>();
@@ -140,9 +140,9 @@ public class RestoListView extends Fragment {
                     + "&type=restaurant"
                     + "&key=" + BuildConfig.API_KEY;
             GooglePlacesApi googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
-            googlePlacesApi.getAllPlaces(url).enqueue(new Callback<Places>() {
+            googlePlacesApi.getAllPlaces(url).enqueue(new Callback<MyPlaces>() {
                 @Override
-                public void onResponse(@NonNull Call<Places> call, @NonNull Response<Places> response) {
+                public void onResponse(@NonNull Call<MyPlaces> call, @NonNull Response<MyPlaces> response) {
                     if (isAdded()) {
                         if (response.errorBody() == null) {
                             if (response.body() != null) {
@@ -190,7 +190,7 @@ public class RestoListView extends Fragment {
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<Places> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<MyPlaces> call, @NonNull Throwable t) {
                 }
             });
         }
