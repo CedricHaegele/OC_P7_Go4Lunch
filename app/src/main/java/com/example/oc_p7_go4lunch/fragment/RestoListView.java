@@ -76,7 +76,7 @@ public class RestoListView extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentRestoListBinding.inflate(inflater,container,false);
+        binding = FragmentRestoListBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
         recyclerView = binding.listRestos;
@@ -237,13 +237,12 @@ public class RestoListView extends Fragment {
                     // 1 - Get restaurant from adapter
                     RestaurantModel restaurant = restoListAdapter.getPlacesList().get(position);
                     if (restaurant != null) {
-                        // 2 - Show result in a Toast
-                        Toast.makeText(getContext(), "You clicked on Restaurant : " + restaurant.getName(), Toast.LENGTH_SHORT).show();
+
                         Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
                         intent.putExtra("Restaurant", restaurant);
                         startActivity(intent);
                     } else {
-                        Toast.makeText(getContext(), "Restaurant data is not available", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "The Restaurant isn't available !!!", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

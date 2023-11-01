@@ -2,6 +2,7 @@ package com.example.oc_p7_go4lunch.helper;
 
 import android.util.Log;
 
+import com.example.oc_p7_go4lunch.firestore.OnUserDataReceivedListener;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -135,17 +136,21 @@ public class FirestoreHelper {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-
                         String name = documentSnapshot.getString("name");
                         String photoUrl = documentSnapshot.getString("photo");
-                        Log.d("FirestoreHelper", "Photo URL: " + photoUrl);
                         UserModel userModel = new UserModel(userId, name, photoUrl);
-                        listener.onUserDataReceived(userModel);
-                    } else {
-                        Log.e("Firestore", "No user data found for userId: " + userId);
+
+
+                        if (listener != null) {
+                            listener.onUserDataReceived(userModel);
+                        }
                     }
                 })
                 .addOnFailureListener(e -> Log.e("Firestore Error", "Error fetching user data: " + e.getMessage()));
+    }
+
+    public void setListener(com.example.oc_p7_go4lunch.firestore.OnUserDataReceivedListener onUserDataReceivedListener) {
+        this.listener = listener;
     }
 
     // Callback interface when user data is received

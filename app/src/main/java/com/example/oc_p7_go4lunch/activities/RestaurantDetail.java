@@ -32,6 +32,8 @@ import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.viewmodel.RestaurantDetailViewModel;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
+import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
+import com.example.oc_p7_go4lunch.webservices.RestaurantDetailViewModelFactory;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.libraries.places.api.Places;
@@ -56,6 +58,7 @@ import retrofit2.Response;
 public class RestaurantDetail extends AppCompatActivity implements FirestoreHelper.OnUserDataReceivedListener {
     private final String apikey = BuildConfig.API_KEY;
     private RestaurantDetailBinding binding;
+    private RestaurantDetailViewModel restaurantDetailViewModel;
     private FirestoreHelper firestoreHelper;
     private String phoneNumber;
     private String websiteUrl;
@@ -65,51 +68,78 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
     private final List<UserModel> combinedList = new ArrayList<>();
     private UserListAdapter userListAdapter;
     public List<UserModel> updatedList;
+    private String restaurantId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = RestaurantDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
         PlacesClient placesClient = Places.createClient(this);
         firestoreHelper = new FirestoreHelper(this);
-
         initRecyclerView();
         updateButtonUI();
-
-        RestaurantDetailViewModel viewModel = new ViewModelProvider(this).get(RestaurantDetailViewModel.class);
-
-        viewModel.restaurantName.observe(this, name -> {
+        setupButtonListeners();
+        RestaurantApiService restaurantApiService = new RestaurantApiService();
+        RestaurantDetailViewModelFactory factory = new RestaurantDetailViewModelFactory(new RestaurantApiService());
+        RestaurantDetailViewModel restaurantDetailViewModel = new ViewModelProvider(this).get(RestaurantDetailViewModel.class);
+        restaurantDetailViewModel.getPhotoUrl().observe(this, this::loadImage);
+        restaurantDetailViewModel.restaurantName.observe(this, name -> {
             binding.restaurantName.setText(name);
         });
-
-        viewModel.restaurantAddress.observe(this, address -> {
+        restaurantDetailViewModel.restaurantAddress.observe(this, address -> {
             binding.restaurantAddress.setText(address);
         });
-
-        viewModel.restaurantRating.observe(this, rating -> {
+        restaurantDetailViewModel.restaurantRating.observe(this, rating -> {
             binding.ratingDetail.setRating(rating);
         });
 
-        //viewModel.isButtonChecked.observe(this, this::updateButtonUI);
-        //viewModel.isLiked.observe(this, this::updateLikeButtonUI);
+        binding.fab.setOnClickListener(v -> {
+            isButtonChecked = !isButtonChecked;
+            updateButtonUI();
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser != null && restaurant != null) {
+                String userId = currentUser.getUid();
+                String restaurantId = restaurant.getPlaceId();
+                String userName = currentUser.getDisplayName();
+                restaurantDetailViewModel.updateRestaurantList(restaurantId, isButtonChecked, userId, userName);
+            }
+        });
 
-        // Instanciation du ViewModel
-        RestaurantDetailViewModel restaurantDetailViewModel = new ViewModelProvider(this).get(RestaurantDetailViewModel.class);
+
+        binding.likeButton.setOnClickListener(v -> {
+            isLiked = !isLiked;
+            updateLikeButtonUI();
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser != null && restaurant != null) {
+                String restaurantId = restaurant.getPlaceId();
+                restaurantDetailViewModel.updateRestaurantLike(restaurantId, isLiked);
+            }
+        });
+
+        binding.callButton.setOnClickListener(v -> {
+            String noPhoneNumberString = getString(R.string.no_phone_number);
+            if (restaurantDetailViewModel.isPhoneNumberValid(noPhoneNumberString)) {
+                String phoneNumber = restaurantDetailViewModel.phoneNumber.getValue();
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(getString(R.string.tel) + phoneNumber));
+                startActivity(intent);
+            } else {
+                Toast.makeText(RestaurantDetail.this, getString(R.string.no_phone_number_message), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         restaurantDetailViewModel.getPlacesData().observe(this, places -> {
             // Mise à jour de l'UI avec les données de 'places'
         });
-
         restaurantDetailViewModel.getError().observe(this, exception -> {
             // Gestion des erreurs
         });
-
         // Récupération des données de l'intent
         Intent callingIntent = getIntent();
         restaurantDetailViewModel.fetchRestaurantData(callingIntent);
-
+        restaurantId = callingIntent.getStringExtra("restaurantIdKey");
         // Observateur sur le restaurant
         restaurantDetailViewModel.restaurant.observe(this, newRestaurantData -> {
 
@@ -121,16 +151,18 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 binding.ratingDetail.setRating(0);
             }
         });
-
         // Observer les LiveData
         restaurantDetailViewModel.phoneNumber.observe(this, number -> {
             binding.callButton.setText(number);
         });
-
         restaurantDetailViewModel.websiteUrl.observe(this, url -> {
             binding.websiteButton.setText(url);
         });
-
+        if (restaurantId != null && !restaurantId.isEmpty()) {
+            restaurantDetailViewModel.fetchUserData(restaurantId);
+        } else {
+            Log.e("RestaurantDetail", "Restaurant ID is null or empty");
+        }
         restaurantDetailViewModel.isLiked.observe(this, liked -> {
             if (liked) {
                 binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_baseline_star_24, 0, 0);
@@ -138,20 +170,15 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.baseline_star_yes, 0, 0);
             }
         });
-
         // Appeler la méthode pour récupérer les détails
         String placeId = "place_id";
         restaurantDetailViewModel.fetchRestaurantDetails(placeId, apikey);
-
         Intent intent = getIntent();
         String intentPlaceId = intent.getStringExtra("place_id");
         updatedList = new ArrayList<>();
-
         if (intentPlaceId != null) {
             restaurantDetailViewModel.fetchPlaceDetails(placesClient, intentPlaceId);
         }
-
-
         if (restaurant != null) {
             String restaurantId = restaurant.getPlaceId();
             Double rating = restaurant.getRating();
@@ -164,149 +191,13 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
             } else {
                 binding.ratingDetail.setRating(0);
             }
-
-            firestoreHelper.getRestaurantDocument(restaurantId).
-                    get().addOnSuccessListener(documentSnapshot ->
-                    {
-                        if (documentSnapshot.exists()) {
-                            Boolean buttonState = documentSnapshot.getBoolean("isButtonChecked");
-                            Boolean likeState = documentSnapshot.getBoolean("isLiked");
-                            if (buttonState != null) {
-                                isButtonChecked = buttonState;
-                                updateButtonUI();
-                            }
-                            if (likeState != null) {
-                                isLiked = likeState;
-                                updateLikeButtonUI();
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e ->
-                    {
-                        Log.e("Firestore Error", "Error fetching document: " + e.getMessage());
-                    });
-
-            DocumentReference docRef = firestoreHelper.getRestaurantDocument(restaurantId);
-            docRef.addSnapshotListener((snapshot, e) -> {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-                if (snapshot != null && snapshot.exists()) {
-                    List<String> userIds = (List<String>) snapshot.get("userIds");
-                    Log.d("SnapshotData", "User IDs: " + userIds.toString());
-                    if (userIds != null) {
-                        combinedList.clear();
-                        for (String users : userIds) {
-                            firestoreHelper.getUserData(users);
-                        }
-                    }
-                }
-            });
         }
 
-        //Button add Restaurant
-        binding.fab.setOnClickListener(v -> {
-            isButtonChecked = !isButtonChecked;
-            updateButtonUI();
-            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (currentUser != null) {
-                String userId = currentUser.getUid();
-                String restaurantId = restaurant.getPlaceId();
-                firestoreHelper.getRestaurantDocument(restaurantId).get()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-                                if (document != null && document.exists()) {
-                                    firestoreHelper.updateRestaurant(restaurantId, isButtonChecked, userId);
-                                    UserModel userModel = new UserModel(userId, currentUser.getDisplayName());
-                                    if (isButtonChecked) {
-                                        firestoreHelper.addUserToRestaurantList(restaurantId, userId);
-                                        combinedList.add(userModel);
-                                        for (int i = 0; i < combinedList.size(); i++) {
-                                            Log.d("User : " + i, combinedList.get(i).name);
-                                        }
+    }
 
-                                        userListAdapter.notifyDataSetChanged();
-                                    } else {
-                                        firestoreHelper.removeUserFromRestaurantList(restaurantId, userId);
-                                        for (UserModel model : combinedList) {
-                                            if (model.getUserId() != null && model.getUserId().equals(userId)) {
-
-                                                combinedList.remove(model);
-                                                Log.d("CombinedList", "Remove Result: " + combinedList.size());
-                                                userListAdapter.notifyDataSetChanged();
-                                                break;
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    firestoreHelper.addRestaurant(restaurantId, isButtonChecked, userId);
-                                    if (isButtonChecked) {
-                                        firestoreHelper.addUserToRestaurantList(restaurantId, userId);
-                                    }
-                                }
-                            }
-                        });
-            }
-        });
-
-        //Button like Restaurant
-        binding.likeButton.setOnClickListener(v -> {
-            isLiked = !isLiked;
-            updateLikeButtonUI();
-            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (currentUser != null) {
-                String userId = currentUser.getUid();
-                String restaurantId = restaurant.getPlaceId();
-                firestoreHelper.getRestaurantDocument(restaurantId).get()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-                                if (document != null && document.exists()) {
-                                    firestoreHelper.updateRestaurantLike(restaurantId, isLiked);
-                                } else {
-                                    firestoreHelper.addRestaurantWithLike(restaurantId, isLiked);
-                                }
-                            }
-                        });
-            }
-        });
-
-        // CALL THE RESTAURANT
-        binding.callButton.setOnClickListener(v -> {
-            if (getString(R.string.no_phone_number).equals(phoneNumber)) {
-                Toast.makeText(
-                        RestaurantDetail.this,
-                        getString(R.string.no_phone_number_message),
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                Intent int1 =
-                        new Intent(
-                                Intent.ACTION_DIAL,
-                                Uri.parse(getString(R.string.tel) + phoneNumber));
-                startActivity(int1);
-            }
-        });
-
-        // RESTAURANT WEBSITE
+    private void setupButtonListeners() {
         binding.websiteButton.setOnClickListener(v -> {
-            if (websiteUrl == null) {
-                Toast.makeText(
-                        RestaurantDetail.this,
-                        getString(R.string.no_website),
-                        Toast.LENGTH_LONG).show();
-            } else {
-                if (websiteUrl.equals("https://www.google.com/")) {
-                    Toast.makeText(
-                            RestaurantDetail.this,
-                            getString(R.string.no_website),
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    Intent int2 = new Intent(Intent.ACTION_VIEW, Uri.parse(websiteUrl));
-                    startActivity(int2);
-                }
-            }
+            restaurantDetailViewModel.onWebsiteButtonClicked();
         });
     }
 
@@ -323,13 +214,11 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         binding.userRecyclerView.setAdapter(userListAdapter);
     }
 
-
     private void updateButtonUI() {
         int imageRes = isButtonChecked ? R.drawable.ic_button_is_checked : R.drawable.baseline_check_circle_outline_24;
         binding.fab.setImageResource(imageRes);
 
     }
-
 
     // Load image using Glide
     private void loadImage(String photoUrl) {
