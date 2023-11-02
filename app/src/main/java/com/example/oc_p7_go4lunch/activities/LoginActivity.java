@@ -104,10 +104,9 @@ public class LoginActivity extends AppCompatActivity {
                             DocumentSnapshot document = task.getResult();
                             if (document != null && document.exists()) {
                                 // User already exists
-                                Log.d("Firestore", "User already exists");
+                                firestoreHelper.getUserData(firebaseUser.getUid());
                             } else {
                                 // Create new user
-                                Log.d("Firestore", "Creating new user");
                                 firestoreHelper.addUser(firebaseUser.getUid(), firebaseUser.getDisplayName(), String.valueOf(firebaseUser.getPhotoUrl()));
                             }
                         } else {

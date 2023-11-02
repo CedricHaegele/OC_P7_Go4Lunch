@@ -241,6 +241,7 @@ public class RestoListView extends Fragment {
                         Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
                         intent.putExtra("Restaurant", restaurant);
                         startActivity(intent);
+
                     } else {
                         Toast.makeText(getContext(), "The Restaurant isn't available !!!", Toast.LENGTH_SHORT).show();
                     }

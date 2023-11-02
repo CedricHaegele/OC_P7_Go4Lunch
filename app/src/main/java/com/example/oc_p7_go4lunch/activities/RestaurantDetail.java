@@ -4,7 +4,6 @@ package com.example.oc_p7_go4lunch.activities;
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,36 +23,21 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.RestoInformations;
 import com.example.oc_p7_go4lunch.adapter.UserListAdapter;
 import com.example.oc_p7_go4lunch.databinding.RestaurantDetailBinding;
 import com.example.oc_p7_go4lunch.helper.FirestoreHelper;
 import com.example.oc_p7_go4lunch.model.firestore.UserModel;
 import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.viewmodel.RestaurantDetailViewModel;
-import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
 import com.example.oc_p7_go4lunch.webservices.RestaurantDetailViewModelFactory;
-import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.PhotoMetadata;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPhotoRequest;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class RestaurantDetail extends AppCompatActivity implements FirestoreHelper.OnUserDataReceivedListener {
     private final String apikey = BuildConfig.API_KEY;
@@ -70,11 +54,13 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
     public List<UserModel> updatedList;
     private String restaurantId;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = RestaurantDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
         Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
         PlacesClient placesClient = Places.createClient(this);
         firestoreHelper = new FirestoreHelper(this);
@@ -83,8 +69,11 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         setupButtonListeners();
         RestaurantApiService restaurantApiService = new RestaurantApiService();
         RestaurantDetailViewModelFactory factory = new RestaurantDetailViewModelFactory(new RestaurantApiService());
-        RestaurantDetailViewModel restaurantDetailViewModel = new ViewModelProvider(this).get(RestaurantDetailViewModel.class);
+        restaurantDetailViewModel = new ViewModelProvider(this, factory).get(RestaurantDetailViewModel.class);
+
+        Log.d("MyPhoto", "Attaching observer on photoUrl");
         restaurantDetailViewModel.getPhotoUrl().observe(this, this::loadImage);
+
         restaurantDetailViewModel.restaurantName.observe(this, name -> {
             binding.restaurantName.setText(name);
         });
@@ -94,6 +83,12 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         restaurantDetailViewModel.restaurantRating.observe(this, rating -> {
             binding.ratingDetail.setRating(rating);
         });
+
+        restaurantDetailViewModel.getRestaurantPhoto().observe(this, bitmap -> {
+            binding.logo.setImageBitmap(bitmap);
+        });
+
+
 
         binding.fab.setOnClickListener(v -> {
             isButtonChecked = !isButtonChecked;
@@ -138,8 +133,20 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         });
         // Récupération des données de l'intent
         Intent callingIntent = getIntent();
+        RestaurantModel restaurantModel = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
+        if (restaurantModel != null) {
+            String placeId = restaurantModel.getPlaceId();
+            if (placeId != null) {
+                Log.d("MyPhoto", "placeId: " + placeId);
+                restaurantDetailViewModel.fetchPlaceDetails(placesClient, placeId);
+            } else {
+                Log.e("MyPhoto", "placeId is null");
+            }
+        } else {
+            Log.e("MyPhoto", "RestaurantModel is null");
+        }
         restaurantDetailViewModel.fetchRestaurantData(callingIntent);
-        restaurantId = callingIntent.getStringExtra("restaurantIdKey");
+        restaurantId = callingIntent.getStringExtra("RestaurantIdKey");
         // Observateur sur le restaurant
         restaurantDetailViewModel.restaurant.observe(this, newRestaurantData -> {
 
@@ -174,9 +181,12 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         String placeId = "place_id";
         restaurantDetailViewModel.fetchRestaurantDetails(placeId, apikey);
         Intent intent = getIntent();
-        String intentPlaceId = intent.getStringExtra("place_id");
+
         updatedList = new ArrayList<>();
+
+        String intentPlaceId = callingIntent.getStringExtra("place_id");
         if (intentPlaceId != null) {
+            Log.d("MyPhoto", "intentPlaceId: " + intentPlaceId);
             restaurantDetailViewModel.fetchPlaceDetails(placesClient, intentPlaceId);
         }
         if (restaurant != null) {
@@ -220,24 +230,30 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
 
     }
 
-    // Load image using Glide
-    private void loadImage(String photoUrl) {
-        Glide.with(this)
-                .load(photoUrl)
-                .error(R.drawable.not_found)
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
-                        return false;
-                    }
+// Load image using Glide
+public void loadImage(String photoUrl) {
+    Log.d("MyPhoto", "Constructed Photo URL: " + photoUrl);
+    Glide.with(this)
+            .load(photoUrl)
+            .error(R.drawable.not_found)
+            .listener(new RequestListener<Drawable>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
+                    Log.e("MyPhoto", "Image load failed", e);
+                    return false;
+                }
 
-                    @Override
-                    public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
-                        return false;
-                    }
-                })
-                .into(binding.logo);
-    }
+                @Override
+                public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+                    Log.d("MyPhoto", "Image load succeeded");
+                    return false;
+                }
+            })
+
+            .into(binding.logo);
+}
+
+
 
     @Override
     public void onUserDataReceived(UserModel userModel) {

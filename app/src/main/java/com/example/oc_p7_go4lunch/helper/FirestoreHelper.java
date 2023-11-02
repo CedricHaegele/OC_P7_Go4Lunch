@@ -39,7 +39,7 @@ public class FirestoreHelper {
         Map<String, Object> user = new HashMap<>();
         user.put("userId", userId);
         user.put("userName", userName);
-        user.put("photo", photoUrl); // Add photo URL
+        user.put("photo", photoUrl);
 
         // Add new document to Firestore
         db.collection("users")
@@ -82,7 +82,7 @@ public class FirestoreHelper {
 
     // Method to update an existing restaurant in Firestore
     public void updateRestaurant(String restaurantId, boolean isButtonChecked, String userId) {
-        DocumentReference restaurantRef = db.collection("restaurants").document(restaurantId);
+        DocumentReference restaurantRef = db.collection("users").document(restaurantId);
 
         // Prepare the updates in a Map
         Map<String, Object> updates = new HashMap<>();

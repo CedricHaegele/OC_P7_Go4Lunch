@@ -3,8 +3,12 @@ package com.example.oc_p7_go4lunch.viewmodel;
 import static androidx.core.content.res.TypedArrayUtils.getString;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
+
+import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -12,6 +16,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.Event;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.RestoInformations;
@@ -25,7 +30,9 @@ import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.firestore.DocumentReference;
@@ -57,6 +64,16 @@ public class RestaurantDetailViewModel extends ViewModel {
     private FirestoreHelper firestoreHelper;
     private MutableLiveData<String> photoUrl = new MutableLiveData<>();
     public final MutableLiveData<Event<Intent>> websiteIntent = new MutableLiveData<>();
+    private final MutableLiveData<Bitmap> restaurantPhoto = new MutableLiveData<>();
+
+    public LiveData<Bitmap> getRestaurantPhoto() {
+        return restaurantPhoto;
+    }
+
+    public void setRestaurantPhoto(Bitmap bitmap) {
+        restaurantPhoto.setValue(bitmap);
+    }
+
 
 
     public LiveData<String> getPhotoUrl() {
@@ -237,7 +254,7 @@ public class RestaurantDetailViewModel extends ViewModel {
         FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
         placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
             Place place = response.getPlace();
-            RestaurantModel restaurantModel = convertPlaceToRestaurantModel(place);
+            RestaurantModel restaurantModel = convertPlaceToRestaurantModel(place, placesClient);
             MyPlaces places = new MyPlaces();
             places.setPlacesList(Collections.singletonList(restaurantModel));
             placesData.setValue(places);
@@ -248,16 +265,38 @@ public class RestaurantDetailViewModel extends ViewModel {
         });
     }
 
-    private RestaurantModel convertPlaceToRestaurantModel(Place place) {
+    private RestaurantModel convertPlaceToRestaurantModel(Place place, PlacesClient placesClient) {
         RestaurantModel restaurantModel = new RestaurantModel();
         restaurantModel.setName(place.getName());
         restaurantModel.setVicinity(place.getAddress());
         restaurantModel.setRating(place.getRating());
-        if (place.getPhotoMetadatas() != null && !place.getPhotoMetadatas().isEmpty()) {
-            restaurantModel.setPhotoUrl(place.getPhotoMetadatas().get(0).toString());
+
+        final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+        if (metadata != null && !metadata.isEmpty()) {
+            final PhotoMetadata photoMetadata = metadata.get(0);
+            fetchPhotoForRestaurant(placesClient, photoMetadata);
         }
+
         return restaurantModel;
     }
+
+    private void fetchPhotoForRestaurant(PlacesClient placesClient, PhotoMetadata photoMetadata) {
+        FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                .setMaxWidth(500)
+                .setMaxHeight(300)
+                .build();
+
+        placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+
+            Bitmap bitmap = fetchPhotoResponse.getBitmap();
+            setRestaurantPhoto(bitmap);
+        }).addOnFailureListener((exception) -> {
+            if (exception instanceof ApiException) {
+                Log.e("MyPhoto", "Place not found: " + exception.getMessage());
+            }
+        });
+    }
+
 }
 
 
