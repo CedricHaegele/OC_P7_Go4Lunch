@@ -1,10 +1,7 @@
 package com.example.oc_p7_go4lunch.adapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,11 +9,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.databinding.FragmentWorkmateItemBinding;
-import com.example.oc_p7_go4lunch.model.firestore.UserModel;
+import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
 
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdapter.ViewHolder> {
@@ -55,6 +50,7 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
             this.binding = binding;
         }
 
+
         private void setData(UserModel mUser) {
 
             Glide.with(binding.imageProfile.getContext())
@@ -64,8 +60,8 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
                     .error(R.drawable.profil_user)
                     .into(binding.imageProfile);
 
-            if (mUser.getChosenRestaurantName() != null && !mUser.getChosenRestaurantName().isEmpty()) {
-                String text = mUser.getName() + " is eating at " + mUser.getChosenRestaurantName();
+            if (mUser.getSelectedRestaurantName() != null && !mUser.getSelectedRestaurantName().isEmpty()) {
+                String text = mUser.getName() + " is eating at " + mUser.getSelectedRestaurantName();
                 binding.textRestaurantName.setText(text);
             } else {
                 String text = mUser.getName() + " hasn't decided yet";

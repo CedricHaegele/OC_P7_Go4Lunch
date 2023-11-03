@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,10 +28,11 @@ import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.SettingsFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
-import com.example.oc_p7_go4lunch.model.firestore.UserModel;
+import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Log.d("MainActivity", "API_KEY: " + BuildConfig.API_KEY);
+
         db = FirebaseFirestore.getInstance();
         navigationView = binding.navigationView;
 
@@ -86,12 +86,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         ImageView searchImageView = binding.searchImageView;
         searchImageView.setOnClickListener(v -> {
-            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
+            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
             Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+                    .setTypeFilter(TypeFilter.ESTABLISHMENT)
                     .build(MainActivity.this);
             startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
-
         });
+
 
         // Initialize MyPlaces API if it's not already initialized
         if (!Places.isInitialized()) {
@@ -137,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             db.collection("users").document(firebaseUser.getUid())
                     .set(userModel)
-                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!"))
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!" + userModel.getName()))
                     .addOnFailureListener(e -> Log.w("Firestore", "Error writing user", e));
         }
     }
@@ -263,6 +264,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        ImageView searchImageView = binding.searchImageView;
         final int myLunch = R.id.nav_lunch;
         final int settings = R.id.nav_settings;
         final int logOut = R.id.nav_logout;
@@ -275,6 +277,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case settings:
                 changeFragment(new SettingsFragment.PreferencesFragment());
+                searchImageView.setVisibility(View.GONE);
                 break;
 
 

@@ -105,7 +105,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="80dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/bolo" />
+                android:src="@drawable/baseline_square_24" />
 
         </LinearLayout>
 

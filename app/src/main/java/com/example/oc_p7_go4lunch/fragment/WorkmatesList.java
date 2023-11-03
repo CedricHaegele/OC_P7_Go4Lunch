@@ -1,7 +1,6 @@
 package com.example.oc_p7_go4lunch.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.oc_p7_go4lunch.adapter.WorkmatesListAdapter;
 import com.example.oc_p7_go4lunch.databinding.FragmentWorkmatesListBinding;
-import com.example.oc_p7_go4lunch.model.firestore.UserModel;
+import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
 import com.example.oc_p7_go4lunch.viewmodel.WorkmatesListViewModel;
 
 import java.util.List;

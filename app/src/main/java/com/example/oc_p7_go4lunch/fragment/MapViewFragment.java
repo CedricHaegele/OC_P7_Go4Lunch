@@ -1,7 +1,6 @@
 package com.example.oc_p7_go4lunch.fragment;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -24,15 +23,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.oc_p7_go4lunch.MapViewModelFactory;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
-import com.example.oc_p7_go4lunch.model.googleplaces.ApiProvider;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
+import com.example.oc_p7_go4lunch.googleplaces.ApiProvider;
+import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.viewmodel.MapViewModel;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;

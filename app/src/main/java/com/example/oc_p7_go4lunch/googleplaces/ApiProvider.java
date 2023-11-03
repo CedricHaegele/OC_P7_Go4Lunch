@@ -1,4 +1,4 @@
-package com.example.oc_p7_go4lunch.model.googleplaces;
+package com.example.oc_p7_go4lunch.googleplaces;
 
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 

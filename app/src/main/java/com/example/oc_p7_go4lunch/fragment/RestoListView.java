@@ -1,13 +1,18 @@
 package com.example.oc_p7_go4lunch.fragment;
 
+import static com.example.oc_p7_go4lunch.activities.LoginActivity.TAG;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,20 +29,28 @@ import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.adapter.RestoListAdapter;
 
 import com.example.oc_p7_go4lunch.databinding.FragmentRestoListBinding;
-import com.example.oc_p7_go4lunch.model.googleplaces.MyPlaces;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
+import com.example.oc_p7_go4lunch.googleplaces.MyPlaces;
+import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
 import com.example.oc_p7_go4lunch.viewmodel.RestoListViewModel;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -45,7 +58,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class RestoListView extends Fragment {
+public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoader {
+    private PlacesClient placesClient;
     private RestoListViewModel viewModel;
     RecyclerView recyclerView;
     List<RestaurantModel> placesList = new ArrayList<>();
@@ -79,9 +93,13 @@ public class RestoListView extends Fragment {
         binding = FragmentRestoListBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        if (placesClient == null) {
+            placesClient = Places.createClient(mContext);
+        }
+
         recyclerView = binding.listRestos;
 
-        restoListAdapter = new RestoListAdapter(new ArrayList<>(), mContext);
+        restoListAdapter = new RestoListAdapter(new ArrayList<>(), mContext, this);
         recyclerView.setAdapter(restoListAdapter);
         this.configureOnClickRecyclerView();
 
@@ -247,4 +265,43 @@ public class RestoListView extends Fragment {
                     }
                 });
     }
+
+    @Override
+    public void loadRestaurantPhoto(String placeId, ImageView imageView) {
+        final List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
+        final FetchPlaceRequest placeRequest = FetchPlaceRequest.newInstance(placeId, fields);
+
+        placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
+            final Place place = response.getPlace();
+            final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+            if (metadata == null || metadata.isEmpty()) {
+                Log.w(TAG, "No photo metadata.");
+                return;
+            }
+            final PhotoMetadata photoMetadata = metadata.get(0);
+
+            // Create a FetchPhotoRequest.
+            final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                    .setMaxWidth(500) // Optional.
+                    .setMaxHeight(300) // Optional.
+                    .build();
+            placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+                Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                imageView.setImageBitmap(bitmap);
+            }).addOnFailureListener((exception) -> {
+                if (exception instanceof ApiException) {
+                    final ApiException apiException = (ApiException) exception;
+                    Log.e(TAG, "Place not found: " + exception.getMessage());
+                    // TODO: Handle error with given status code.
+                }
+            });
+        }).addOnFailureListener((exception) -> {
+            if (exception instanceof ApiException) {
+                final ApiException apiException = (ApiException) exception;
+                Log.e(TAG, "Place not found: " + exception.getMessage());
+                // TODO: Handle error with given status code.
+            }
+        });
+    }
+
 }

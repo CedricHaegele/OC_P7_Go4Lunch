@@ -79,9 +79,13 @@
 
             <Button
                 android:id="@+id/callButton"
+                android:drawablePadding="5dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:padding="10dp"
+                android:layout_margin="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:drawableTop="@drawable/ic_baseline_local_phone_24"
                 android:text="@string/call"
@@ -89,9 +93,13 @@
 
             <Button
                 android:id="@+id/likeButton"
+                android:drawablePadding="5dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:padding="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="1dp"
+                android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:drawableTop="@drawable/button_like_selector"
                 android:text="@string/like"
@@ -99,9 +107,13 @@
 
             <Button
                 android:id="@+id/websiteButton"
+                android:drawablePadding="5dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:padding="10dp"
+                android:layout_margin="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:drawableTop="@drawable/ic_baseline_language_24"
                 android:text="@string/website"

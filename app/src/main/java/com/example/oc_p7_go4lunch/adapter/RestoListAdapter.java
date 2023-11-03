@@ -4,26 +4,18 @@ package com.example.oc_p7_go4lunch.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.BuildConfig;
-import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.databinding.FragmentRestoItemBinding;
-import com.example.oc_p7_go4lunch.model.googleplaces.OpeningHours;
-import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
+import com.example.oc_p7_go4lunch.googleplaces.OpeningHours;
+import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 
 import java.util.List;
 import java.util.Locale;
@@ -34,9 +26,16 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     private List<RestaurantModel> placesList;
     private final LayoutInflater layoutInflater;
 
+    public interface PhotoLoader {
+        void loadRestaurantPhoto(String placeId, ImageView imageView);
+    }
+
+    private final PhotoLoader photoLoader;
+
     // Constructor
-    public RestoListAdapter(List<RestaurantModel> placesList, Context context) {
+    public RestoListAdapter(List<RestaurantModel> placesList, Context context,PhotoLoader photoLoader) {
         this.context = context;
+        this.photoLoader = photoLoader;
         this.layoutInflater = LayoutInflater.from(context);
         updateData(placesList);
     }
@@ -44,9 +43,8 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         FragmentRestoItemBinding binding = FragmentRestoItemBinding.inflate(layoutInflater, parent, false);
-        return new MyViewHolder(binding);
+        return new MyViewHolder(binding, photoLoader);
     }
 
     @Override
@@ -68,10 +66,12 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         private final FragmentRestoItemBinding binding;
+        private final PhotoLoader photoLoader;
 
-        public MyViewHolder(@NonNull FragmentRestoItemBinding binding) {
+        public MyViewHolder(@NonNull FragmentRestoItemBinding binding, PhotoLoader photoLoader) {
             super(binding.getRoot());
             this.binding = binding;
+            this.photoLoader = photoLoader;
         }
 
         public void bindData(RestaurantModel restaurantModel) {
@@ -86,9 +86,13 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
             String photoUrl = restaurantModel.getPhotoUrl(BuildConfig.API_KEY);
 
-            if (photoUrl != null) {
-                Glide.with(binding.photo.getContext()).load(photoUrl).into(binding.photo);
+            if (photoLoader != null) {
+                String placeId = restaurantModel.getPlaceId();
+                if (placeId != null) {
+                    photoLoader.loadRestaurantPhoto(placeId, binding.photo);
+                }
             }
+
             OpeningHours openingHours = restaurantModel.getOpeningHours();
             if (openingHours != null) {
                 if (openingHours.getOpenNow()) {

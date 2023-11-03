@@ -8,32 +8,19 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 
-import com.example.oc_p7_go4lunch.BuildConfig;
-import com.example.oc_p7_go4lunch.MapViewModelFactory;
-import com.example.oc_p7_go4lunch.model.googleplaces.ApiProvider;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantResponse;
+import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.repositories.MapRepository;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
-import android.os.Looper;
 import android.util.Log;
 
 import java.util.List;
-import java.util.Objects;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MapViewModel extends AndroidViewModel {
 

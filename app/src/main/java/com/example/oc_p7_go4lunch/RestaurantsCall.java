@@ -3,9 +3,9 @@ package com.example.oc_p7_go4lunch;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.example.oc_p7_go4lunch.model.googleplaces.Photo;
-import com.example.oc_p7_go4lunch.model.googleplaces.MyPlaces;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
+import com.example.oc_p7_go4lunch.googleplaces.Photo;
+import com.example.oc_p7_go4lunch.googleplaces.MyPlaces;
+import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.gms.maps.GoogleMap;

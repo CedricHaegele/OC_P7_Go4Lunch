@@ -2,21 +2,14 @@ package com.example.oc_p7_go4lunch.repositories;
 
 import static android.content.ContentValues.TAG;
 
-import android.content.Context;
-import android.location.Location;
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.oc_p7_go4lunch.BuildConfig;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantResponse;
+import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
+import com.example.oc_p7_go4lunch.googleplaces.RestaurantResponse;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
-import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 

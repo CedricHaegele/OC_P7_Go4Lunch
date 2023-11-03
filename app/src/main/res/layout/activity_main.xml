@@ -37,9 +37,11 @@
                     android:layout_height="24dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
+                    android:layout_marginEnd="16dp"
                     android:src="@drawable/ic_search"/>
 
             </RelativeLayout>
+
         </androidx.appcompat.widget.Toolbar>
 
         <FrameLayout

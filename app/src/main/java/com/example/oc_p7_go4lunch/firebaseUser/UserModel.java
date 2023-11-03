@@ -1,13 +1,19 @@
-package com.example.oc_p7_go4lunch.model.firestore;
+package com.example.oc_p7_go4lunch.firebaseUser;
 
 import android.util.Log;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 public class UserModel implements Serializable {
-    public String userId, mail, name, photo, restaurantID, chosenRestaurantName;
-    public boolean isVisible;
+    private String userId;
+    private String mail;
+    private String name;
+    private String photo;
+    private String selectedRestaurantId;
+    private String selectedRestaurantName;
+    private List<String> likedRestaurantIds;
 
     public UserModel() {
     }
@@ -17,13 +23,14 @@ public class UserModel implements Serializable {
         this.name = name;
     }
 
-    public UserModel(String userId, String mail, String name, String photo, String restaurantID, String chosenRestaurantName) {
+    public UserModel(String userId, String mail, String name, String photo, String selectedRestaurantId, String selectedRestaurantName, List<String> likedRestaurantIds) {
         this.userId = userId;
         this.mail = mail;
         this.name = name;
         this.photo = photo;
-        this.restaurantID = restaurantID;
-        this.chosenRestaurantName = chosenRestaurantName;
+        this.selectedRestaurantId = selectedRestaurantId;
+        this.selectedRestaurantName = selectedRestaurantName;
+        this.likedRestaurantIds = likedRestaurantIds;
     }
 
     public String getUserId() {
@@ -65,20 +72,30 @@ public class UserModel implements Serializable {
         this.photo = photo;
     }
 
-    public String getRestaurantID() {
-        return restaurantID;
+
+
+    public String getSelectedRestaurantId() {
+        return selectedRestaurantId;
     }
 
-    public void setRestaurantID(String restaurantID) {
-        this.restaurantID = restaurantID;
+    public void setSelectedRestaurantId(String selectedRestaurantId) {
+        this.selectedRestaurantId = selectedRestaurantId;
     }
 
-    public String getChosenRestaurantName() {
-        return chosenRestaurantName;
+    public String getSelectedRestaurantName() {
+        return selectedRestaurantName;
     }
 
-    public void setChosenRestaurantName(String chosenRestaurantName) {
-        this.chosenRestaurantName = chosenRestaurantName;
+    public void setSelectedRestaurantName(String selectedRestaurantName) {
+        this.selectedRestaurantName = selectedRestaurantName;
+    }
+
+    public List<String> getLikedRestaurantIds() {
+        return likedRestaurantIds;
+    }
+
+    public void setLikedRestaurantIds(List<String> likedRestaurantIds) {
+        this.likedRestaurantIds = likedRestaurantIds;
     }
 
     @Override

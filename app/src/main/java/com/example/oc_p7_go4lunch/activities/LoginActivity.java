@@ -10,8 +10,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.helper.FirestoreHelper;
-import com.example.oc_p7_go4lunch.model.firestore.UserModel;
+import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
@@ -109,8 +108,6 @@ public class LoginActivity extends AppCompatActivity {
                                 // Create new user
                                 firestoreHelper.addUser(firebaseUser.getUid(), firebaseUser.getDisplayName(), String.valueOf(firebaseUser.getPhotoUrl()));
                             }
-                        } else {
-                            Log.d("Firestore", "Failed to get user", task.getException());
                         }
                     });
 

@@ -1,8 +1,7 @@
-package com.example.oc_p7_go4lunch.model.googleplaces;
+package com.example.oc_p7_go4lunch.googleplaces;
 
 import java.io.Serializable;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 

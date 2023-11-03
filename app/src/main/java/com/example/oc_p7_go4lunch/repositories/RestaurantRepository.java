@@ -6,8 +6,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.oc_p7_go4lunch.BuildConfig;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantModel;
-import com.example.oc_p7_go4lunch.model.googleplaces.RestaurantResponse;
+import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
+import com.example.oc_p7_go4lunch.googleplaces.RestaurantResponse;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 
@@ -29,8 +29,7 @@ public class RestaurantRepository {
             // If the location is null, return an empty list
             data.setValue(new ArrayList<>());
         } else {
-            // Otherwise, make your API call or any other logic here
-            // and update 'data' accordingly.
+
             String locationString = location.getLatitude() + "," + location.getLongitude();
             Call<RestaurantResponse> call = googlePlacesApi.getNearbyPlaces(locationString, 1500, "restaurant", BuildConfig.API_KEY);
 
