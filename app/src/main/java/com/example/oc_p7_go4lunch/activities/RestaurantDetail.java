@@ -4,32 +4,23 @@ package com.example.oc_p7_go4lunch.activities;
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.adapter.UserListAdapter;
 import com.example.oc_p7_go4lunch.databinding.RestaurantDetailBinding;
-import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
+import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.viewmodel.RestaurantDetailViewModel;
 import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
@@ -43,12 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RestaurantDetail extends AppCompatActivity implements FirestoreHelper.OnUserDataReceivedListener {
-    private final String apikey = BuildConfig.API_KEY;
     private RestaurantDetailBinding binding;
+    private SharedPreferences sharedPreferences;
     private RestaurantDetailViewModel restaurantDetailViewModel;
-    private FirestoreHelper firestoreHelper;
-    private String phoneNumber;
-    private String websiteUrl;
     private RestaurantModel restaurant;
     private boolean isButtonChecked = false;
     private boolean isLiked = false;
@@ -57,6 +45,7 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
     public List<UserModel> updatedList;
     private String restaurantId;
     private String userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,16 +53,24 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         setContentView(binding.getRoot());
         Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
         PlacesClient placesClient = Places.createClient(this);
-        firestoreHelper = new FirestoreHelper(this);
+        FirestoreHelper firestoreHelper = new FirestoreHelper();
         initRecyclerView();
         updateButtonUI(isButtonChecked);
+
         setupButtonListeners();
+
+        sharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE);
+
+
+        isLiked = sharedPreferences.getBoolean("likeButtonState", false);
+        updateLikeButtonUI();
+
+
+
         RestaurantApiService restaurantApiService = new RestaurantApiService();
         RestaurantDetailViewModelFactory factory = new RestaurantDetailViewModelFactory(new RestaurantApiService());
         restaurantDetailViewModel = new ViewModelProvider(this, factory).get(RestaurantDetailViewModel.class);
-        Log.d("MyPhoto", "Attaching observer on photoUrl");
-        restaurantDetailViewModel.getPhotoUrl().observe(this, this::loadImage);
-           restaurantDetailViewModel.restaurantName.observe(this, name -> {
+        restaurantDetailViewModel.restaurantName.observe(this, name -> {
             binding.restaurantName.setText(name);
         });
         restaurantDetailViewModel.restaurantAddress.observe(this, address -> {
@@ -97,7 +94,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
             if (currentUser != null && restaurant != null) {
                 String userId = currentUser.getUid();
                 String restaurantId = restaurant.getPlaceId();
-                Log.d(TAG, "Restaurant ID: " + restaurantId);
                 String userName = currentUser.getDisplayName();
                 restaurantDetailViewModel.setCurrentUserId(userId);
                 restaurantDetailViewModel.onRestaurantClicked(restaurantId);
@@ -106,6 +102,12 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
 
         binding.likeButton.setOnClickListener(v -> {
             isLiked = !isLiked;
+            // Stocker l'état dans SharedPreferences
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("likeButtonState", isLiked);
+            editor.apply();
+
             updateLikeButtonUI();
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null && restaurant != null) {
@@ -118,6 +120,7 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 }
             }
         });
+
 
         restaurantDetailViewModel.getLikedRestaurants().observe(this, new Observer<List<RestaurantModel>>() {
             @Override
@@ -154,18 +157,14 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         if (restaurant != null) {
             String placeId = restaurant.getPlaceId();
             if (placeId != null) {
-                Log.d("MyPhoto", "placeId: " + placeId);
+
                 restaurantDetailViewModel.fetchPlaceDetails(placesClient, placeId);
             } else {
-                Log.e("MyPhoto", "placeId is null");
             }
         } else {
-            Log.e("MyPhoto", "RestaurantModel is null");
         }
         restaurantDetailViewModel.fetchRestaurantData(callingIntent);
         restaurantId = callingIntent.getStringExtra("RestaurantIdKey");
-        Log.d("RestaurantDetail", "restaurantModel: " + restaurant);
-        Log.d("RestaurantDetail", "restaurantId: " + restaurantId);
         // Observateur sur le restaurant
         restaurantDetailViewModel.restaurant.observe(this, newRestaurantData -> {
 
@@ -195,7 +194,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         if (restaurantId != null && !restaurantId.isEmpty()) {
 
         } else {
-            Log.e("RestaurantDetail", "Restaurant ID is null or empty");
         }
         restaurantDetailViewModel.isLiked.observe(this, liked -> {
             if (liked) {
@@ -206,6 +204,7 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         });
         // Appeler la méthode pour récupérer les détails
         String placeId = "place_id";
+        String apikey = BuildConfig.API_KEY;
         restaurantDetailViewModel.fetchRestaurantDetails(placeId, apikey);
         Intent intent = getIntent();
 
@@ -213,7 +212,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
 
         String intentPlaceId = callingIntent.getStringExtra("place_id");
         if (intentPlaceId != null) {
-            Log.d("MyPhoto", "intentPlaceId: " + intentPlaceId);
             restaurantDetailViewModel.fetchPlaceDetails(placesClient, intentPlaceId);
         }
         if (restaurant != null) {
@@ -230,10 +228,31 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         }
 
     }
+
+    private void saveLikeState(boolean isLiked) {
+        if (sharedPreferences != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("likeButtonState", isLiked);
+            editor.apply();
+        } else {
+
+            Log.e("MyTag", "SharedPreferences not initialized before saving like state.");
+
+        }
+    }
+
+
+    private void updateLikeButtonUI() {
+        int drawableRes = isLiked ? R.drawable.baseline_star_yes : R.drawable.ic_baseline_star_24;
+        binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, drawableRes, 0, 0);
+    }
+
+
     private void setupButtonListeners() {
         binding.fab.setOnClickListener(v -> {
-            Log.d("RestaurantDetail", "restaurant: " + restaurant);
-            Log.d("RestaurantDetail", "restaurantId: " + restaurant.getPlaceId());
+            isLiked = !isLiked;
+            saveLikeState(isLiked);
+
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null && restaurant != null) {
                 String userId = currentUser.getUid();
@@ -242,51 +261,35 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 // Inverser l'état du bouton
                 isButtonChecked = !isButtonChecked;
                 // Mettre à jour Firestore
-                restaurantDetailViewModel.updateSelectedRestaurant(userId, restaurantId, isButtonChecked,restaurant);
+                restaurantDetailViewModel.updateSelectedRestaurant(userId, restaurantId, isButtonChecked, restaurant);
             }
             restaurantDetailViewModel.isButtonChecked.observe(this, isChecked -> {
                 updateButtonUI(isChecked);
             });
         });
     }
-    private void updateLikeButtonUI() {
-        int drawableRes = isLiked ? R.drawable.baseline_star_yes : R.drawable.ic_baseline_star_24;
-        binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, drawableRes, 0, 0);
-    }
+
     // Initialize RecyclerView using View Binding
     private void initRecyclerView() {
         binding.userRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         userListAdapter = new UserListAdapter(combinedList);
         binding.userRecyclerView.setAdapter(userListAdapter);
     }
+
     private void updateButtonUI(boolean isButtonChecked) {
         int imageRes = isButtonChecked ? R.drawable.ic_button_is_checked : R.drawable.baseline_check_circle_outline_24;
         binding.fab.setImageResource(imageRes);
     }
-// Load image using Glide
-public void loadImage(String photoUrl) {
-    Log.d("MyPhoto", "Constructed Photo URL: " + photoUrl);
-    Glide.with(this)
-            .load(photoUrl)
-            .error(R.drawable.not_found)
-            .listener(new RequestListener<Drawable>() {
-                @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
-                    Log.e("MyPhoto", "Image load failed", e);
-                    return false;
-                }
-                @Override
-                public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
-                    Log.d("MyPhoto", "Image load succeeded");
-                    return false;
-                }
-            })
-            .into(binding.logo);
-}
+
+
     @Override
     public void onUserDataReceived(UserModel userModel) {
         combinedList.add(userModel);
-        Log.d(TAG, "onUserDataReceived: User added, new list size: " + combinedList.size());
+        Log.d("MyTag", "onUserDataReceived: User added, new list size: " + combinedList.size());
         runOnUiThread(() -> userListAdapter.notifyDataSetChanged());
     }
-}
+
+    @Override
+    public void onError(Exception e) {
+
+    }}

@@ -73,6 +73,25 @@ public class RestaurantDetailViewModel extends ViewModel {
     private final MutableLiveData<Bitmap> restaurantPhoto = new MutableLiveData<>();
     private String currentUserId;
     private final MutableLiveData<List<RestaurantModel>> likedRestaurants = new MutableLiveData<>();
+    private MutableLiveData<UserModel> userModelLiveData = new MutableLiveData<>();
+
+    public LiveData<UserModel> getUserModelLiveData() {
+        return userModelLiveData;
+    }
+
+    public void fetchUserData(String userId) {
+        firestoreHelper.getUserData(userId, new FirestoreHelper.OnUserDataReceivedListener() {
+            @Override
+            public void onUserDataReceived(UserModel userModel) {
+                userModelLiveData.postValue(userModel);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                error.postValue(e);
+            }
+        });
+    }
 
 
     public LiveData<Bitmap> getRestaurantPhoto() {
@@ -92,18 +111,28 @@ public class RestaurantDetailViewModel extends ViewModel {
         photoUrl.setValue(url);
     }
 
+    // Constructeur avec argument qui initialise le service API et FirestoreHelper
     public RestaurantDetailViewModel(RestaurantApiService restaurantApiService) {
         this.restaurantApiService = restaurantApiService;
         firestoreHelper = new FirestoreHelper();
         firestoreHelper.setListener(new OnUserDataReceivedListener() {
             @Override
             public void onUserDataReceived(UserModel userModel) {
+                // Mettre à jour l'interface utilisateur avec les données utilisateur
+                userModelLiveData.postValue(userModel);
+                // Si vous voulez mettre à jour une liste d'utilisateurs comme dans l'exemple:
                 List<UserModel> currentList = userList.getValue();
                 if (currentList == null) {
                     currentList = new ArrayList<>();
                 }
                 currentList.add(userModel);
                 userList.setValue(currentList);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // Mettre à jour l'interface utilisateur pour afficher l'erreur
+                error.postValue(e);
             }
         });
     }
@@ -132,7 +161,6 @@ public class RestaurantDetailViewModel extends ViewModel {
         }
     }
 
-
     // Initialisez l'ID de l'utilisateur connecté (appelez cette méthode lors de la création du ViewModel)
     public void setCurrentUserId(String userId) {
         this.currentUserId = userId;
@@ -140,9 +168,7 @@ public class RestaurantDetailViewModel extends ViewModel {
 
     // Méthode appelée lorsque l'utilisateur clique sur un restaurant
     public void onRestaurantClicked(String restaurantId) {
-        Log.d("Debug", "onRestaurantClicked called with restaurantId: " + restaurantId);
         if (currentUserId == null) {
-            Log.d("Debug", "currentUserId is null");
             // L'utilisateur n'est pas connecté
             return;
         }
@@ -150,9 +176,7 @@ public class RestaurantDetailViewModel extends ViewModel {
         firestoreHelper.getSelectedRestaurant(currentUserId, new FirestoreHelper.OnRestaurantSelectedListener() {
             @Override
             public void onRestaurantSelected(String selectedRestaurantId) {
-                Log.d("Debug", "onRestaurantSelected called with selectedRestaurantId: " + selectedRestaurantId);
                 if (restaurantId.equals(selectedRestaurantId)) {
-
                     // L'utilisateur a déjà sélectionné ce restaurant
                     firestoreHelper.selectRestaurant(currentUserId, null, success -> {
                         isButtonChecked.setValue(!success);
@@ -180,8 +204,6 @@ public class RestaurantDetailViewModel extends ViewModel {
                     likedRestaurants.setValue(restaurants);
                 })
                 .addOnFailureListener(e -> {
-                    // Handle error
-                    Log.e(TAG, "Failed to retrieve liked restaurants: ", e);
                 });
     }
 
@@ -189,12 +211,8 @@ public class RestaurantDetailViewModel extends ViewModel {
         return likedRestaurants;
     }
 
-
-
     public void listenToSelectedRestaurant(String userId, String restaurantId) {
         if (userId == null || restaurantId == null) {
-            // Log the error and return early to prevent the rest of the code from executing
-            Log.e(TAG, "userId or restaurantId is null");
             return;
         }
 
@@ -202,7 +220,6 @@ public class RestaurantDetailViewModel extends ViewModel {
         DocumentReference docRef = db.collection("users").document(userId);
         docRef.addSnapshotListener((snapshot, e) -> {
             if (e != null) {
-                Log.w(TAG, "Listen failed.", e);
                 return;
             }
 
@@ -210,7 +227,6 @@ public class RestaurantDetailViewModel extends ViewModel {
                 String selectedRestaurantId = snapshot.getString("selectedRestaurantId");
                 isButtonChecked.setValue(restaurantId.equals(selectedRestaurantId));
             } else {
-                Log.d(TAG, "Current data: null");
                 isButtonChecked.setValue(false);
             }
         });
@@ -222,7 +238,6 @@ public class RestaurantDetailViewModel extends ViewModel {
             if (success) {
                 isButtonChecked.setValue(isSelected);
             } else {
-                // Gérer l'échec de la mise à jour
             }
         });
     }
@@ -258,7 +273,6 @@ public class RestaurantDetailViewModel extends ViewModel {
 
             @Override
             public void onFailure(@NonNull Call<RestoInformations> call, @NonNull Throwable t) {
-                Log.e("API Error", "Error fetching restaurant details: " + t.getMessage());
             }
         });
     }
@@ -328,16 +342,12 @@ public class RestaurantDetailViewModel extends ViewModel {
                 .build();
 
         placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
-
             Bitmap bitmap = fetchPhotoResponse.getBitmap();
             setRestaurantPhoto(bitmap);
         }).addOnFailureListener((exception) -> {
             if (exception instanceof ApiException) {
-                Log.e("MyPhoto", "Place not found: " + exception.getMessage());
             }
         });
     }
+
 }
-
-
-

@@ -3,7 +3,9 @@ package com.example.oc_p7_go4lunch.firebaseUser;
 import android.util.Log;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class UserModel implements Serializable {
@@ -114,4 +116,16 @@ public class UserModel implements Serializable {
         result = 31 * result + (mail != null ? mail.hashCode() : 0);
         return result;
     }
-}
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("userId", userId);
+        result.put("mail", mail);
+        result.put("name", name);
+        result.put("photo", photo);
+        result.put("selectedRestaurantId", selectedRestaurantId);
+        result.put("selectedRestaurantName", selectedRestaurantName);
+        result.put("likedRestaurantIds", likedRestaurantIds);
+
+        return result;
+}}

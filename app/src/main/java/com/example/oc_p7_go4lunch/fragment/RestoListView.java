@@ -1,6 +1,8 @@
 package com.example.oc_p7_go4lunch.fragment;
 
-import static com.example.oc_p7_go4lunch.activities.LoginActivity.TAG;
+
+
+import static android.content.ContentValues.TAG;
 
 import android.content.Context;
 import android.content.Intent;

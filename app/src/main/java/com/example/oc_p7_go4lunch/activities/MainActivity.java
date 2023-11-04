@@ -42,10 +42,15 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.Logger;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // Main Activity class
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -69,7 +74,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Initialise Firestore
         db = FirebaseFirestore.getInstance();
+
+        // Configure les paramètres de Firestore
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
+
+        // Active les logs de débogage pour Firestore
+        FirebaseFirestore.setLoggingEnabled(true);
+
         navigationView = binding.navigationView;
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -122,26 +138,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void addOrUpdateUserToFirestore(FirebaseUser firebaseUser) {
         if (firebaseUser != null) {
-            UserModel userModel = new UserModel();
+            // Create a map to hold the user data
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("mail", firebaseUser.getEmail());
+            userData.put("name", firebaseUser.getDisplayName());
+            userData.put("photo", firebaseUser.getPhotoUrl() != null ? firebaseUser.getPhotoUrl().toString() : null);
 
-            if (firebaseUser.getEmail() != null) {
-                userModel.setMail(firebaseUser.getEmail());
-            }
-
-            if (firebaseUser.getDisplayName() != null) {
-                userModel.setName(firebaseUser.getDisplayName());
-            }
-
-            if (firebaseUser.getPhotoUrl() != null) {
-                userModel.setPhoto(firebaseUser.getPhotoUrl().toString());
-            }
-
+            // Use set() with merge option to update user data without overwriting existing fields
             db.collection("users").document(firebaseUser.getUid())
-                    .set(userModel)
-                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written!" + userModel.getName()))
-                    .addOnFailureListener(e -> Log.w("Firestore", "Error writing user", e));
+                    .set(userData, SetOptions.merge())
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written/updated!"))
+                    .addOnFailureListener(e -> Log.w("Firestore", "Error writing/updating user", e));
         }
     }
+
 
 
     @Override

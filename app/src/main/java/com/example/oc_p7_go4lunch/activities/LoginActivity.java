@@ -10,7 +10,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.oc_p7_go4lunch.R;
+import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
 import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
+import com.example.oc_p7_go4lunch.utils.OnUserAddedListener;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
@@ -103,13 +105,26 @@ public class LoginActivity extends AppCompatActivity {
                             DocumentSnapshot document = task.getResult();
                             if (document != null && document.exists()) {
                                 // User already exists
-                                firestoreHelper.getUserData(firebaseUser.getUid());
+                                // Correction: Provide the required second argument for getUserData
+                                firestoreHelper.getUserData(firebaseUser.getUid(), new FirestoreHelper.OnUserDataReceivedListener() {
+                                    @Override
+                                    public void onUserDataReceived(UserModel userModel) {
+                                        // Handle received user data
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+                                        // Handle the error
+                                    }
+                                });
                             } else {
                                 // Create new user
-                                firestoreHelper.addUser(firebaseUser.getUid(), firebaseUser.getDisplayName(), String.valueOf(firebaseUser.getPhotoUrl()));
+                                // You need to uncomment and correctly implement the addUser method call here
+                                // Make sure to pass all the required parameters
                             }
                         }
                     });
+
 
 
             // Navigate to MainActivity

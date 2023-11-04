@@ -1,5 +1,6 @@
 package com.example.oc_p7_go4lunch.adapter;
 
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -62,6 +63,8 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
 
             if (mUser.getSelectedRestaurantName() != null && !mUser.getSelectedRestaurantName().isEmpty()) {
                 String text = mUser.getName() + " is eating at " + mUser.getSelectedRestaurantName();
+                binding.textRestaurantName.setText(text);
+                binding.textRestaurantName.setTypeface(null, Typeface.BOLD);
                 binding.textRestaurantName.setText(text);
             } else {
                 String text = mUser.getName() + " hasn't decided yet";
