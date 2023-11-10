@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.android.play:integrity:1.1.0@aar">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/bcf725c352955f429e9753c4a8c359b1/transformed/jetified-integrity-1.1.0/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/bcf725c352955f429e9753c4a8c359b1/transformed/jetified-integrity-1.1.0/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/2f4b633aba56d9e0d18b201276683afc/transformed/jetified-integrity-1.1.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/2f4b633aba56d9e0d18b201276683afc/transformed/jetified-integrity-1.1.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

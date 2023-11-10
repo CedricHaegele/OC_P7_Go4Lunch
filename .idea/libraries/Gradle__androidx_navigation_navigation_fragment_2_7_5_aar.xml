@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.navigation:navigation-fragment:2.7.5@aar">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/45953a440f63f2ee96b83eb24574c648/transformed/navigation-fragment-2.7.5/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/45953a440f63f2ee96b83eb24574c648/transformed/navigation-fragment-2.7.5/res" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/45953a440f63f2ee96b83eb24574c648/transformed/navigation-fragment-2.7.5/AndroidManifest.xml" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/41d027b8952fee32d13d506af9494d99/transformed/navigation-fragment-2.7.5/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/41d027b8952fee32d13d506af9494d99/transformed/navigation-fragment-2.7.5/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/41d027b8952fee32d13d506af9494d99/transformed/navigation-fragment-2.7.5/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

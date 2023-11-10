@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.customview:customview:1.1.0@aar">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/23df5bdec922b036ed8a3a4130896f98/transformed/customview-1.1.0/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/23df5bdec922b036ed8a3a4130896f98/transformed/customview-1.1.0/AndroidManifest.xml" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/70ae52fd4a56e34fed44e07b381a3c10/transformed/customview-1.1.0/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/70ae52fd4a56e34fed44e07b381a3c10/transformed/customview-1.1.0/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

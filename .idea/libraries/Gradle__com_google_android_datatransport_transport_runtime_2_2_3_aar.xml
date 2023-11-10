@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.android.datatransport:transport-runtime:2.2.3@aar">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/5d76d1c50f914605e7226cc4accbb75c/transformed/jetified-transport-runtime-2.2.3/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/5d76d1c50f914605e7226cc4accbb75c/transformed/jetified-transport-runtime-2.2.3/AndroidManifest.xml" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/2d98d89656cf6469ea3aa3fc37a0e3c4/transformed/jetified-transport-runtime-2.2.3/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/2d98d89656cf6469ea3aa3fc37a0e3c4/transformed/jetified-transport-runtime-2.2.3/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.google.android.datatransport/transport-runtime/2.2.3/98d7e688682f0a29533d77fc69ba2a642e195620/transport-runtime-2.2.3-javadoc.jar!/" />

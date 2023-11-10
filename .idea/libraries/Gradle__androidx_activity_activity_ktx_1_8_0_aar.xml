@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.activity:activity-ktx:1.8.0@aar">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/07bb6a0a0f55fa67c42909d1376985c0/transformed/jetified-activity-ktx-1.8.0/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/07bb6a0a0f55fa67c42909d1376985c0/transformed/jetified-activity-ktx-1.8.0/res" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/07bb6a0a0f55fa67c42909d1376985c0/transformed/jetified-activity-ktx-1.8.0/AndroidManifest.xml" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/41bb372868075cad6e2dfbe0b05cdaa7/transformed/jetified-activity-ktx-1.8.0/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/41bb372868075cad6e2dfbe0b05cdaa7/transformed/jetified-activity-ktx-1.8.0/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/41bb372868075cad6e2dfbe0b05cdaa7/transformed/jetified-activity-ktx-1.8.0/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

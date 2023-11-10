@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.browser:browser:1.4.0@aar">
     <ANNOTATIONS>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/a6134f8c5d0eae8c7eabc50c4fc5b564/transformed/browser-1.4.0/annotations.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/fc1a5fb31317acaae67bf87ca50bc6c9/transformed/browser-1.4.0/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/a6134f8c5d0eae8c7eabc50c4fc5b564/transformed/browser-1.4.0/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/a6134f8c5d0eae8c7eabc50c4fc5b564/transformed/browser-1.4.0/res" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/a6134f8c5d0eae8c7eabc50c4fc5b564/transformed/browser-1.4.0/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/fc1a5fb31317acaae67bf87ca50bc6c9/transformed/browser-1.4.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/fc1a5fb31317acaae67bf87ca50bc6c9/transformed/browser-1.4.0/AndroidManifest.xml" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/fc1a5fb31317acaae67bf87ca50bc6c9/transformed/browser-1.4.0/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

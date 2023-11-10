@@ -67,7 +67,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
                             .load(user.getPhoto())
                             .placeholder(com.google.android.libraries.places.R.drawable.quantum_ic_cloud_off_vd_theme_24)
                             .circleCrop()
-                            .error(com.android.car.ui.R.drawable.car_ui_icon_error)
+                            //.error(com.android.car.ui.R.drawable.car_ui_icon_error)
                             .into(binding.userPhoto);
                 } else {
                     Glide.with(binding.userPhoto.getContext())
