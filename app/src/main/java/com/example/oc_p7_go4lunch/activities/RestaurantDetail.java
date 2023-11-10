@@ -1,8 +1,5 @@
 package com.example.oc_p7_go4lunch.activities;
 
-
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -53,21 +50,20 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         setContentView(binding.getRoot());
         Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
         PlacesClient placesClient = Places.createClient(this);
-        FirestoreHelper firestoreHelper = new FirestoreHelper();
+
+        //FirestoreHelper firestoreHelper = new FirestoreHelper();
         initRecyclerView();
         updateButtonUI(isButtonChecked);
-
         setupButtonListeners();
 
         sharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE);
-
-
-        isLiked = sharedPreferences.getBoolean("likeButtonState", false);
+        isLiked = sharedPreferences.getBoolean("likeButtonState_" + restaurantId, false);
         updateLikeButtonUI();
 
+        isButtonChecked = sharedPreferences.getBoolean("buttonCheckedState_" + restaurantId, false);
+        updateButtonUI(isButtonChecked);
 
-
-        RestaurantApiService restaurantApiService = new RestaurantApiService();
+        //RestaurantApiService restaurantApiService = new RestaurantApiService();
         RestaurantDetailViewModelFactory factory = new RestaurantDetailViewModelFactory(new RestaurantApiService());
         restaurantDetailViewModel = new ViewModelProvider(this, factory).get(RestaurantDetailViewModel.class);
         restaurantDetailViewModel.restaurantName.observe(this, name -> {
@@ -84,8 +80,10 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         });
         // Configure observer on isButtonChecked
         restaurantDetailViewModel.isButtonChecked.observe(this, isChecked -> {
+            isButtonChecked = isChecked;
             updateButtonUI(isChecked);
         });
+
         restaurantDetailViewModel.listenToSelectedRestaurant(userId, restaurantId);
         binding.fab.setOnClickListener(v -> {
             isButtonChecked = !isButtonChecked;
@@ -101,14 +99,13 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         });
 
         binding.likeButton.setOnClickListener(v -> {
+            Log.d("RestaurantDetail", "Current Restaurant ID: " + restaurantId);
             isLiked = !isLiked;
-            // Stocker l'état dans SharedPreferences
-
+            updateLikeButtonUI();
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("likeButtonState", isLiked);
+            editor.putBoolean("likeButtonState_" + restaurantId, isLiked);
             editor.apply();
 
-            updateLikeButtonUI();
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null && restaurant != null) {
                 String userId = currentUser.getUid();
@@ -120,7 +117,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 }
             }
         });
-
 
         restaurantDetailViewModel.getLikedRestaurants().observe(this, new Observer<List<RestaurantModel>>() {
             @Override
@@ -207,6 +203,12 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         String apikey = BuildConfig.API_KEY;
         restaurantDetailViewModel.fetchRestaurantDetails(placeId, apikey);
         Intent intent = getIntent();
+        if (intent.hasExtra("Restaurant")) {
+            restaurantId = intent.getStringExtra("Restaurant");
+        } else {
+            // Gestion du cas où restaurantId n'est pas disponible
+        }
+
 
         updatedList = new ArrayList<>();
 
@@ -241,7 +243,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         }
     }
 
-
     private void updateLikeButtonUI() {
         int drawableRes = isLiked ? R.drawable.baseline_star_yes : R.drawable.ic_baseline_star_24;
         binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, drawableRes, 0, 0);
@@ -250,22 +251,18 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
 
     private void setupButtonListeners() {
         binding.fab.setOnClickListener(v -> {
-            isLiked = !isLiked;
-            saveLikeState(isLiked);
+            isButtonChecked = !isButtonChecked;
+            /**SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("buttonCheckedState_" + restaurantId, isButtonChecked);
+            editor.apply();*/
+            updateButtonUI(isButtonChecked);
 
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null && restaurant != null) {
                 String userId = currentUser.getUid();
                 String restaurantId = restaurant.getPlaceId();
-                restaurantDetailViewModel.listenToSelectedRestaurant(userId, restaurantId);
-                // Inverser l'état du bouton
-                isButtonChecked = !isButtonChecked;
-                // Mettre à jour Firestore
                 restaurantDetailViewModel.updateSelectedRestaurant(userId, restaurantId, isButtonChecked, restaurant);
             }
-            restaurantDetailViewModel.isButtonChecked.observe(this, isChecked -> {
-                updateButtonUI(isChecked);
-            });
         });
     }
 
@@ -292,4 +289,5 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
     @Override
     public void onError(Exception e) {
 
-    }}
+    }
+}

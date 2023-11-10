@@ -7,13 +7,20 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
+
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import com.example.oc_p7_go4lunch.googleplaces.MyPlaces;
@@ -75,6 +82,7 @@ public class RestaurantDetailViewModel extends ViewModel {
     private final MutableLiveData<List<RestaurantModel>> likedRestaurants = new MutableLiveData<>();
     private MutableLiveData<UserModel> userModelLiveData = new MutableLiveData<>();
 
+
     public LiveData<UserModel> getUserModelLiveData() {
         return userModelLiveData;
     }
@@ -118,9 +126,9 @@ public class RestaurantDetailViewModel extends ViewModel {
         firestoreHelper.setListener(new OnUserDataReceivedListener() {
             @Override
             public void onUserDataReceived(UserModel userModel) {
-                // Mettre à jour l'interface utilisateur avec les données utilisateur
+
                 userModelLiveData.postValue(userModel);
-                // Si vous voulez mettre à jour une liste d'utilisateurs comme dans l'exemple:
+
                 List<UserModel> currentList = userList.getValue();
                 if (currentList == null) {
                     currentList = new ArrayList<>();
@@ -131,7 +139,7 @@ public class RestaurantDetailViewModel extends ViewModel {
 
             @Override
             public void onError(Exception e) {
-                // Mettre à jour l'interface utilisateur pour afficher l'erreur
+
                 error.postValue(e);
             }
         });
@@ -161,7 +169,6 @@ public class RestaurantDetailViewModel extends ViewModel {
         }
     }
 
-    // Initialisez l'ID de l'utilisateur connecté (appelez cette méthode lors de la création du ViewModel)
     public void setCurrentUserId(String userId) {
         this.currentUserId = userId;
     }
@@ -192,20 +199,22 @@ public class RestaurantDetailViewModel extends ViewModel {
     }
 
     public void fetchLikedRestaurants(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            // Gérer le cas où userId est null ou vide
+            Log.e(TAG, "fetchLikedRestaurants: userId est null ou vide.");
+            return;
+        }
+
+        // Reste de la logique pour récupérer les restaurants aimés
         firestoreHelper.getLikedRestaurants(userId)
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<RestaurantModel> restaurants = new ArrayList<>();
-                    for (DocumentSnapshot document : queryDocumentSnapshots) {
-                        RestaurantModel restaurant = document.toObject(RestaurantModel.class);
-                        if (restaurant != null) {
-                            restaurants.add(restaurant);
-                        }
-                    }
-                    likedRestaurants.setValue(restaurants);
+                    // Traitement en cas de succès
                 })
                 .addOnFailureListener(e -> {
+                    // Traitement en cas d'échec
                 });
     }
+
 
     public LiveData<List<RestaurantModel>> getLikedRestaurants() {
         return likedRestaurants;
@@ -236,10 +245,15 @@ public class RestaurantDetailViewModel extends ViewModel {
     public void updateSelectedRestaurant(String userId, String restaurantId, boolean isSelected, RestaurantModel restaurant) {
         firestoreHelper.updateSelectedRestaurant(userId, restaurantId, isSelected, restaurant, success -> {
             if (success) {
-                isButtonChecked.setValue(isSelected);
+                isButtonChecked.postValue(isSelected);
             } else {
+
             }
         });
+    }
+
+    public LiveData<Boolean> getIsButtonChecked() {
+        return isButtonChecked;
     }
 
     private List<UserModel> transformUserIdsToUserModels(List<String> userIds) {
@@ -334,6 +348,31 @@ public class RestaurantDetailViewModel extends ViewModel {
 
         return restaurantModel;
     }
+
+    public void listenToRestaurantLikedStatus(String userId, String restaurantId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference likedRef = db.collection("users").document(userId)
+                .collection("likedRestaurants").document(restaurantId);
+
+        likedRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    Boolean isRestaurantLiked = snapshot.getBoolean("isLiked");
+                    isLiked.setValue(isRestaurantLiked != null ? isRestaurantLiked : false);
+                } else {
+                    isLiked.setValue(false);
+                }
+            }
+        });
+    }
+
 
     private void fetchPhotoForRestaurant(PlacesClient placesClient, PhotoMetadata photoMetadata) {
         FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
