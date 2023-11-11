@@ -6,14 +6,14 @@
     <style name="Theme.OC_P7_Go4Lunch" parent="Theme.AppCompat.Light.DarkActionBar">
 
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#FF3300</item>
+        <item name="colorPrimary">#D3352A</item>
         <item name="colorPrimaryVariant">#292828</item>
         <item name="colorOnPrimary">@color/white</item>
     </style>
 
     <!-- FirebaseUI -->
     <style name="LoginTheme" parent="FirebaseUI">
-        <item name="colorPrimary">#FF1100</item>
+        <item name="colorPrimary">#D3352A</item>
         <item name="colorPrimaryDark">#8A8989</item>
         <item name="colorAccent">@color/colorPrimary</item>
 
@@ -27,7 +27,7 @@
     <style name="Theme.OC_P7_Go4Lunch.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="MyFirebaseUIToolbar" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">#FF0000</item>
+        <item name="colorPrimary">#D3352A</item>
         <item name="colorPrimaryDark">#978A8A</item>
         <item name="android:windowBackground">@drawable/lunch_time</item>
         <item name="android:textColorPrimary">#FFFFFF</item>
@@ -38,6 +38,14 @@
         <!-- Change color of the search icon -->
         <item name="colorControlNormal">@android:color/white</item>
     </style>
+
+    <style name="RoundedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/rounded_button_background</item>
+        <item name="android:textColor">@color/background_image_background</item>
+        <item name="android:textStyle">bold</item>
+
+    </style>
+
 
 
 </resources>

@@ -37,7 +37,7 @@
 
         <!-- Login Activity -->
         <activity
-            android:name=".activities.LoginActivity"
+            android:name=".login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <!-- This makes LoginActivity the first activity to launch when the app is opened. -->

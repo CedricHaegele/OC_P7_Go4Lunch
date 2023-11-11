@@ -28,7 +28,7 @@ import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.SettingsFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
-import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
+import com.example.oc_p7_go4lunch.login.LoginActivity;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
