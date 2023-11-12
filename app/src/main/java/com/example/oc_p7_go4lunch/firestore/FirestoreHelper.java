@@ -74,6 +74,8 @@ public class FirestoreHelper {
                     }
                 });
     }
+
+
     public void getButtonState(String userId, OnButtonStateReceivedListener listener) {
         getUserDocument(userId)
                 .get()
