@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.test:annotation:1.0.1@aar">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d19b2136132a39c5200c00c36383b8da/transformed/jetified-annotation-1.0.1/AndroidManifest.xml" />
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d19b2136132a39c5200c00c36383b8da/transformed/jetified-annotation-1.0.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d19b2136132a39c5200c00c36383b8da/transformed/jetified-annotation-1.0.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

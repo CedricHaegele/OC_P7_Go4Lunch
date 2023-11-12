@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.navigation:navigation-ui:2.7.5@aar">
     <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/81b15bb46cea5835d9359c2c48063624/transformed/navigation-ui-2.7.5/jars/classes.jar!/" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/81b15bb46cea5835d9359c2c48063624/transformed/navigation-ui-2.7.5/res" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/81b15bb46cea5835d9359c2c48063624/transformed/navigation-ui-2.7.5/AndroidManifest.xml" />
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/81b15bb46cea5835d9359c2c48063624/transformed/navigation-ui-2.7.5/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

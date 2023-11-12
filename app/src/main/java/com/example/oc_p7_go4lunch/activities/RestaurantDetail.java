@@ -253,8 +253,8 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         binding.fab.setOnClickListener(v -> {
             isButtonChecked = !isButtonChecked;
             /**SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("buttonCheckedState_" + restaurantId, isButtonChecked);
-            editor.apply();*/
+             editor.putBoolean("buttonCheckedState_" + restaurantId, isButtonChecked);
+             editor.apply();*/
             updateButtonUI(isButtonChecked);
 
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

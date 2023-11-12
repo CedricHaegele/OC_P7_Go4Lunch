@@ -128,4 +128,4 @@ public class UserModel implements Serializable {
         result.put("likedRestaurantIds", likedRestaurantIds);
 
         return result;
-}}
+    }}

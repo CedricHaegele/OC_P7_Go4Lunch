@@ -4,8 +4,8 @@
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/5548089bbf3c706485429ca92514f095/transformed/appcompat-1.6.1/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/5548089bbf3c706485429ca92514f095/transformed/appcompat-1.6.1/res" />
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/5548089bbf3c706485429ca92514f095/transformed/appcompat-1.6.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/5548089bbf3c706485429ca92514f095/transformed/appcompat-1.6.1/res" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/5548089bbf3c706485429ca92514f095/transformed/appcompat-1.6.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />

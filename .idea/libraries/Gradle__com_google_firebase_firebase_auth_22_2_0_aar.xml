@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.firebase:firebase-auth:22.2.0@aar">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/f89df0defe50e6444aeb2892f40b296c/transformed/jetified-firebase-auth-22.2.0/AndroidManifest.xml" />
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/f89df0defe50e6444aeb2892f40b296c/transformed/jetified-firebase-auth-22.2.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/f89df0defe50e6444aeb2892f40b296c/transformed/jetified-firebase-auth-22.2.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.google.firebase/firebase-auth/22.2.0/cad96c9c00a4effbdc6c3b7b28e0d789efa2eab4/firebase-auth-22.2.0-javadoc.jar!/" />

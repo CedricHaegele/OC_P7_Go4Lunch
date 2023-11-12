@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.preference:preference:1.2.1@aar">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d611a16ceb8473417f4c8c239281adc6/transformed/preference-1.2.1/res" />
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d611a16ceb8473417f4c8c239281adc6/transformed/preference-1.2.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d611a16ceb8473417f4c8c239281adc6/transformed/preference-1.2.1/res" />
       <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/d611a16ceb8473417f4c8c239281adc6/transformed/preference-1.2.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
