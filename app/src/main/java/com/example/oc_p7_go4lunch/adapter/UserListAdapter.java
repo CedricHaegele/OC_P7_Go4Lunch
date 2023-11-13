@@ -35,6 +35,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         UserModel user = userList.get(position);
+        Log.d("UserListAdapter", "Binding view for user: " + user.getName());
         holder.setData(user);
     }
 
@@ -75,6 +76,24 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
                             .into(binding.userPhoto);
                 }
             }
+        }
+    }
+
+    // Add the new addUser method
+    public void addUser(UserModel newUser) {
+        Log.d("UserListAdapter", "Adding user: " + newUser.getName());
+        userList.add(newUser);
+        notifyItemInserted(userList.size() - 1);
+        Log.d("UserListAdapter", "User added. Total users: " + userList.size());
+    }
+
+
+    // Add the new removeUser method
+    public void removeUser(UserModel user) {
+        int position = userList.indexOf(user);
+        if (position > -1) {
+            userList.remove(position);
+            notifyItemRemoved(position);
         }
     }
 

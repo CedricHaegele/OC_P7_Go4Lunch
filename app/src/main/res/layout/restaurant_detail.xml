@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_weight="2"
-            android:background="#FF3300"
+            android:background="#D3352A"
             android:orientation="vertical">
 
             <LinearLayout
@@ -89,7 +89,7 @@
                 android:layout_weight="1"
                 android:drawableTop="@drawable/ic_baseline_local_phone_24"
                 android:text="@string/call"
-                android:textColor="#E61000" />
+                android:textColor="#D3352A" />
 
             <Button
                 android:id="@+id/likeButton"
@@ -103,7 +103,7 @@
                 android:layout_weight="1"
                 android:drawableTop="@drawable/button_like_selector"
                 android:text="@string/like"
-                android:textColor="#E61000" />
+                android:textColor="#D3352A" />
 
             <Button
                 android:id="@+id/websiteButton"
@@ -117,14 +117,14 @@
                 android:layout_weight="1"
                 android:drawableTop="@drawable/ic_baseline_language_24"
                 android:text="@string/website"
-                android:textColor="#E61000" />
+                android:textColor="#D3352A" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/userRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="5"
+            android:layout_weight="10"
             android:layout_marginBottom="?android:attr/actionBarSize"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 

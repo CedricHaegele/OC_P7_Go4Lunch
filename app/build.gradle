@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.oc_p7_go4lunch"
-        minSdkVersion 24
+        minSdkVersion 21
         targetSdk 31
         versionCode 1
         versionName "1.0"
