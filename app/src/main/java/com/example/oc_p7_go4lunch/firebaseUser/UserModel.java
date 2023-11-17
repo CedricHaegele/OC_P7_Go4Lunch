@@ -20,41 +20,12 @@ public class UserModel implements Serializable {
     public UserModel() {
     }
 
-    public UserModel(String userId, String name) {
-        this.userId = userId;
-        this.name = name;
-    }
-
-    public UserModel(String userId, String mail, String name, String photo, String selectedRestaurantId, String selectedRestaurantName, List<String> likedRestaurantIds) {
-        this.userId = userId;
-        this.mail = mail;
-        this.name = name;
-        this.photo = photo;
-        this.selectedRestaurantId = selectedRestaurantId;
-        this.selectedRestaurantName = selectedRestaurantName;
-        this.likedRestaurantIds = likedRestaurantIds;
-    }
-
     public String getUserId() {
         return userId;
     }
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public UserModel(String email, String displayName, String valueOf) {
-        this.mail = email;
-        this.name = displayName;
-
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
     }
 
     public String getName() {

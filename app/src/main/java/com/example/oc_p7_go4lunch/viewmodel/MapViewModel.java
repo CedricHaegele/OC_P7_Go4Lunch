@@ -3,31 +3,22 @@ package com.example.oc_p7_go4lunch.viewmodel;
 
 import android.app.Application;
 import android.location.Location;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.repositories.MapRepository;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-
-import android.util.Log;
 
 import java.util.List;
 
 public class MapViewModel extends AndroidViewModel {
-
-    public LocationRequest locationRequest;
-    public LocationCallback locationCallback;
-
-    private MutableLiveData<Boolean> isLocationPermissionGranted = new MutableLiveData<>();
 
     private final MutableLiveData<Boolean> isLocationReady = new MutableLiveData<>(false);
 
@@ -71,15 +62,13 @@ public class MapViewModel extends AndroidViewModel {
                             isLocationReady.setValue(true);
                         }
                     })
-                    .addOnFailureListener(e -> {
-                        Log.d("MapViewModel", "Failed to retrieve location", e);
-                    });
+                    .addOnFailureListener(e -> Log.d("MapViewModel", "Failed to retrieve location", e));
         } catch (SecurityException e) {
             Log.d("MapViewModel", "SecurityException", e);
 
 
-            if (locationData.getValue() == null);
-                //requestLocationUpdates();
+            locationData.getValue();
+            //requestLocationUpdates();
         }
     }
 

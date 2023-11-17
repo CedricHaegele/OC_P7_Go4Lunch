@@ -16,7 +16,7 @@ import java.util.List;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserViewHolder> {
     // Member variable to hold the list of UserModels
-    private List<UserModel> userList;
+    private final List<UserModel> userList;
 
     // Constructor to initialize the list
     public UserListAdapter(List<UserModel> userList) {
@@ -42,8 +42,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
     // Get the number of items in the list
     @Override
     public int getItemCount() {
-        int size = userList.size();
-        return size;
+        return userList.size();
     }
 
     // ViewHolder class to hold the views for each list item
@@ -79,25 +78,4 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         }
     }
 
-    // Add the new addUser method
-    public void addUser(UserModel newUser) {
-        Log.d("UserListAdapter", "Adding user: " + newUser.getName());
-        userList.add(newUser);
-        notifyItemInserted(userList.size() - 1);
-        Log.d("UserListAdapter", "User added. Total users: " + userList.size());
-    }
-
-    // Add the new removeUser method
-    public void removeUser(UserModel user) {
-        int position = userList.indexOf(user);
-        if (position > -1) {
-            userList.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
-
-    public void updateList(List<UserModel> newUserList) {
-        this.userList = newUserList;
-        notifyDataSetChanged();
-    }
 }

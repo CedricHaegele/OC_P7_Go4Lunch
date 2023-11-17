@@ -16,8 +16,4 @@ public class Geometry implements Serializable {
         return location;
     }
 
-    // Setter method for location
-    public void setLocation(Location location) {
-        this.location = location;
-    }
 }

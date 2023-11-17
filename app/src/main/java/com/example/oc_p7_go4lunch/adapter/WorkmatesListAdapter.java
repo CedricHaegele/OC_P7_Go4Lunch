@@ -17,7 +17,7 @@ import java.util.List;
 
 public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdapter.ViewHolder> {
 
-    private List<UserModel> userList;
+    private final List<UserModel> userList;
 
     public WorkmatesListAdapter(List<UserModel> userModels) {
         this.userList = userModels;
@@ -61,15 +61,15 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
                     .error(R.drawable.profil_user)
                     .into(binding.imageProfile);
 
+            String text;
             if (mUser.getSelectedRestaurantName() != null && !mUser.getSelectedRestaurantName().isEmpty()) {
-                String text = mUser.getName() + " is eating at " + mUser.getSelectedRestaurantName();
+                text = mUser.getName() + " is eating at " + mUser.getSelectedRestaurantName();
                 binding.textRestaurantName.setText(text);
                 binding.textRestaurantName.setTypeface(null, Typeface.BOLD);
-                binding.textRestaurantName.setText(text);
             } else {
-                String text = mUser.getName() + " hasn't decided yet";
-                binding.textRestaurantName.setText(text);
+                text = mUser.getName() + " hasn't decided yet";
             }
+            binding.textRestaurantName.setText(text);
 
         }
     }

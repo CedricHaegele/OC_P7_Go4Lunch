@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorkmatesListViewModel extends ViewModel {
-    private MutableLiveData<List<UserModel>> usersList;
-    private FirestoreHelper firestoreHelper;
+    private final MutableLiveData<List<UserModel>> usersList;
+    private final FirestoreHelper firestoreHelper;
 
 
     public WorkmatesListViewModel() {

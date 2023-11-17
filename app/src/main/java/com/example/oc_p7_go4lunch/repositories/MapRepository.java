@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.oc_p7_go4lunch.BuildConfig;
@@ -44,7 +45,7 @@ public class MapRepository {
         googlePlacesApi.getNearbyPlaces(location, radius, type, apiKey).enqueue(new Callback<RestaurantResponse>() {
             // Successful API call
             @Override
-            public void onResponse(Call<RestaurantResponse> call, Response<RestaurantResponse> response) {
+            public void onResponse(@NonNull Call<RestaurantResponse> call, @NonNull Response<RestaurantResponse> response) {
                 // Check if the response is successful and contains data
                 if (response.isSuccessful() && response.body() != null) {
                     // Update the MutableLiveData with new list of restaurants
@@ -54,7 +55,7 @@ public class MapRepository {
 
             // Failed API call
             @Override
-            public void onFailure(Call<RestaurantResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<RestaurantResponse> call, @NonNull Throwable t) {
                 Log.d(TAG, "Api Failed");
             }
         });

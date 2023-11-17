@@ -4,6 +4,7 @@ package com.example.oc_p7_go4lunch.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -12,7 +13,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.databinding.FragmentRestoItemBinding;
 import com.example.oc_p7_go4lunch.googleplaces.OpeningHours;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
@@ -22,7 +22,6 @@ import java.util.Locale;
 
 public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyViewHolder> {
     // Member variables
-    private final Context context;
     private List<RestaurantModel> placesList;
     private final LayoutInflater layoutInflater;
 
@@ -34,7 +33,6 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
     // Constructor
     public RestoListAdapter(List<RestaurantModel> placesList, Context context,PhotoLoader photoLoader) {
-        this.context = context;
         this.photoLoader = photoLoader;
         this.layoutInflater = LayoutInflater.from(context);
         updateData(placesList);
@@ -56,7 +54,9 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     @SuppressLint("NotifyDataSetChanged")
     public void updateData(List<RestaurantModel> newPlacesList) {
         this.placesList = newPlacesList;
-        placesList.sort((r1, r2) -> Float.compare(r1.getDistanceFromCurrentLocation(), r2.getDistanceFromCurrentLocation()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            placesList.sort((r1, r2) -> Float.compare(r1.getDistanceFromCurrentLocation(), r2.getDistanceFromCurrentLocation()));
+        }
         Log.d("AdapterUpdate", "About to call notifyDataSetChanged");
         notifyDataSetChanged();
         Log.d("AdapterUpdate", "Called notifyDataSetChanged");
@@ -74,6 +74,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             this.photoLoader = photoLoader;
         }
 
+        @SuppressLint("SetTextI18n")
         public void bindData(RestaurantModel restaurantModel) {
             binding.name.setText(restaurantModel.getName());
             binding.address.setText(restaurantModel.getVicinity());
@@ -83,8 +84,6 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             } else {
                 binding.ratingBar.setRating(0);
             }
-
-            String photoUrl = restaurantModel.getPhotoUrl(BuildConfig.API_KEY);
 
             if (photoLoader != null) {
                 String placeId = restaurantModel.getPlaceId();

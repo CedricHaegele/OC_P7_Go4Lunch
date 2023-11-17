@@ -11,8 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.SupportMapFragment;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -20,9 +18,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.oc_p7_go4lunch.factories.MapViewModelFactory;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
+import com.example.oc_p7_go4lunch.factories.MapViewModelFactory;
 import com.example.oc_p7_go4lunch.googleplaces.ApiProvider;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.viewmodel.MapViewModel;
@@ -30,11 +28,10 @@ import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.List;
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
@@ -136,20 +133,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         if (location != null && mMap != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
-        }
-    }
-
-    private void updateMarkers(List<RestaurantModel> restaurants) {
-        if (restaurants != null && mMap != null) {
-            mMap.clear();
-            Log.d("MapViewFragment", "Updating markers");
-            for (RestaurantModel restaurant : restaurants) {
-                LatLng latLng = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
-                Log.d("MapViewFragment", "Adding marker for " + restaurant.getName());
-                mMap.addMarker(new MarkerOptions().position(latLng).title(restaurant.getName()));
-            }
-        } else {
-            Log.d("MapViewFragment", "Either restaurants or mMap is null");
         }
     }
 

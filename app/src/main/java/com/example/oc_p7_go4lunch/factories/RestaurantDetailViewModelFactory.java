@@ -24,6 +24,7 @@ public class RestaurantDetailViewModelFactory implements ViewModelProvider.Facto
 
     // Redéfinition de la méthode create de l'interface ViewModelProvider.Factory.
     // Cette méthode est appelée pour créer une instance de ViewModel.
+    @NonNull
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
         // Vérification si le modelClass spécifié est assignable à RestaurantDetailViewModel.

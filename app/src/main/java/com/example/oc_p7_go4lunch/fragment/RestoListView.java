@@ -1,7 +1,6 @@
 package com.example.oc_p7_go4lunch.fragment;
 
 
-
 import static android.content.ContentValues.TAG;
 
 import android.content.Context;
@@ -9,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,7 +28,6 @@ import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.adapter.RestoListAdapter;
-
 import com.example.oc_p7_go4lunch.databinding.FragmentRestoListBinding;
 import com.example.oc_p7_go4lunch.googleplaces.MyPlaces;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
@@ -62,7 +60,6 @@ import retrofit2.Response;
 
 public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoader {
     private PlacesClient placesClient;
-    private RestoListViewModel viewModel;
     RecyclerView recyclerView;
     List<RestaurantModel> placesList = new ArrayList<>();
     RestoListAdapter restoListAdapter;
@@ -70,9 +67,6 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
     private Context mContext;
     GoogleMap map;
     List<RestaurantModel> restaurantList = new ArrayList<>();
-    // A default location (Sydney, Australia) and default zoom to use when location permission is
-    // not granted.
-    private FragmentRestoListBinding binding;
     private boolean locationPermissionGranted;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
@@ -90,9 +84,11 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentRestoListBinding.inflate(inflater, container, false);
+        // A default location (Sydney, Australia) and default zoom to use when location permission is
+        // not granted.
+        com.example.oc_p7_go4lunch.databinding.FragmentRestoListBinding binding = FragmentRestoListBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
         if (placesClient == null) {
@@ -105,19 +101,14 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
         recyclerView.setAdapter(restoListAdapter);
         this.configureOnClickRecyclerView();
 
-        viewModel = new ViewModelProvider(this).get(RestoListViewModel.class);
+        RestoListViewModel viewModel = new ViewModelProvider(this).get(RestoListViewModel.class);
 
         // Construct a FusedLocationProviderClient
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         getLocationPermission();
         getDeviceLocation();
 
-        viewModel.getRestaurants().observe(getViewLifecycleOwner(), new Observer<List<RestaurantModel>>() {
-            @Override
-            public void onChanged(List<RestaurantModel> restaurantModels) {
-                restoListAdapter.updateData(restaurantModels);
-            }
-        });
+        viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurantModels -> restoListAdapter.updateData(restaurantModels));
 
         return view;
     }
@@ -174,17 +165,19 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
                                     Location currentLocation = new Location("current");
                                     currentLocation.setLatitude(lastKnownLocation.getLatitude());
                                     currentLocation.setLongitude(lastKnownLocation.getLongitude());
-                                    restaurantList.sort((r1, r2) -> {
-                                        Location loc1 = new Location("");
-                                        loc1.setLatitude(r1.getLatitude());
-                                        loc1.setLongitude(r1.getLongitude());
-                                        Location loc2 = new Location("");
-                                        loc2.setLatitude(r2.getLatitude());
-                                        loc2.setLongitude(r2.getLongitude());
-                                        float distance1 = currentLocation.distanceTo(loc1);
-                                        float distance2 = currentLocation.distanceTo(loc2);
-                                        return Float.compare(distance1, distance2);
-                                    });
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                        restaurantList.sort((r1, r2) -> {
+                                            Location loc1 = new Location("");
+                                            loc1.setLatitude(r1.getLatitude());
+                                            loc1.setLongitude(r1.getLongitude());
+                                            Location loc2 = new Location("");
+                                            loc2.setLatitude(r2.getLatitude());
+                                            loc2.setLongitude(r2.getLongitude());
+                                            float distance1 = currentLocation.distanceTo(loc1);
+                                            float distance2 = currentLocation.distanceTo(loc2);
+                                            return Float.compare(distance1, distance2);
+                                        });
+                                    }
 
                                     restoListAdapter.updateData(restaurantList);
                                 } else {
@@ -260,7 +253,7 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
                     // Ajoutez des logs ici pour vérifier l'ID du lieu
                     Log.d("RestoListView", "Selected restaurant: " + restaurant.getName() + ", Place ID: " + restaurant.getPlaceId());
 
-                    if (restaurant != null && restaurant.getPlaceId() != null) {
+                    if (restaurant.getPlaceId() != null) {
                         // Le restaurant est valide et a un placeId, démarrer l'intention.
                         Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
                         intent.putExtra("Restaurant", restaurant);
@@ -298,16 +291,14 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
                 imageView.setImageBitmap(bitmap);
             }).addOnFailureListener((exception) -> {
                 if (exception instanceof ApiException) {
-                    final ApiException apiException = (ApiException) exception;
                     Log.e(TAG, "Place not found: " + exception.getMessage());
-                    // TODO: Handle error with given status code.
+
                 }
             });
         }).addOnFailureListener((exception) -> {
             if (exception instanceof ApiException) {
-                final ApiException apiException = (ApiException) exception;
                 Log.e(TAG, "Place not found: " + exception.getMessage());
-                // TODO: Handle error with given status code.
+
             }
         });
     }

@@ -4,54 +4,27 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.LiveData;
-
-
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import com.example.oc_p7_go4lunch.googleplaces.MyPlaces;
-import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.libraries.places.api.model.PhotoMetadata;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.oc_p7_go4lunch.Event;
-import com.example.oc_p7_go4lunch.RestoInformations;
-import com.example.oc_p7_go4lunch.utils.OnUserDataReceivedListener;
+import com.example.oc_p7_go4lunch.googleplaces.RestoInformations;
 import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
-import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
-
+import com.example.oc_p7_go4lunch.googleplaces.MyPlaces;
+import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
-
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -73,35 +46,9 @@ public class RestaurantDetailViewModel extends ViewModel {
     public MutableLiveData<Float> restaurantRating = new MutableLiveData<>();
     public MutableLiveData<Boolean> isButtonChecked = new MutableLiveData<>();
     private final RestaurantApiService restaurantApiService;
-    public MutableLiveData<List<UserModel>> userList = new MutableLiveData<>(new ArrayList<>());
-    private FirestoreHelper firestoreHelper;
-    private MutableLiveData<String> photoUrl = new MutableLiveData<>();
-    public final MutableLiveData<Event<Intent>> websiteIntent = new MutableLiveData<>();
+    private final FirestoreHelper firestoreHelper;
     private final MutableLiveData<Bitmap> restaurantPhoto = new MutableLiveData<>();
-    private String currentUserId;
     private final MutableLiveData<List<RestaurantModel>> likedRestaurants = new MutableLiveData<>();
-    private MutableLiveData<UserModel> userModelLiveData = new MutableLiveData<>();
-
-
-    public LiveData<UserModel> getUserModelLiveData() {
-        return userModelLiveData;
-    }
-
-    public void fetchUserData(String userId) {
-        firestoreHelper.getUserData(userId, new FirestoreHelper.OnUserDataReceivedListener() {
-            @Override
-            public void onUserDataReceived(UserModel userModel) {
-                userModelLiveData.postValue(userModel);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                error.postValue(e);
-            }
-        });
-    }
-
-
 
 
     public LiveData<Bitmap> getRestaurantPhoto() {
@@ -111,47 +58,12 @@ public class RestaurantDetailViewModel extends ViewModel {
     public void setRestaurantPhoto(Bitmap bitmap) {
         restaurantPhoto.setValue(bitmap);
     }
-
-
-    public LiveData<String> getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String url) {
-        photoUrl.setValue(url);
-    }
-
     // Constructeur avec argument qui initialise le service API et FirestoreHelper
     public RestaurantDetailViewModel(RestaurantApiService restaurantApiService) {
         this.restaurantApiService = restaurantApiService;
         firestoreHelper = new FirestoreHelper();
-        firestoreHelper.setListener(new OnUserDataReceivedListener() {
-            @Override
-            public void onUserDataReceived(UserModel userModel) {
-
-                userModelLiveData.postValue(userModel);
-
-                List<UserModel> currentList = userList.getValue();
-                if (currentList == null) {
-                    currentList = new ArrayList<>();
-                }
-                currentList.add(userModel);
-                userList.setValue(currentList);
-            }
-
-            @Override
-            public void onError(Exception e) {
-
-                error.postValue(e);
-            }
-        });
+        firestoreHelper.setListener();
     }
-
-    // Constructeur sans argument
-    public RestaurantDetailViewModel() {
-        this(new RestaurantApiService());
-    }
-
 
     public LiveData<MyPlaces> getPlacesData() {
         return placesData;
@@ -169,35 +81,6 @@ public class RestaurantDetailViewModel extends ViewModel {
                 restaurant.setValue(fetchedData);
             }
         }
-    }
-
-    public void setCurrentUserId(String userId) {
-        this.currentUserId = userId;
-    }
-
-    // Méthode appelée lorsque l'utilisateur clique sur un restaurant
-    public void onRestaurantClicked(String restaurantId) {
-        if (currentUserId == null) {
-            // L'utilisateur n'est pas connecté
-            return;
-        }
-
-        firestoreHelper.getSelectedRestaurant(currentUserId, new FirestoreHelper.OnRestaurantSelectedListener() {
-            @Override
-            public void onRestaurantSelected(String selectedRestaurantId) {
-                if (restaurantId.equals(selectedRestaurantId)) {
-                    // L'utilisateur a déjà sélectionné ce restaurant
-                    firestoreHelper.selectRestaurant(currentUserId, null, success -> {
-                        isButtonChecked.setValue(!success);
-                    });
-                } else {
-                    // L'utilisateur n'a pas sélectionné ce restaurant
-                    firestoreHelper.selectRestaurant(currentUserId, restaurantId, success -> {
-                        isButtonChecked.setValue(success);
-                    });
-                }
-            }
-        });
     }
 
     public void fetchLikedRestaurants(String userId) {
@@ -248,31 +131,9 @@ public class RestaurantDetailViewModel extends ViewModel {
         firestoreHelper.updateSelectedRestaurant(userId, restaurantId, isSelected, restaurant, success -> {
             if (success) {
                 isButtonChecked.postValue(isSelected);
-            } else {
-
             }
         });
     }
-
-    public LiveData<Boolean> getIsButtonChecked() {
-        return isButtonChecked;
-    }
-
-    private List<UserModel> transformUserIdsToUserModels(List<String> userIds) {
-        List<UserModel> userModels = new ArrayList<>();
-
-        return userModels;
-    }
-
-    public void likeRestaurant(String userId, String restaurantId) {
-        firestoreHelper.likeRestaurant(userId, restaurantId);
-    }
-
-    public void unlikeRestaurant(String userId, String restaurantId) {
-        firestoreHelper.unlikeRestaurant(userId, restaurantId);
-    }
-
-
     public void fetchRestaurantDetails(String placeId, String apiKey) {
         restaurantApiService.fetchRestaurantDetails(placeId, apiKey, new Callback<RestoInformations>() {
             @Override
@@ -296,24 +157,6 @@ public class RestaurantDetailViewModel extends ViewModel {
     public boolean isPhoneNumberValid(String noPhoneNumberString) {
         String number = phoneNumber.getValue();
         return number != null && !number.equals(noPhoneNumberString);
-    }
-
-    public void setPhoneNumber(String number) {
-        phoneNumber.setValue(number);
-    }
-
-    public void onWebsiteButtonClicked() {
-        String websiteUrl = this.websiteUrl.getValue();
-        if (websiteUrl == null || websiteUrl.equals("https://www.google.com/")) {
-
-        } else {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(websiteUrl));
-            websiteIntent.setValue(new Event<>(intent));
-        }
-    }
-
-    public LiveData<Event<Intent>> getWebsiteIntent() {
-        return websiteIntent;
     }
 
     public void fetchPlaceDetails(PlacesClient placesClient, String placeId) {
@@ -351,31 +194,6 @@ public class RestaurantDetailViewModel extends ViewModel {
         return restaurantModel;
     }
 
-    public void listenToRestaurantLikedStatus(String userId, String restaurantId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference likedRef = db.collection("users").document(userId)
-                .collection("likedRestaurants").document(restaurantId);
-
-        likedRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-
-                if (snapshot != null && snapshot.exists()) {
-                    Boolean isRestaurantLiked = snapshot.getBoolean("isLiked");
-                    isLiked.setValue(isRestaurantLiked != null ? isRestaurantLiked : false);
-                } else {
-                    isLiked.setValue(false);
-                }
-            }
-        });
-    }
-
-
     private void fetchPhotoForRestaurant(PlacesClient placesClient, PhotoMetadata photoMetadata) {
         FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
                 .setMaxWidth(500)
@@ -386,8 +204,6 @@ public class RestaurantDetailViewModel extends ViewModel {
             Bitmap bitmap = fetchPhotoResponse.getBitmap();
             setRestaurantPhoto(bitmap);
         }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-            }
         });
     }
 

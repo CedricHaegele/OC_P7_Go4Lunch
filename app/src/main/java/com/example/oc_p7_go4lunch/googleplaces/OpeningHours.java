@@ -19,8 +19,4 @@ public class OpeningHours implements Serializable {
         return openNow;
     }
 
-    // Setter method for openNow
-    public void setOpenNow(Boolean openNow) {
-        this.openNow = openNow;
-    }
 }

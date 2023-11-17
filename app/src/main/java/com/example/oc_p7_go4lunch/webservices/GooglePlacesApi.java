@@ -1,6 +1,6 @@
 package com.example.oc_p7_go4lunch.webservices;
 
-import com.example.oc_p7_go4lunch.RestoInformations;
+import com.example.oc_p7_go4lunch.googleplaces.RestoInformations;
 import com.example.oc_p7_go4lunch.googleplaces.MyPlaces;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantResponse;
 

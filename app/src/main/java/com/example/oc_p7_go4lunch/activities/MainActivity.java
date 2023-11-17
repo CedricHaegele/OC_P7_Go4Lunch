@@ -34,7 +34,6 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
@@ -43,7 +42,6 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.SetOptions;
@@ -52,6 +50,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 // Main Activity class
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -115,7 +114,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
             // Create a new MyPlaces client instance.
-            PlacesClient placesClient = Places.createClient(this);
         }
 
         // UI Component Initializations
@@ -159,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
+                assert data != null;
                 Place place = Autocomplete.getPlaceFromIntent(data);
 
                 Intent intent = new Intent(MainActivity.this, RestaurantDetail.class);
@@ -167,8 +166,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
 
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i("PlaceAPI", status.getStatusMessage());
+                Status status = null;
+                if (data != null) {
+                    status = Autocomplete.getStatusFromIntent(data);
+                }
+                if (status != null && status.getStatusMessage() != null) {
+                    Log.i("PlaceAPI", status.getStatusMessage());
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -254,17 +258,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
             case R.id.mapView:
                 changeFragment(new MapViewFragment());
-                getSupportActionBar().setTitle("I'm Hungry !");
+                Objects.requireNonNull(getSupportActionBar()).setTitle("I'm Hungry !");
                 searchImageView.setVisibility(View.VISIBLE);
                 break;
             case R.id.listView:
                 changeFragment(new RestoListView());
-                getSupportActionBar().setTitle("I'm Hungry !");
+                Objects.requireNonNull(getSupportActionBar()).setTitle("I'm Hungry !");
                 searchImageView.setVisibility(View.GONE);
                 break;
             case R.id.workmates:
                 changeFragment(new WorkmatesList());
-                getSupportActionBar().setTitle(" Workmates");
+                Objects.requireNonNull(getSupportActionBar()).setTitle(" Workmates");
                 searchImageView.setVisibility(View.GONE);
                 break;
         }
