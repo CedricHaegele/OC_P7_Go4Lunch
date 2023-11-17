@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+
 public class LoginViewModel extends ViewModel {
     // MutableLiveData est un type de données observable. Ici, il détient et gère les données de l'utilisateur Firebase.
     private final MutableLiveData<FirebaseUser> userLiveData = new MutableLiveData<>();

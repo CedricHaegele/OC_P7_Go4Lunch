@@ -153,7 +153,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == YOUR_REQUEST_CODE) {
@@ -198,27 +197,24 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             }else{
                 Log.d("MapViewFragment", "Location is null");
             }
-            });
+        });
 
-            // Enable zoom controls on the map
-            mMap.getUiSettings().setZoomControlsEnabled(true);
+        // Enable zoom controls on the map
+        mMap.getUiSettings().setZoomControlsEnabled(true);
 
-            // Enable location features if permission granted
-            enableLocationFeatures();
+        // Enable location features if permission granted
+        enableLocationFeatures();
 
-
-            mMap.setOnMarkerClickListener(marker -> {
-                RestaurantModel clickedRestaurant = (RestaurantModel) marker.getTag();
-                if (clickedRestaurant != null) {
-                    Intent detailIntent = new Intent(getActivity(), RestaurantDetail.class);
-                    detailIntent.putExtra("Restaurant", clickedRestaurant);
-                    startActivity(detailIntent);
-                } else {
-                    Toast.makeText(getContext(), "Restaurant data is not available", Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            });
-
-        }
+        mMap.setOnMarkerClickListener(marker -> {
+            RestaurantModel clickedRestaurant = (RestaurantModel) marker.getTag();
+            if (clickedRestaurant != null) {
+                Intent detailIntent = new Intent(getActivity(), RestaurantDetail.class);
+                detailIntent.putExtra("Restaurant", clickedRestaurant);
+                startActivity(detailIntent);
+            } else {
+                Toast.makeText(getContext(), "Restaurant data is not available", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        });
     }
-
+}

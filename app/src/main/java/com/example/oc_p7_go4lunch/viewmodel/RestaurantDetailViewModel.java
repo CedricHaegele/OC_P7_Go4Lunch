@@ -102,6 +102,8 @@ public class RestaurantDetailViewModel extends ViewModel {
     }
 
 
+
+
     public LiveData<Bitmap> getRestaurantPhoto() {
         return restaurantPhoto;
     }
