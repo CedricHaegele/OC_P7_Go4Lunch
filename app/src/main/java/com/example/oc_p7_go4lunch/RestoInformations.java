@@ -47,4 +47,5 @@ public class RestoInformations {
   public void setLiked(boolean liked) {
     this.isLiked = liked;
   }
+
 }

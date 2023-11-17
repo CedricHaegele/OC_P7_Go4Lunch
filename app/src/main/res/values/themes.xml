@@ -3,13 +3,13 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
 
-    <style name="Theme.OC_P7_Go4Lunch" parent="Theme.AppCompat.Light.DarkActionBar">
-
+    <style name="Theme.OC_P7_Go4Lunch" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">#D3352A</item>
         <item name="colorPrimaryVariant">#292828</item>
         <item name="colorOnPrimary">@color/white</item>
     </style>
+
 
     <!-- FirebaseUI -->
     <style name="LoginTheme" parent="FirebaseUI">

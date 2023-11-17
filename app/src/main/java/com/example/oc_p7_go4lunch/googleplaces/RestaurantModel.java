@@ -1,5 +1,7 @@
 package com.example.oc_p7_go4lunch.googleplaces;
 
+import android.util.Log;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,9 +11,6 @@ import java.util.List;
 public class RestaurantModel implements Serializable {
 
     // Fields for various attributes of a restaurant
-    @SerializedName("business_status")
-    @Expose
-    private String businessStatus;
 
     @SerializedName("geometry")
     @Expose
@@ -20,10 +19,6 @@ public class RestaurantModel implements Serializable {
     @SerializedName("icon_background_color")
     @Expose
     private String iconBackgroundColor;
-
-    @SerializedName("icon_mask_base_uri")
-    @Expose
-    private String iconMaskBaseUri;
 
     public RestaurantModel(String id, String name, String address, Float aFloat) {
         this.placeId = id;
@@ -103,6 +98,14 @@ public class RestaurantModel implements Serializable {
     @SerializedName("longitude")
     @Expose
     private double longitude;
+
+    @SerializedName("website")
+    @Expose
+    private String website;
+
+    @SerializedName("phone")
+    @Expose
+    private String phone;
 
     // Fields for additional properties
     private Photo photo;
@@ -198,6 +201,23 @@ public class RestaurantModel implements Serializable {
 
     public Geometry getGeometry() {
         return geometry;
+    }
+
+    public String getWebsite() {
+
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
 }

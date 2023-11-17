@@ -20,7 +20,7 @@ import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.viewmodel.RestaurantDetailViewModel;
 import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
-import com.example.oc_p7_go4lunch.webservices.RestaurantDetailViewModelFactory;
+import com.example.oc_p7_go4lunch.factories.RestaurantDetailViewModelFactory;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
@@ -96,7 +96,10 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         binding.fab.setOnClickListener(v -> {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null && restaurant != null) {
+                userId = currentUser.getUid();
+
                 String newRestaurantId = restaurant.getPlaceId();
+                saveRestaurantSelection(newRestaurantId);
 
                 checkIfRestaurantCanBeSelected(currentUser.getUid(), newRestaurantId, isSelected -> {
                     if (isSelected) {
@@ -112,7 +115,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         binding.likeButton.setOnClickListener(v -> {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null && restaurant != null) {
-                String userId = currentUser.getUid();
                 String restaurantId = restaurant.getPlaceId();
 
                 isLiked = !isLiked;
@@ -337,7 +339,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
 
     private void removeUserSelectionFromFirestore(UserModel user, String restaurantId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Log.d("Firestore", "Starting to remove user selection from Firestore for user: " + user.getUserId());
         db.collection("restaurants").document(restaurantId)
                 .update("selectedUsers", FieldValue.arrayRemove(user.getUserId()))
                 .addOnSuccessListener(aVoid -> Log.d("Firestore", "User selection removed successfully"))
@@ -346,18 +347,14 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
 
 
     private void saveUserSelectionToFirestore(UserModel user, String restaurantId, boolean isSelected) {
-        Log.d("Firestore", "saveUserSelectionToFirestore: Start - UserId: " + user.getUserId() + ", RestaurantId: " + restaurantId);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Log.d("Firestore", "Starting to save user selection to Firestore for user: " + user.getUserId());
 
         // Mise à jour du document du restaurant
         DocumentReference restaurantRef = db.collection("restaurants").document(restaurantId);
         if (isSelected) {
             restaurantRef.update("selectedUsers", FieldValue.arrayUnion(user.getUserId()));
-            Log.d("Firestore", "User selection added");
         } else {
             restaurantRef.update("selectedUsers", FieldValue.arrayRemove(user.getUserId()));
-            Log.d("Firestore", "User selection removed");
         }
 
         // Mise à jour du document de l'utilisateur
@@ -526,6 +523,23 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 .addOnSuccessListener(aVoid -> Log.d("Firestore", "State updated successfully for " + restaurantId))
                 .addOnFailureListener(e -> Log.d("Firestore", "Error updating state for " + restaurantId, e));
     }
+
+    private void saveRestaurantSelection(String restaurantId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("selectedRestaurantId", restaurantId);
+
+            db.collection("users").document(userId)
+                    .set(data, SetOptions.merge())
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "Restaurant sélectionné enregistré pour l'utilisateur: " + userId))
+                    .addOnFailureListener(e -> Log.e("Firestore", "Erreur lors de l'enregistrement de la sélection du restaurant pour l'utilisateur: " + userId, e));
+        }
+    }
+
 
     // Initialize RecyclerView using View Binding
     private void initRecyclerView() {

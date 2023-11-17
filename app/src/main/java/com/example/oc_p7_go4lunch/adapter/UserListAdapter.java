@@ -87,7 +87,6 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         Log.d("UserListAdapter", "User added. Total users: " + userList.size());
     }
 
-
     // Add the new removeUser method
     public void removeUser(UserModel user) {
         int position = userList.indexOf(user);

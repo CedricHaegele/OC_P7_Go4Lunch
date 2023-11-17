@@ -334,7 +334,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$PROJECT_DIR$/../../../../../../flutter/icons/material/materialicons/square/baseline_square_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/downloading/baseline_downloading_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -344,8 +344,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="fcfcfc" />
-                            <entry key="outputName" value="baseline_square_24" />
+                            <entry key="color" value="b3a8a8" />
+                            <entry key="outputName" value="baseline_downloading_24" />
                             <entry key="sourceFile" value="C:\Users\zikce\OneDrive\Documents\ProjectsAndroid\OC_P7_Go4Lunch" />
                           </map>
                         </option>

@@ -66,11 +66,11 @@ public class Photo implements Serializable {
 
     // Method to generate a photo URL with a given API key
     public String getPhotoUrl(String apiKey) {
-
-        String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=WIDTH&photoreference=PHOTO_REFERENCE&key=YOUR_API_KEY";
-        String generatedUrl = url + getPhotoReference() + "&key=" + apiKey;
-
-        return generatedUrl;
+        if (photoReference == null || apiKey == null) {
+            return null; // or a default image URL
+        }
+        return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=" + width
+                + "&photoreference=" + photoReference
+                + "&key=" + apiKey;
     }
-
 }

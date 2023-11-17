@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.oc_p7_go4lunch.BuildConfig;
+import com.example.oc_p7_go4lunch.RestoInformations;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantResponse;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
@@ -51,6 +52,30 @@ public class RestaurantRepository {
         }
 
         return data;
+    }
+    public LiveData<RestaurantModel> fetchRestaurantDetails(String placeId, String apiKey) {
+        MutableLiveData<RestaurantModel> restaurantData = new MutableLiveData<>();
+
+        // Appel API pour récupérer les détails d'un restaurant spécifique
+        Call<RestoInformations> call = googlePlacesApi.getRestaurantDetails(placeId, "formatted_phone_number,website,like", apiKey);
+        call.enqueue(new Callback<RestoInformations>() {
+            @Override
+            public void onResponse(Call<RestoInformations> call, Response<RestoInformations> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Convertir RestoInformations en RestaurantModel si nécessaire
+                    //restaurantData.postValue(response.body().toRestaurantModel());
+                } else {
+                    // Gérer le cas où la réponse n'est pas réussie
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RestoInformations> call, Throwable t) {
+                // Gérer l'erreur ici
+            }
+        });
+
+        return restaurantData;
     }
 }
 

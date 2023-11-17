@@ -45,6 +45,7 @@ public class FirestoreHelper {
     public FirestoreHelper() {
         db = FirebaseFirestore.getInstance();
     }
+
     // Method to add a user to Firestore
     public void addUser(String userId, String userName, String photoUrl, String userMail, OnUserAddedListener onUserAddedListener) {
         Map<String, Object> user = new HashMap<>();

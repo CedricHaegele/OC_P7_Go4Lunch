@@ -29,6 +29,7 @@ import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.SettingsFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
 import com.example.oc_p7_go4lunch.login.LoginActivity;
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         // UI Component Initializations
-        setSupportActionBar(toolbar);
+
         setUpNavView();
 
         // Change the fragment and set the action bar title
@@ -178,8 +179,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Initialize UI components.
      */
     private void initUIComponents() {
-        toolbar = binding.toolbar; // Find the Toolbar view and assign it to 'toolbar' variable
-        setSupportActionBar(toolbar); // Set the toolbar as the app bar
+        toolbar = binding.toolbar;
+
         mBottomNavigationView = binding.bottomNav;
     }
 
@@ -293,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case logOut:
                 Log.d("MainActivity", "LogOut Selected");
-                logOut();
+                onSignOutButtonClicked();
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -301,12 +302,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     //Log out the user and navigate back to LoginActivity.
-    private void logOut() {
-        Log.d("MainActivity", "LogOut method called");
-        FirebaseAuth.getInstance().signOut();
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finishAffinity();
+    // Dans MainActivity ou une autre activité où vous voulez gérer la déconnexion
+    public void onSignOutButtonClicked() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(task -> {
+                    // Redirection vers LoginActivity après une déconnexion réussie
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                });
     }
+
 }

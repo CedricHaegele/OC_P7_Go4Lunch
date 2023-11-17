@@ -20,7 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.oc_p7_go4lunch.MapViewModelFactory;
+import com.example.oc_p7_go4lunch.factories.MapViewModelFactory;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
 import com.example.oc_p7_go4lunch.googleplaces.ApiProvider;
