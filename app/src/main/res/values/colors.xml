@@ -15,6 +15,7 @@
     <color name="orange">#FFA500</color>
     <color name="red">#D3352A</color>
     <color name="Toolbar">#E83902</color>
+    <color name="Settings">#1F2928</color>
 
        <!-- APP BASE -->
     <color name="colorAccentDark">#000000</color>

@@ -31,30 +31,34 @@ public class FirestoreHelper {
     }
 
     public void updateSelectedRestaurant(String userId, String restaurantId, boolean isSelected, RestaurantModel restaurant, OnUpdateCompleteListener listener) {
-        Log.d("Firestore Update", "Updating selected restaurant: " + isSelected);
         DocumentReference userDocRef = db.collection("users").document(userId);
         Map<String, Object> updateData = new HashMap<>();
         if (isSelected) {
             updateData.put("selectedRestaurantId", restaurantId);
             updateData.put("selectedRestaurantName", restaurant.getName());
+            // Ajouter ou mettre à jour d'autres champs relatifs à l'état de l'utilisateur
         } else {
             updateData.put("selectedRestaurantId", FieldValue.delete());
             updateData.put("selectedRestaurantName", FieldValue.delete());
+            // Gérer la suppression ou la mise à jour de l'état de l'utilisateur
         }
         userDocRef.update(updateData)
                 .addOnSuccessListener(aVoid -> {
                     if (listener != null) listener.onUpdateComplete(true);
                 })
                 .addOnFailureListener(e -> {
-
                     if (listener != null) listener.onUpdateComplete(false);
                 });
     }
+
+
     public void setListener() {
     }
+
     public interface OnUpdateCompleteListener {
         void onUpdateComplete(boolean success);
     }
+
     // Interface pour les callbacks lorsque les données de l'utilisateur sont reçues
     public interface OnUserDataReceivedListener {
     }

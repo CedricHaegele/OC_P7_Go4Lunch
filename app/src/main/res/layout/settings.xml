@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/Settings"
-        android:textColor="@color/black"
+        android:text="Notifications"
+        android:textColor="#03293C"
         android:textSize="40sp"
         android:textAlignment="center"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -25,8 +25,8 @@
         android:layout_marginTop="30dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="@string/title"
-        android:textColor="@color/black"
+        android:text="Activation"
+        android:textColor="#03293C"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"/>
 

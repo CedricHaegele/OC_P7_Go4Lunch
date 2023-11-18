@@ -26,7 +26,7 @@ import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
-import com.example.oc_p7_go4lunch.fragment.SettingsFragment;
+import com.example.oc_p7_go4lunch.settings.SettingsFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
 import com.example.oc_p7_go4lunch.login.LoginActivity;
 import com.firebase.ui.auth.AuthUI;
@@ -291,10 +291,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case settings:
-                changeFragment(new SettingsFragment.PreferencesFragment());
+                changeFragment(new SettingsFragment());
                 searchImageView.setVisibility(View.GONE);
                 break;
-
 
             case logOut:
                 Log.d("MainActivity", "LogOut Selected");

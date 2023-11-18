@@ -134,6 +134,7 @@ public class RestaurantDetailViewModel extends ViewModel {
             }
         });
     }
+
     public void fetchRestaurantDetails(String placeId, String apiKey) {
         restaurantApiService.fetchRestaurantDetails(placeId, apiKey, new Callback<RestoInformations>() {
             @Override

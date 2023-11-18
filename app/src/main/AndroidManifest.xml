@@ -48,7 +48,7 @@
 
         <!-- Settings Activity -->
         <activity
-            android:name=".fragment.SettingsFragment"
+            android:name=".settings.SettingsFragment"
             android:exported="false"
             android:label="@string/title_activity_settings" />
 

@@ -35,7 +35,6 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         UserModel user = userList.get(position);
-        Log.d("UserListAdapter", "Binding view for user: " + user.getName());
         holder.setData(user);
     }
 
@@ -61,7 +60,6 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
                 String text = user.getName() + "" + " is joining!";
                 binding.userName.setText(text);
                 // Set user photo
-                Log.d("PhotoUrl","User Photo= "+ user);
                 if (user.getPhoto() != null) {
                     Glide.with(binding.userPhoto.getContext())
                             .load(user.getPhoto())
