@@ -1,8 +1,6 @@
 package com.example.oc_p7_go4lunch.firestore;
 
 
-import android.util.Log;
-
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -73,5 +71,4 @@ public class FirestoreHelper {
                 .addOnFailureListener(e -> {
                 });
     }
-
 }

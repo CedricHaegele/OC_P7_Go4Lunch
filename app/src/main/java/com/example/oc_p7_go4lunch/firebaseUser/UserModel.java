@@ -16,6 +16,26 @@ public class UserModel implements Serializable {
     public UserModel() {
     }
 
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public String getSelectedRestaurantId() {
+        return selectedRestaurantId;
+    }
+
+    public void setSelectedRestaurantId(String selectedRestaurantId) {
+        this.selectedRestaurantId = selectedRestaurantId;
+    }
+
+    public void setSelectedRestaurantName(String selectedRestaurantName) {
+        this.selectedRestaurantName = selectedRestaurantName;
+    }
+
     public String getUserId() {
         return userId;
     }

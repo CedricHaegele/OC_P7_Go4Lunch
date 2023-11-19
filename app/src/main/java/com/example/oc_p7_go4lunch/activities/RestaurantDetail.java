@@ -248,7 +248,7 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
     }
 
     private void manageUserInRestaurantList(FirebaseUser currentUser, boolean addUser) {
-         if (currentUser != null && currentUser.getUid() != null) {
+        if (currentUser != null && currentUser.getUid() != null) {
             UserModel newUser = new UserModel();
             newUser.setUserId(currentUser.getUid());
             newUser.setName(currentUser.getDisplayName());
@@ -381,8 +381,7 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 String userId = currentUser.getUid();
                 String restaurantId = restaurant.getPlaceId();
                 restaurantDetailViewModel.updateSelectedRestaurant(userId, restaurantId, isButtonChecked, restaurant);
-                // Ajouter l'utilisateur à la liste s'il n'est pas déjà présent
-                // Supprimer l'utilisateur de la liste s'il est déjà présent
+
                 manageUserInRestaurantList(currentUser, isButtonChecked);
             }
         });

@@ -44,6 +44,37 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         return userList.size();
     }
 
+    public void updateData(List<UserModel> newUsers) {
+
+        userList.clear();
+        userList.addAll(newUsers);
+        notifyDataSetChanged();
+    }
+
+    // Méthodes pour gérer des cas spécifiques
+    public void addUser(UserModel newUser) {
+        userList.add(newUser);
+        notifyItemInserted(userList.size() - 1);
+    }
+
+    public void removeUser(int position) {
+        if (position >= 0 && position < userList.size()) {
+            userList.remove(position);
+            notifyItemRemoved(position);
+        } else {
+            Log.e("UserListAdapter", "Tentative de suppression d'un utilisateur en dehors de l'intervalle: " + position);
+        }
+    }
+
+    public void updateUser(UserModel updatedUser, int position) {
+        if (position >= 0 && position < userList.size()) {
+            userList.set(position, updatedUser);
+            notifyItemChanged(position);
+        } else {
+            Log.e("UserListAdapter", "Tentative de mise à jour d'un utilisateur en dehors de l'intervalle: " + position);
+        }
+    }
+
     // ViewHolder class to hold the views for each list item
     public static class UserViewHolder extends RecyclerView.ViewHolder {
         private final ItemUserBinding binding;

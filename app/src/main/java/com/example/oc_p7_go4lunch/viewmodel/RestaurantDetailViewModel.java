@@ -207,5 +207,4 @@ public class RestaurantDetailViewModel extends ViewModel {
         }).addOnFailureListener((exception) -> {
         });
     }
-
 }

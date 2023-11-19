@@ -291,8 +291,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case settings:
-                changeFragment(new SettingsFragment());
-                searchImageView.setVisibility(View.GONE);
+                changeFragment(new SettingsFragment.PreferencesFragment());
                 break;
 
             case logOut:
