@@ -49,16 +49,18 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
 
     // Liste mise à jour des utilisateurs, utilisée pour suivre les changements d'état ou de données
     public List<UserModel> updatedList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Initialisation du View Binding
         binding = RestaurantDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
         if (restaurant != null) {
             getRestaurantUsers(restaurant.getPlaceId());
         }
-        checkUserSelectionState();
+
         // Initialisation des composants de l'API Places
         Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
         PlacesClient placesClient = Places.createClient(this);
@@ -73,22 +75,15 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         restaurantDetailViewModel.restaurantAddress.observe(this, address -> binding.restaurantAddress.setText(address));
         restaurantDetailViewModel.restaurantRating.observe(this, rating -> binding.ratingDetail.setRating(rating));
         restaurantDetailViewModel.getRestaurantPhoto().observe(this, bitmap -> binding.logo.setImageBitmap(bitmap));
+
+
         // Configure observer on isButtonChecked
         restaurantDetailViewModel.isButtonChecked.observe(this, isChecked -> {
             isButtonChecked = isChecked;
             updateButtonUI(isChecked);
         });
         restaurantDetailViewModel.listenToSelectedRestaurant(userId, restaurantId);
-        binding.fab.setOnClickListener(v -> {
-            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (currentUser != null && restaurant != null) {
-                userId = currentUser.getUid();
 
-                String newRestaurantId = restaurant.getPlaceId();
-                saveRestaurantSelection(newRestaurantId);
-
-            }
-        });
         binding.likeButton.setOnClickListener(v -> {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null && restaurant != null) {
@@ -100,7 +95,7 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
             }
         });
         restaurantDetailViewModel.getLikedRestaurants().observe(this, likedRestaurants -> {
-            // Update your UI with the liked restaurants
+
         });
         // Fetch the liked restaurants
         String userId = "your_user_id";
@@ -116,7 +111,7 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
             }
         });
         restaurantDetailViewModel.getPlacesData().observe(this, places -> {
-            // Mise à jour de l'UI avec les données de 'places'
+
         });
         restaurantDetailViewModel.getError().observe(this, exception -> {
             // Gestion des erreurs
@@ -205,30 +200,20 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 binding.ratingDetail.setRating(0);
             }
         }
-    }
 
-    private void checkUserSelectionState() {
-        Log.d("Firestore", "checkUserSelectionState: Start");
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null && restaurant != null) {
-            db.collection("users").document(currentUser.getUid())
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            String selectedRestaurantId = documentSnapshot.getString("selectedRestaurantId");
-                            if (restaurant.getPlaceId().equals(selectedRestaurantId)) {
-                                // L'utilisateur a déjà sélectionné ce restaurant
-                                isButtonChecked = true;
-                                updateButtonUI(true);
-                                // Ajouter l'utilisateur à la liste s'il n'est pas déjà présent
-                                manageUserInRestaurantList(currentUser, true);
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e -> Log.e("Firestore", "Error fetching user data", e));
+            restaurantDetailViewModel.checkUserSelectionState(restaurant.getPlaceId(), currentUser.getUid())
+                    .observe(this, isSelected -> {
+                        // Mettez à jour l'interface utilisateur en fonction de l'état de sélection
+                        updateButtonUI(isSelected);
+                        manageUserInRestaurantList(currentUser, isSelected);
+                    });
         }
     }
+
+
+
 
     private void getRestaurantUsers(String restaurantId) {
         Log.d("Firestore", "getRestaurantUsers: Start - RestaurantId: " + restaurantId);
@@ -257,23 +242,23 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 if (!isUserInList(currentUser.getUid())) {
                     combinedList.add(newUser);
                     userListAdapter.notifyDataSetChanged();
-                    addUserToFirestore(newUser, restaurantId);
+
                 }
             } else {
                 removeUserFromList(currentUser.getUid());
-
             }
         } else {
             Log.e("manageUserInList", "currentUser or userId is null");
         }
+
     }
 
-    private void addUserToFirestore(UserModel user, String restaurantId) {
+    private boolean addUserToFirestore(UserModel user, String restaurantId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Log.d("RestaurantDetail", "Adding user to Firestore: UserID = " + user.getUserId() + ", RestaurantID = " + restaurantId);
         if (user.getUserId() == null || restaurantId == null) {
             Log.e("RestaurantDetail", "Cannot add user: UserID or RestaurantID is null");
-            return;
+            return false;
         }
         db.collection("restaurants").document(restaurantId)
                 .collection("users")
@@ -281,6 +266,7 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 .set(user)
                 .addOnSuccessListener(aVoid -> Log.d("Firestore", "User added successfully"))
                 .addOnFailureListener(e -> Log.d("Firestore", "Error adding user", e));
+        return false;
     }
 
     private void removeUserFromFirestore(String userId, String restaurantId) {
@@ -292,6 +278,33 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 .addOnSuccessListener(aVoid -> Log.d("Firestore", "User removed successfully"))
                 .addOnFailureListener(e -> Log.d("Firestore", "Error removing user", e));
     }
+
+    private void handleRestaurantSelection(boolean isSelected) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null || restaurant == null) return;
+
+        String restaurantId = restaurant.getPlaceId();
+        String userId = currentUser.getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        if (isSelected) {
+            // Ajouter l'utilisateur à la liste des utilisateurs du restaurant dans Firestore
+            Map<String, Object> userValue = new HashMap<>();
+            userValue.put("userId", userId);
+            db.collection("restaurants").document(restaurantId)
+                    .collection("selectedUsers").document(userId)
+                    .set(userValue)
+                    .addOnSuccessListener(aVoid -> updateButtonUI(true));
+
+            // Supprimer l'utilisateur de la liste des utilisateurs du restaurant dans Firestore
+            db.collection("restaurants").document(restaurantId)
+                    .collection("selectedUsers").document(userId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> updateButtonUI(false));
+
+        }
+    }
+
 
     // Méthode pour vérifier si un utilisateur est déjà dans la liste
     private boolean isUserInList(String userId) {
@@ -363,6 +376,7 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 })
                 .addOnFailureListener(e -> Log.d("Firestore", "Error fetching state for " + restaurantId, e));
     }
+
     private void updateLikeButtonUI() {
         int drawableRes = isLiked ? R.drawable.baseline_star_yes : R.drawable.ic_baseline_star_24;
         binding.likeButton.setCompoundDrawablesWithIntrinsicBounds(0, drawableRes, 0, 0);
@@ -371,21 +385,22 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
 
     private void setupButtonListeners() {
         binding.fab.setOnClickListener(v -> {
-            isButtonChecked = !isButtonChecked;
-            updateButtonUI(isButtonChecked);
-            if (restaurant != null && restaurant.getPlaceId() != null) {
-                saveButtonStateToFirestore(isButtonChecked, restaurant.getPlaceId());
-            }
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if (currentUser != null && restaurant != null) {
                 String userId = currentUser.getUid();
-                String restaurantId = restaurant.getPlaceId();
-                restaurantDetailViewModel.updateSelectedRestaurant(userId, restaurantId, isButtonChecked, restaurant);
+                String newRestaurantId = restaurant.getPlaceId();
+                isButtonChecked = !isButtonChecked;  // Basculer l'état du bouton
 
+                // Mettre à jour l'UI et Firestore
+                updateButtonUI(isButtonChecked);
+                saveRestaurantSelection(newRestaurantId);
+                saveButtonStateToFirestore(isButtonChecked, newRestaurantId);
+                restaurantDetailViewModel.updateSelectedRestaurant(userId, newRestaurantId, isButtonChecked, restaurant);
                 manageUserInRestaurantList(currentUser, isButtonChecked);
             }
         });
     }
+
 
     private void saveButtonStateToFirestore(boolean state, String restaurantId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -406,14 +421,12 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
             Map<String, Object> data = new HashMap<>();
             data.put("selectedRestaurantId", restaurantId);
             data.put("selectedUserId", userId);
+            data.put("userId", userId);
+
             db.collection("users").document(userId)
                     .set(data, SetOptions.merge())
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d("Firestore", "Restaurant sélectionné enregistré pour l'utilisateur: " + userId);
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("Firestore", "Erreur lors de l'enregistrement de la sélection du restaurant pour l'utilisateur: " + userId, e);
-                    });
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "Restaurant sélectionné enregistré pour l'utilisateur: " + userId))
+                    .addOnFailureListener(e -> Log.e("Firestore", "Erreur lors de l'enregistrement de la sélection du restaurant pour l'utilisateur: " + userId, e));
         } else {
             Log.e("Firestore", "L'utilisateur n'est pas connecté.");
         }
@@ -425,6 +438,7 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         userListAdapter = new UserListAdapter(combinedList);
         binding.userRecyclerView.setAdapter(userListAdapter);
     }
+
     private void updateButtonUI(boolean isButtonChecked) {
         int imageRes = isButtonChecked ? R.drawable.ic_button_is_checked : R.drawable.baseline_check_circle_outline_24;
         binding.fab.setImageResource(imageRes);

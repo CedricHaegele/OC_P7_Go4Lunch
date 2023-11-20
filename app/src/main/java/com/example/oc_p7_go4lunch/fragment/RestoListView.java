@@ -246,19 +246,14 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
     private void configureOnClickRecyclerView() {
         ItemClickSupport.addTo(recyclerView, R.layout.fragment_resto_list)
                 .setOnItemClickListener((recyclerView, position, v) -> {
-                    // 1 - Get restaurant from adapter
                     RestaurantModel restaurant = restoListAdapter.getPlacesList().get(position);
-
-                    // Ajoutez des logs ici pour vérifier l'ID du lieu
                     Log.d("RestoListView", "Selected restaurant: " + restaurant.getName() + ", Place ID: " + restaurant.getPlaceId());
 
                     if (restaurant.getPlaceId() != null) {
-                        // Le restaurant est valide et a un placeId, démarrer l'intention.
                         Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
                         intent.putExtra("Restaurant", restaurant);
                         startActivity(intent);
                     } else {
-                        // Le restaurant est null ou n'a pas de placeId valide.
                         Log.w("RestoListView", "Restaurant is null or doesn't have a valid Place ID.");
                         Toast.makeText(getContext(), "The Restaurant isn't available !!!", Toast.LENGTH_SHORT).show();
                     }

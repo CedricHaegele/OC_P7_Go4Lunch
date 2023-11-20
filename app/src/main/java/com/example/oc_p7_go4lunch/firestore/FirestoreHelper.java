@@ -1,6 +1,8 @@
 package com.example.oc_p7_go4lunch.firestore;
 
 
+import android.util.Log;
+
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -29,15 +31,18 @@ public class FirestoreHelper {
     }
 
     public void updateSelectedRestaurant(String userId, String restaurantId, boolean isSelected, RestaurantModel restaurant, OnUpdateCompleteListener listener) {
+        Log.d("FirestoreHelper", "updateSelectedRestaurant called with userId: " + userId + ", restaurantId: " + restaurantId + ", isSelected: " + isSelected);
         DocumentReference userDocRef = db.collection("users").document(userId);
         Map<String, Object> updateData = new HashMap<>();
         if (isSelected) {
             updateData.put("selectedRestaurantId", restaurantId);
             updateData.put("selectedRestaurantName", restaurant.getName());
-            // Ajouter ou mettre à jour d'autres champs relatifs à l'état de l'utilisateur
+            updateData.put("userId",userId);
+
         } else {
             updateData.put("selectedRestaurantId", FieldValue.delete());
             updateData.put("selectedRestaurantName", FieldValue.delete());
+            updateData.put("userId", FieldValue.delete());
             // Gérer la suppression ou la mise à jour de l'état de l'utilisateur
         }
         userDocRef.update(updateData)
@@ -48,7 +53,6 @@ public class FirestoreHelper {
                     if (listener != null) listener.onUpdateComplete(false);
                 });
     }
-
 
     public void setListener() {
     }

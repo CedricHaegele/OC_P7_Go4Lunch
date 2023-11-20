@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        FirebaseFirestore.setLoggingEnabled(true);
 
         // Initialise Firestore
         db = FirebaseFirestore.getInstance();

@@ -23,6 +23,7 @@ import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
@@ -45,11 +46,11 @@ public class RestaurantDetailViewModel extends ViewModel {
     public MutableLiveData<String> restaurantAddress = new MutableLiveData<>();
     public MutableLiveData<Float> restaurantRating = new MutableLiveData<>();
     public MutableLiveData<Boolean> isButtonChecked = new MutableLiveData<>();
+    private MutableLiveData<Boolean> isRestaurantSelected = new MutableLiveData<>();
     private final RestaurantApiService restaurantApiService;
     private final FirestoreHelper firestoreHelper;
     private final MutableLiveData<Bitmap> restaurantPhoto = new MutableLiveData<>();
     private final MutableLiveData<List<RestaurantModel>> likedRestaurants = new MutableLiveData<>();
-
 
     public LiveData<Bitmap> getRestaurantPhoto() {
         return restaurantPhoto;
@@ -58,6 +59,7 @@ public class RestaurantDetailViewModel extends ViewModel {
     public void setRestaurantPhoto(Bitmap bitmap) {
         restaurantPhoto.setValue(bitmap);
     }
+
     // Constructeur avec argument qui initialise le service API et FirestoreHelper
     public RestaurantDetailViewModel(RestaurantApiService restaurantApiService) {
         this.restaurantApiService = restaurantApiService;
@@ -100,7 +102,6 @@ public class RestaurantDetailViewModel extends ViewModel {
                 });
     }
 
-
     public LiveData<List<RestaurantModel>> getLikedRestaurants() {
         return likedRestaurants;
     }
@@ -126,6 +127,40 @@ public class RestaurantDetailViewModel extends ViewModel {
         });
     }
 
+    public void updateRestaurantUserSelection(String restaurantId, String userId, boolean isSelected) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference restaurantRef = db.collection("restaurants").document(restaurantId);
+
+        if (isSelected) {
+            restaurantRef.update("selectedUsers", FieldValue.arrayUnion(userId));
+
+
+        } else {
+            restaurantRef.update("selectedUsers", FieldValue.arrayRemove(userId));
+
+
+        }
+    }
+
+    public LiveData<Boolean> checkUserSelectionState(String restaurantId, String userId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String selectedRestaurantId = documentSnapshot.getString("selectedRestaurantId");
+                        isRestaurantSelected.setValue(restaurantId.equals(selectedRestaurantId));
+                    } else {
+                        isRestaurantSelected.setValue(false);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error fetching user data", e);
+                    isRestaurantSelected.setValue(false);
+                });
+
+        return isRestaurantSelected;
+    }
 
     public void updateSelectedRestaurant(String userId, String restaurantId, boolean isSelected, RestaurantModel restaurant) {
         firestoreHelper.updateSelectedRestaurant(userId, restaurantId, isSelected, restaurant, success -> {
