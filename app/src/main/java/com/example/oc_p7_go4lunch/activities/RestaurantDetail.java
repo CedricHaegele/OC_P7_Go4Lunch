@@ -56,6 +56,7 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         binding = RestaurantDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+
         // Initialisation des composants de l'API Places
         Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
         PlacesClient placesClient = Places.createClient(this);
@@ -203,11 +204,19 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                     updateButtonUI(isChecked);
                 });
 
-                restaurantDetailViewModel.fetchSelectedUsers(restaurant.getPlaceId());
-                restaurantDetailViewModel.getSelectedUserIds().observe(this, userIds -> {
-                    Log.d("Debug", "Selected users for restaurant: " + userIds);
-                });
+                if (restaurant != null) {
+                    String placeId = restaurant.getPlaceId();
+                    Log.d("RestaurantDetail", "Fetching users for restaurant ID: " + placeId);
+                    restaurantDetailViewModel.fetchSelectedUsers(placeId);
+                } else {
+                    Log.e("RestaurantDetail", "Restaurant object is null");
+                }
 
+                restaurantDetailViewModel.getSelectedUsers().observe(this, users -> {
+                    combinedList.clear();
+                    combinedList.addAll(users);
+                    userListAdapter.notifyDataSetChanged();
+                });
 
                 restaurantDetailViewModel.restaurant.observe(this, newRestaurantData -> {
                     binding.restaurantName.setText(newRestaurantData.getName());

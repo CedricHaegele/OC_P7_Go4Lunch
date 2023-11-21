@@ -26,12 +26,10 @@ public class WorkmatesListViewModel extends ViewModel {
         return usersList;
     }
 
-
     private void loadUsers() {
         firestoreHelper.getUsersCollection()
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
-
                         return;
                     }
                     if (value != null) {
@@ -44,7 +42,4 @@ public class WorkmatesListViewModel extends ViewModel {
                     }
                 });
     }
-
-
-
 }

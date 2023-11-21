@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
 import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.googleplaces.MyPlaces;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
@@ -25,10 +26,12 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,7 +60,7 @@ public class RestaurantDetailViewModel extends ViewModel {
     private final FirestoreHelper firestoreHelper;
     private final MutableLiveData<Bitmap> restaurantPhoto = new MutableLiveData<>();
     private final MutableLiveData<List<RestaurantModel>> likedRestaurants = new MutableLiveData<>();
-    private MutableLiveData<List<String>> selectedUserIds = new MutableLiveData<>();
+    private MutableLiveData<List<UserModel>> selectedUsers = new MutableLiveData<>();
 
     public LiveData<Bitmap> getRestaurantPhoto() {
         return restaurantPhoto;
@@ -66,10 +69,6 @@ public class RestaurantDetailViewModel extends ViewModel {
         restaurantPhoto.setValue(bitmap);
     }
 
-    // Getter pour les selectedUserIds
-    public LiveData<List<String>> getSelectedUserIds() {
-        return selectedUserIds;
-    }
 
     public void fetchLikeState(String userId, String restaurantId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -87,20 +86,46 @@ public class RestaurantDetailViewModel extends ViewModel {
     // Méthode pour charger les données
     public void fetchSelectedUsers(String restaurantId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("restaurants").document(restaurantId)
+        db.collection("users")
+                .whereEqualTo("selectedRestaurantId", restaurantId)
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists() && documentSnapshot.contains("selectedUsers")) {
-                        List<String> userIds = (List<String>) documentSnapshot.get("selectedUsers", List.class);
-                        selectedUserIds.postValue(userIds);
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        List<String> userIds = new ArrayList<>();
+                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                            userIds.add(document.getId());
+                        }
+                        fetchUserDetails(userIds);
+                    } else {
+                        Log.d("Firestore", "Aucun utilisateur trouvé pour le restaurant : " + restaurantId);
                     }
                 })
-                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching restaurant users", e));
+                .addOnFailureListener(e -> Log.e("Firestore", "Erreur lors de la récupération des utilisateurs", e));
     }
 
+    private void fetchUserDetails(List<String> userIds) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        List<UserModel> users = new ArrayList<>();
+        for (String userId : userIds) {
+            db.collection("users").document(userId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        UserModel user = documentSnapshot.toObject(UserModel.class);
+                        if (user != null) {
+                            users.add(user);
+                            if (users.size() == userIds.size()) {
+                                selectedUsers.setValue(users);
+                            }
+                        }
+                    });
+        }
+    }
 
+    public LiveData<List<UserModel>> getSelectedUsers() {
+        return selectedUsers;
+    }
 
-    // Constructeur avec argument qui initialise le service API et FirestoreHelper
+        // Constructeur avec argument qui initialise le service API et FirestoreHelper
     public RestaurantDetailViewModel(RestaurantApiService restaurantApiService) {
         this.restaurantApiService = restaurantApiService;
         firestoreHelper = new FirestoreHelper();

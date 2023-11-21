@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +27,7 @@ import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
+import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.settings.SettingsFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
 import com.example.oc_p7_go4lunch.login.LoginActivity;
@@ -103,13 +105,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         ImageView searchImageView = binding.searchImageView;
         searchImageView.setOnClickListener(v -> {
-            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
+            List<Place.Field> fields = Arrays.asList(
+                    Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS,
+                    Place.Field.RATING, Place.Field.TYPES);
+
             Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
                     .setTypeFilter(TypeFilter.ESTABLISHMENT)
                     .build(MainActivity.this);
             startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
         });
-
 
         // Initialize MyPlaces API if it's not already initialized
         if (!Places.isInitialized()) {
@@ -152,31 +156,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                assert data != null;
-                Place place = Autocomplete.getPlaceFromIntent(data);
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE && resultCode == RESULT_OK) {
+            Place place = Autocomplete.getPlaceFromIntent(data);
+
+            if (place.getTypes().contains(Place.Type.RESTAURANT)) {
+                // Récupération des informations supplémentaires
+                String placeId = place.getId();
+                String name = place.getName();
+                String address = place.getAddress();
+                Double rating = place.getRating();
 
                 Intent intent = new Intent(MainActivity.this, RestaurantDetail.class);
-                intent.putExtra("place_id", place.getId());
+                RestaurantModel restaurantModel = new RestaurantModel();
+                restaurantModel.setPlaceId(place.getId());
+                restaurantModel.setName(place.getName());
+                restaurantModel.setVicinity(place.getAddress());
+                restaurantModel.setRating(place.getRating());
+                intent.putExtra("Restaurant", restaurantModel);
                 startActivity(intent);
 
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-
-                Status status = null;
-                if (data != null) {
-                    status = Autocomplete.getStatusFromIntent(data);
-                }
-                if (status != null && status.getStatusMessage() != null) {
-                    Log.i("PlaceAPI", status.getStatusMessage());
-                }
+            } else {
+                Toast.makeText(MainActivity.this, "Le lieu sélectionné n'est pas un restaurant", Toast.LENGTH_SHORT).show();
+            }
+        } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+            Status status = Autocomplete.getStatusFromIntent(data);
+            if (status != null && status.getStatusMessage() != null) {
+                Log.i("PlaceAPI", status.getStatusMessage());
             }
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
 

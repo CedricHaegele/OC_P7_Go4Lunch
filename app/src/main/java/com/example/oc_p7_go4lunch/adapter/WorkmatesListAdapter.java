@@ -16,9 +16,7 @@ import java.util.List;
 
 
 public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdapter.ViewHolder> {
-
     private final List<UserModel> userList;
-
     public WorkmatesListAdapter(List<UserModel> userModels) {
         this.userList = userModels;
     }
@@ -42,7 +40,6 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
         return userList == null ? 0 : userList.size();
     }
 
-
     static class ViewHolder extends RecyclerView.ViewHolder {
         private final FragmentWorkmateItemBinding binding;
 
@@ -51,9 +48,7 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
             this.binding = binding;
         }
 
-
         private void setData(UserModel mUser) {
-
             Glide.with(binding.imageProfile.getContext())
                     .load(mUser.getPhoto())
                     .placeholder(com.google.android.libraries.places.R.drawable.quantum_ic_cloud_off_vd_theme_24)
@@ -66,6 +61,7 @@ public class WorkmatesListAdapter extends RecyclerView.Adapter<WorkmatesListAdap
                 text = mUser.getName() + " is eating at " + mUser.getSelectedRestaurantName();
                 binding.textRestaurantName.setText(text);
                 binding.textRestaurantName.setTypeface(null, Typeface.BOLD);
+
             } else {
                 text = mUser.getName() + " hasn't decided yet";
             }

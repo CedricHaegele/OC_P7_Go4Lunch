@@ -47,6 +47,10 @@ public class RestaurantModel implements Serializable {
         return placeId;
     }
 
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
+    }
+
     @SerializedName("place_id")
     @Expose
     private String placeId;
