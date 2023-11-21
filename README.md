@@ -7,7 +7,7 @@ Back-end Integration
 The mobile application leverages Firebase as its back-end service to manage user accounts, authentication through third-party services like Facebook and Google, data storage, and push notifications. Users must have a Google account to access Firebase functionalities and integrate Firebase dependencies into their Android Studio project.
 
 Authentication
-Access to the application requires login using a Google or Facebook account. This step is crucial to ensure user identity verification and prevent impersonation.
+Access to the application requires login using a Google. This step is crucial to ensure user identity verification and prevent impersonation.
 
 Main Views
 Go4Lunch features three primary views accessible via three buttons at the bottom of the screen:
@@ -30,7 +30,7 @@ Type of restaurant (optional)
 Address
 Number of interested colleagues
 Opening hours
-Number of positive reviews (0 to 3 stars)
+Number of positive reviews (0 to 5 stars)
 Detailed Restaurant Information
 When a user selects a restaurant, they can view detailed information, including:
 
