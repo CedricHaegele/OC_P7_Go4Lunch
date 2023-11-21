@@ -37,13 +37,11 @@ public class FirestoreHelper {
         if (isSelected) {
             updateData.put("selectedRestaurantId", restaurantId);
             updateData.put("selectedRestaurantName", restaurant.getName());
-            updateData.put("userId",userId);
 
         } else {
             updateData.put("selectedRestaurantId", FieldValue.delete());
             updateData.put("selectedRestaurantName", FieldValue.delete());
-            updateData.put("userId", FieldValue.delete());
-            // Gérer la suppression ou la mise à jour de l'état de l'utilisateur
+
         }
         userDocRef.update(updateData)
                 .addOnSuccessListener(aVoid -> {

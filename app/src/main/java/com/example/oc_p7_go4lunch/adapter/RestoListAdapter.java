@@ -102,11 +102,9 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
                     binding.openingHours.setTextColor(Color.RED);
                 }
             }
-
             float distance = restaurantModel.getDistanceFromCurrentLocation();
             binding.distance.setText(String.format(Locale.getDefault(), "%.2f km", distance / 1000));
         }
-
     }
 
     @Override
