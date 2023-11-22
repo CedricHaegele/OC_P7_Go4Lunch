@@ -33,8 +33,8 @@ public class LoginActivity extends AppCompatActivity {
     // Liste des fournisseurs d'authentification (e-mail et Google).
     private final List<AuthUI.IdpConfig> providers = Arrays.asList(
             new AuthUI.IdpConfig.EmailBuilder().build(),
-            new AuthUI.IdpConfig.TwitterBuilder().build(),
-            new AuthUI.IdpConfig.GoogleBuilder().build());
+            new AuthUI.IdpConfig.GoogleBuilder().build(),
+            new AuthUI.IdpConfig.TwitterBuilder().build());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

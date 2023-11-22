@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.core:core:1.9.0@aar">
     <ANNOTATIONS>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/e20ea6a824805106686f9423cb2c707c/transformed/core-1.9.0/annotations.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/372fc989a5893ace2fba6a3a23e41f9d/transformed/core-1.9.0/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/e20ea6a824805106686f9423cb2c707c/transformed/core-1.9.0/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/e20ea6a824805106686f9423cb2c707c/transformed/core-1.9.0/res" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/e20ea6a824805106686f9423cb2c707c/transformed/core-1.9.0/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/372fc989a5893ace2fba6a3a23e41f9d/transformed/core-1.9.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/372fc989a5893ace2fba6a3a23e41f9d/transformed/core-1.9.0/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/372fc989a5893ace2fba6a3a23e41f9d/transformed/core-1.9.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

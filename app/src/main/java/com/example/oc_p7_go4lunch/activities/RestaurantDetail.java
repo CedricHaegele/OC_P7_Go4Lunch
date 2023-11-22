@@ -1,5 +1,7 @@
 package com.example.oc_p7_go4lunch.activities;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
 import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.viewmodel.RestaurantDetailViewModel;
+import com.example.oc_p7_go4lunch.viewmodel.SharedViewModel;
 import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -37,6 +40,7 @@ import java.util.Objects;
 
 public class RestaurantDetail extends AppCompatActivity implements FirestoreHelper.OnUserDataReceivedListener {
     // Déclaration des variables de la classe
+    private SharedViewModel sharedViewModel;
     private RestaurantDetailBinding binding;
     private RestaurantDetailViewModel restaurantDetailViewModel;
     private RestaurantModel restaurant;
@@ -55,7 +59,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         super.onCreate(savedInstanceState);
         binding = RestaurantDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
 
         // Initialisation des composants de l'API Places
         Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
@@ -136,6 +139,14 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
 
         if (restaurant != null) {
             String placeId = restaurant.getPlaceId();
+            Log.d("RestaurantDetail", "Fetching users for restaurant ID: " + placeId);
+            restaurantDetailViewModel.fetchSelectedUsers(placeId);
+        } else {
+            Log.e("RestaurantDetail", "Restaurant object is null");
+        }
+
+        if (restaurant != null) {
+            String placeId = restaurant.getPlaceId();
             if (placeId != null) {
                 restaurantDetailViewModel.fetchPlaceDetails(placesClient, placeId);
             } else {
@@ -144,7 +155,8 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         }
 
         restaurantDetailViewModel.fetchRestaurantData(callingIntent);
-        setupButtonListeners();
+        sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+
 
         // Appeler la méthode pour récupérer les détails
         String placeId = "place_id";
@@ -182,6 +194,16 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                         manageUserInRestaurantList(currentUser, isSelected);
                     });
         }
+
+        restaurantDetailViewModel.getSelectedUsers().observe(this, users -> {
+            if (userListAdapter != null) {
+                userListAdapter.updateUserList(users);
+            } else {
+                Log.e("RestaurantDetail", "UserListAdapter is not initialized");
+            }
+        });
+
+
     }
 
     private void initializeViewBindings() {
@@ -202,20 +224,6 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 restaurantDetailViewModel.isButtonChecked.observe(this, isChecked -> {
                     isButtonChecked = isChecked;
                     updateButtonUI(isChecked);
-                });
-
-                if (restaurant != null) {
-                    String placeId = restaurant.getPlaceId();
-                    Log.d("RestaurantDetail", "Fetching users for restaurant ID: " + placeId);
-                    restaurantDetailViewModel.fetchSelectedUsers(placeId);
-                } else {
-                    Log.e("RestaurantDetail", "Restaurant object is null");
-                }
-
-                restaurantDetailViewModel.getSelectedUsers().observe(this, users -> {
-                    combinedList.clear();
-                    combinedList.addAll(users);
-                    userListAdapter.notifyDataSetChanged();
                 });
 
                 restaurantDetailViewModel.restaurant.observe(this, newRestaurantData -> {
@@ -253,40 +261,46 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         } else {
             Log.e("initializeViewBindings", "currentUser or restaurant is null");
         }
+        setupButtonListeners();
     }
 
     private void manageUserInRestaurantList(FirebaseUser currentUser, boolean addUser) {
-        if (currentUser != null) {
-            UserModel newUser = new UserModel();
-            newUser.setUserId(currentUser.getUid());
-            newUser.setName(currentUser.getDisplayName());
-            newUser.setPhoto(currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : null);
-            if (addUser) {
-                if (!isUserInList(currentUser.getUid())) {
-                    combinedList.add(newUser);
-                    userListAdapter.notifyDataSetChanged();
+        if (currentUser == null) {
+            return;
+        }
 
-                }
-            } else {
-                removeUserFromList(currentUser.getUid());
+        String userId = currentUser.getUid();
+        if (addUser) {
+            if (!isUserInList(userId)) {
+                UserModel newUser = new UserModel();
+                newUser.setUserId(userId);
+                newUser.setName(currentUser.getDisplayName());
+                newUser.setPhoto(currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : null);
+                combinedList.add(newUser);
+                userListAdapter.notifyDataSetChanged();
             }
         } else {
-            Log.e("manageUserInList", "currentUser or userId is null");
+            removeUserFromList(userId);
         }
     }
 
     private boolean isUserInList(String userId) {
         for (UserModel user : combinedList) {
-            if (user.getUserId().equals(userId)) {
+            if (userId != null && userId.equals(user.getUserId())) {
                 return true;
             }
         }
         return false;
     }
 
+    private void updateButtonUI(boolean isButtonChecked) {
+        int imageRes = isButtonChecked ? R.drawable.ic_button_is_checked : R.drawable.baseline_check_circle_outline_24;
+        binding.fab.setImageResource(imageRes);
+    }
+
     private void removeUserFromList(String userId) {
         for (int i = 0; i < combinedList.size(); i++) {
-            if (combinedList.get(i).getUserId().equals(userId)) {
+            if (userId != null && userId.equals(combinedList.get(i).getUserId())) {
                 combinedList.remove(i);
                 userListAdapter.notifyDataSetChanged();
                 break;
@@ -323,11 +337,11 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
                 String userId = currentUser.getUid();
                 String newRestaurantId = restaurant.getPlaceId();
                 isButtonChecked = !isButtonChecked;
-
                 updateButtonUI(isButtonChecked);
                 restaurantDetailViewModel.saveButtonStateToFirestore(isButtonChecked, newRestaurantId);
                 restaurantDetailViewModel.updateSelectedRestaurant(userId, newRestaurantId, isButtonChecked, restaurant);
                 manageUserInRestaurantList(currentUser, isButtonChecked);
+                sharedViewModel.selectRestaurant(restaurant.getPlaceId(), isButtonChecked);
             }
         });
     }
@@ -337,10 +351,5 @@ public class RestaurantDetail extends AppCompatActivity implements FirestoreHelp
         binding.userRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         userListAdapter = new UserListAdapter(combinedList);
         binding.userRecyclerView.setAdapter(userListAdapter);
-    }
-
-    private void updateButtonUI(boolean isButtonChecked) {
-        int imageRes = isButtonChecked ? R.drawable.ic_button_is_checked : R.drawable.baseline_check_circle_outline_24;
-        binding.fab.setImageResource(imageRes);
     }
 }

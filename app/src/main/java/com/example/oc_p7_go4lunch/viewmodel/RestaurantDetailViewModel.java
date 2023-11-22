@@ -10,9 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
 import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
+import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.googleplaces.MyPlaces;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.googleplaces.RestoInformations;
@@ -37,14 +40,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RestaurantDetailViewModel extends ViewModel {
-
-    // Déclaration des MutableLiveData
+    private SharedViewModel sharedViewModel;
     public MutableLiveData<RestaurantModel> restaurant = new MutableLiveData<>();
     public MutableLiveData<String> phoneNumber = new MutableLiveData<>();
     public MutableLiveData<String> websiteUrl = new MutableLiveData<>();
@@ -62,13 +65,18 @@ public class RestaurantDetailViewModel extends ViewModel {
     private final MutableLiveData<List<RestaurantModel>> likedRestaurants = new MutableLiveData<>();
     private MutableLiveData<List<UserModel>> selectedUsers = new MutableLiveData<>();
 
+
     public LiveData<Bitmap> getRestaurantPhoto() {
         return restaurantPhoto;
     }
+
     public void setRestaurantPhoto(Bitmap bitmap) {
         restaurantPhoto.setValue(bitmap);
     }
 
+    public void setSharedViewModel(SharedViewModel sharedViewModel) {
+        this.sharedViewModel = sharedViewModel;
+    }
 
     public void fetchLikeState(String userId, String restaurantId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -83,8 +91,9 @@ public class RestaurantDetailViewModel extends ViewModel {
                 .addOnFailureListener(e -> Log.d("Firestore", "Error fetching liked restaurants", e));
     }
 
-    // Méthode pour charger les données
+    // Méthode pour charger les données des utilisateurs ayant sélectionné un restaurant spécifique
     public void fetchSelectedUsers(String restaurantId) {
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users")
                 .whereEqualTo("selectedRestaurantId", restaurantId)
@@ -94,43 +103,78 @@ public class RestaurantDetailViewModel extends ViewModel {
                         List<String> userIds = new ArrayList<>();
                         for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                             userIds.add(document.getId());
+
                         }
                         fetchUserDetails(userIds);
                     } else {
-                        Log.d("Firestore", "Aucun utilisateur trouvé pour le restaurant : " + restaurantId);
+
+                        selectedUsers.setValue(new ArrayList<>());
                     }
                 })
-                .addOnFailureListener(e -> Log.e("Firestore", "Erreur lors de la récupération des utilisateurs", e));
+                .addOnFailureListener(e -> {
+                    Log.e("myTAG", "Erreur lors de la récupération des utilisateurs pour le restaurant " + restaurantId, e);
+                });
     }
 
+    // Méthode pour récupérer les détails des utilisateurs
     private void fetchUserDetails(List<String> userIds) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         List<UserModel> users = new ArrayList<>();
+        AtomicInteger responseCounter = new AtomicInteger(0);
+
         for (String userId : userIds) {
             db.collection("users").document(userId)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
-                        UserModel user = documentSnapshot.toObject(UserModel.class);
-                        if (user != null) {
-                            users.add(user);
-                            if (users.size() == userIds.size()) {
-                                selectedUsers.setValue(users);
+                        if (documentSnapshot.exists()) {
+                            UserModel user = documentSnapshot.toObject(UserModel.class);
+                            if (user != null) {
+                                // Vérifiez si l'utilisateur est déjà dans la liste avant de l'ajouter
+                                if (!isUserAlreadyInList(user, users)) {
+                                    users.add(user);
+                                }
                             }
+                        }
+                        if (responseCounter.incrementAndGet() == userIds.size()) {
+                            selectedUsers.setValue(users);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        if (responseCounter.incrementAndGet() == userIds.size()) {
+                            selectedUsers.setValue(users);
                         }
                     });
         }
     }
 
+    // Méthode pour vérifier si l'utilisateur est déjà dans la liste
+    private boolean isUserAlreadyInList(UserModel user, List<UserModel> usersList) {
+        if (user == null || user.getUserId() == null) {
+            return false; // Retourne false si l'utilisateur ou son ID est null
+        }
+
+        for (UserModel existingUser : usersList) {
+            if (user.getUserId().equals(existingUser.getUserId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Getter pour les données des utilisateurs sélectionnés
     public LiveData<List<UserModel>> getSelectedUsers() {
         return selectedUsers;
     }
 
-        // Constructeur avec argument qui initialise le service API et FirestoreHelper
+    // Constructeur avec argument qui initialise le service API et FirestoreHelper
     public RestaurantDetailViewModel(RestaurantApiService restaurantApiService) {
         this.restaurantApiService = restaurantApiService;
         firestoreHelper = new FirestoreHelper();
         firestoreHelper.setListener();
+        //sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
     }
+
 
     public LiveData<MyPlaces> getPlacesData() {
         return placesData;
@@ -216,10 +260,14 @@ public class RestaurantDetailViewModel extends ViewModel {
     public void updateSelectedRestaurant(String userId, String restaurantId, boolean isSelected, RestaurantModel restaurant) {
         firestoreHelper.updateSelectedRestaurant(userId, restaurantId, isSelected, restaurant, success -> {
             if (success) {
-                isButtonChecked.postValue(isSelected);
+                isRestaurantSelected.postValue(isSelected);
+                if (sharedViewModel != null) {
+                    sharedViewModel.selectRestaurant(restaurantId, isSelected);
+                }
             }
         });
     }
+
 
     public void fetchRestaurantDetails(String placeId, String apiKey) {
         restaurantApiService.fetchRestaurantDetails(placeId, apiKey, new Callback<RestoInformations>() {
@@ -312,19 +360,30 @@ public class RestaurantDetailViewModel extends ViewModel {
         });
     }
 
-    
+
     public void saveButtonStateToFirestore(boolean state, String restaurantId) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
-            Map<String, Object> restaurantData = new HashMap<>();
-            restaurantData.put("isChecked", state);
-
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("users").document(userId).collection("restaurants").document(restaurantId)
-                    .set(restaurantData, SetOptions.merge())
-                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "State updated successfully for " + restaurantId))
-                    .addOnFailureListener(e -> Log.d("Firestore", "Error updating state for " + restaurantId, e));
+            DocumentReference restaurantRef = db.collection("users").document(userId).collection("restaurants").document(restaurantId);
+
+            restaurantRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        // Le document existe, mettre à jour
+                        restaurantRef.update("isChecked", state);
+                    } else {
+                        // Le document n'existe pas, créer un nouveau
+                        Map<String, Object> restaurantData = new HashMap<>();
+                        restaurantData.put("isChecked", state);
+                        restaurantRef.set(restaurantData, SetOptions.merge());
+                    }
+                } else {
+                    Log.d("Firestore", "Erreur lors de la vérification de l'existence du document", task.getException());
+                }
+            });
         }
     }
 

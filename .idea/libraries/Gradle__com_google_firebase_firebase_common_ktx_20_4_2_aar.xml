@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.firebase:firebase-common-ktx:20.4.2@aar">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/a920b0d241f4fa5d1d84730db7f0da8b/transformed/jetified-firebase-common-ktx-20.4.2/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/a920b0d241f4fa5d1d84730db7f0da8b/transformed/jetified-firebase-common-ktx-20.4.2/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/7676f007a841220bc2ab85301157bd82/transformed/jetified-firebase-common-ktx-20.4.2/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/7676f007a841220bc2ab85301157bd82/transformed/jetified-firebase-common-ktx-20.4.2/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

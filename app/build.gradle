@@ -50,7 +50,6 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.7.5'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.firebase:firebase-auth:22.2.0'
     testImplementation 'junit:junit:4.13.2'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -62,7 +61,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:okhttp3-integration:4.12.0'
 
     // FIREBASE UI
-    implementation 'com.google.firebase:firebase-auth:22.2.0'
+    implementation 'com.google.firebase:firebase-auth:22.3.0'
     implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
     implementation 'com.google.firebase:firebase-firestore'
 
@@ -78,9 +77,10 @@ dependencies {
     //dependency for circular image View
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
-    implementation 'com.google.android.libraries.places:places:3.2.0'
+    implementation 'com.google.android.libraries.places:places:3.3.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
 
     implementation 'com.google.firebase:firebase-database:20.3.0'
+    implementation 'com.google.firebase:firebase-messaging'
 
 }

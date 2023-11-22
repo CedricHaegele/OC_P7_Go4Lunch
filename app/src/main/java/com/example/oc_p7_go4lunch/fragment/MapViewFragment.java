@@ -24,17 +24,22 @@ import com.example.oc_p7_go4lunch.factories.MapViewModelFactory;
 import com.example.oc_p7_go4lunch.googleplaces.ApiProvider;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.viewmodel.MapViewModel;
+import com.example.oc_p7_go4lunch.viewmodel.SharedViewModel;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapViewFragment extends Fragment implements OnMapReadyCallback {
+import java.util.ArrayList;
+import java.util.List;
 
+public class MapViewFragment extends Fragment implements OnMapReadyCallback {
+    private SharedViewModel sharedViewModel;
     // GoogleMap object to display the map
     private GoogleMap mMap;
     // ViewModel to manage data logic
@@ -42,6 +47,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     // Constants for default zoom and permission request code
     private static final float DEFAULT_ZOOM = 15.0f;
     private static final int YOUR_REQUEST_CODE = 1234;
+    private List<Marker> allMarkers = new ArrayList<>();
+
 
     @Nullable
     @Override
@@ -69,18 +76,28 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
         // Ask permission first
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
             ActivityCompat.requestPermissions(
                     requireActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     YOUR_REQUEST_CODE
             );
-
         } else {
             Log.d("MapViewFragment", "Location permission already granted");
-            // Permission already granted
 
         }
+        mapViewModel.getLastLocation().observe(getViewLifecycleOwner(), location -> {
+            if (location != null) {
+                updateCameraPosition(location);
+            }
+        });
+
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        sharedViewModel.getSelectedRestaurant().observe(getViewLifecycleOwner(), pair -> {
+            String restaurantId = pair.first;
+            boolean isSelected = pair.second;
+            updateMarkerColor(restaurantId, isSelected);
+        });
+
     }
 
     private void initMapAndViewModel() {
@@ -107,23 +124,30 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         });
 
     }
-
-
     private void enableLocationFeatures() {
         if (mMap != null) {
-            Log.d("MapViewFragment", "mMap is initialized");
             try {
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) {
                     mMap.setMyLocationEnabled(true);
                     mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                    // mapViewModel.requestLocationUpdates();
+                    mapViewModel.requestLocationUpdates();
                 }
             } catch (SecurityException e) {
-                Log.d("MapViewFragment", "Permission not granted for location features");
+                Log.e("MapViewFragment", "Permission not granted for location features");
             }
-        } else {
-            Log.d("MapViewFragment", "mMap is null");
+        }
+    }
+
+    private void updateMarkerColor(String restaurantId, boolean isSelected) {
+        for (Marker marker : allMarkers) {
+            RestaurantModel restaurantModel = (RestaurantModel) marker.getTag();
+            if (restaurantModel != null && restaurantModel.getPlaceId().equals(restaurantId)) {
+                // Changer la couleur du marqueur en fonction de l'état de sélection
+                float color = isSelected ? BitmapDescriptorFactory.HUE_GREEN : BitmapDescriptorFactory.HUE_RED;
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(color));
+                return;
+            }
         }
     }
 
@@ -149,20 +173,17 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         Log.d("MapViewFragment", "onMapReady called");
-        // Initialize GoogleMap instance
         mMap = googleMap;
+        enableLocationFeatures();
 
         // Observe last known location to update map camera and fetch nearby restaurants
         mapViewModel.getLastLocation().observe(getViewLifecycleOwner(), location -> {
             if (location != null) {
                 updateCameraPosition(location);
                 mapViewModel.fetchNearbyRestaurants(location.getLatitude(), location.getLongitude());
-
-
 
                 mapViewModel.getNearbyRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
                     if (restaurants != null && !restaurants.isEmpty()) {
@@ -174,6 +195,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                             Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(restaurant.getName()));
                             assert marker != null;
                             marker.setTag(restaurant);
+                            allMarkers.add(marker);
                         }
                     }
                 });

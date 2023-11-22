@@ -55,19 +55,6 @@ public class SettingsFragment extends Fragment {
         return view;
     }
 
-    public void setDarkModeEnabled(boolean enabled) {
-        darkModeEnabled.setValue(enabled);
-
-        // Met à jour les préférences de l'utilisateur ici (en utilisant SharedPreferences)
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("dark_mode_enabled", enabled);
-        editor.apply();
-    }
-
-    public LiveData<Boolean> isDarkModeEnabled() {
-        return darkModeEnabled;
-    }
-
     public static class PreferencesFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

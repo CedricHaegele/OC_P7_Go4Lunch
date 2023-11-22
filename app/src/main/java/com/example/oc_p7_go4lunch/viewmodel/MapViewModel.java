@@ -3,6 +3,7 @@ package com.example.oc_p7_go4lunch.viewmodel;
 
 import android.app.Application;
 import android.location.Location;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,9 @@ import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.repositories.MapRepository;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.List;
@@ -90,6 +94,30 @@ public class MapViewModel extends AndroidViewModel {
     // Method to fetch nearby restaurants based on latitude and longitude.
     public void fetchNearbyRestaurants(double latitude, double longitude) {
         mapRepository.fetchNearbyRestaurants(latitude, longitude, this.nearbyRestaurants);
+    }
+
+    public void requestLocationUpdates() {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000); // 10 seconds
+        locationRequest.setFastestInterval(5000); // 5 seconds
+
+        try {
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest,
+                    new LocationCallback() {
+                        @Override
+                        public void onLocationResult(LocationResult locationResult) {
+                            if (locationResult != null) {
+                                for (Location location : locationResult.getLocations()) {
+                                    locationData.setValue(location);
+                                }
+                            }
+                        }
+                    },
+                    Looper.getMainLooper());
+        } catch (SecurityException e) {
+            Log.e("MapViewModel", "Lost location permission.", e);
+        }
     }
 }
 

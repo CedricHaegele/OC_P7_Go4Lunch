@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: com.firebaseui:firebase-ui-auth:8.0.2@aar">
     <ANNOTATIONS>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/638c0d10b064acbc994705b8e372d28c/transformed/jetified-firebase-ui-auth-8.0.2/annotations.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/bab9bd6bbe0f7606fdb1bd1b6ee01744/transformed/jetified-firebase-ui-auth-8.0.2/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/638c0d10b064acbc994705b8e372d28c/transformed/jetified-firebase-ui-auth-8.0.2/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/638c0d10b064acbc994705b8e372d28c/transformed/jetified-firebase-ui-auth-8.0.2/res" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/638c0d10b064acbc994705b8e372d28c/transformed/jetified-firebase-ui-auth-8.0.2/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/bab9bd6bbe0f7606fdb1bd1b6ee01744/transformed/jetified-firebase-ui-auth-8.0.2/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/bab9bd6bbe0f7606fdb1bd1b6ee01744/transformed/jetified-firebase-ui-auth-8.0.2/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/bab9bd6bbe0f7606fdb1bd1b6ee01744/transformed/jetified-firebase-ui-auth-8.0.2/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.firebaseui/firebase-ui-auth/8.0.2/ec7eb11a29eba19584fa6dac6c8a11c238a513bb/firebase-ui-auth-8.0.2-javadoc.jar!/" />

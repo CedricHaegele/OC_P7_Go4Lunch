@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.navigation:navigation-runtime:2.7.5@aar">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/9c2ec3967527b4ad3c1967739398b622/transformed/navigation-runtime-2.7.5/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/9c2ec3967527b4ad3c1967739398b622/transformed/navigation-runtime-2.7.5/res" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/9c2ec3967527b4ad3c1967739398b622/transformed/navigation-runtime-2.7.5/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/588dcf8f39428474216945eefdc33828/transformed/navigation-runtime-2.7.5/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/588dcf8f39428474216945eefdc33828/transformed/navigation-runtime-2.7.5/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/588dcf8f39428474216945eefdc33828/transformed/navigation-runtime-2.7.5/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

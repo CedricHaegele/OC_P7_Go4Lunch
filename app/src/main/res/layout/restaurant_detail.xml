@@ -124,7 +124,7 @@
             android:id="@+id/userRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="10"
+            android:layout_weight="7"
             android:layout_marginBottom="?android:attr/actionBarSize"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 

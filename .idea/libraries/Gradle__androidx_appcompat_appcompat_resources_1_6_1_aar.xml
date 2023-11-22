@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.appcompat:appcompat-resources:1.6.1@aar">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/f41fbda2797f3ee8fd4fca19b556e8c3/transformed/jetified-appcompat-resources-1.6.1/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/f41fbda2797f3ee8fd4fca19b556e8c3/transformed/jetified-appcompat-resources-1.6.1/res" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/f41fbda2797f3ee8fd4fca19b556e8c3/transformed/jetified-appcompat-resources-1.6.1/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/39bea67891b9780d72791fce18be7fe6/transformed/jetified-appcompat-resources-1.6.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/39bea67891b9780d72791fce18be7fe6/transformed/jetified-appcompat-resources-1.6.1/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/39bea67891b9780d72791fce18be7fe6/transformed/jetified-appcompat-resources-1.6.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

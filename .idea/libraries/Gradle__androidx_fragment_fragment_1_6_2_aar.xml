@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.fragment:fragment:1.6.2@aar">
     <ANNOTATIONS>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/735d37334cf7e5c68be3d327fb71b374/transformed/fragment-1.6.2/annotations.zip!/" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/5dbcf2e3223a87ae75e30d5c88c71a21/transformed/fragment-1.6.2/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/735d37334cf7e5c68be3d327fb71b374/transformed/fragment-1.6.2/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/735d37334cf7e5c68be3d327fb71b374/transformed/fragment-1.6.2/res" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/735d37334cf7e5c68be3d327fb71b374/transformed/fragment-1.6.2/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/5dbcf2e3223a87ae75e30d5c88c71a21/transformed/fragment-1.6.2/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/5dbcf2e3223a87ae75e30d5c88c71a21/transformed/fragment-1.6.2/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/5dbcf2e3223a87ae75e30d5c88c71a21/transformed/fragment-1.6.2/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

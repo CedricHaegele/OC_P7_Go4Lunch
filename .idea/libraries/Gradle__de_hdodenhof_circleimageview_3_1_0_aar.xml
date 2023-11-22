@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: de.hdodenhof:circleimageview:3.1.0@aar">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/583a08d71c3a18c57e7c1620c4d3f800/transformed/jetified-circleimageview-3.1.0/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/583a08d71c3a18c57e7c1620c4d3f800/transformed/jetified-circleimageview-3.1.0/res" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/583a08d71c3a18c57e7c1620c4d3f800/transformed/jetified-circleimageview-3.1.0/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/58c8085c819b536e879cb2118d0c2aea/transformed/jetified-circleimageview-3.1.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/58c8085c819b536e879cb2118d0c2aea/transformed/jetified-circleimageview-3.1.0/res" />
+      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/58c8085c819b536e879cb2118d0c2aea/transformed/jetified-circleimageview-3.1.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/de.hdodenhof/circleimageview/3.1.0/e33964c462b854162fee2bd3cd52889ef878df77/circleimageview-3.1.0-javadoc.jar!/" />
