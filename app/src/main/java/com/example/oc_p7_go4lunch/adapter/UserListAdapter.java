@@ -1,6 +1,5 @@
 package com.example.oc_p7_go4lunch.adapter;
 
-import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.databinding.FragmentWorkmateItemBinding;
 import com.example.oc_p7_go4lunch.databinding.ItemUserBinding;
 import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
 
@@ -39,8 +37,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        int size = userList == null ? 0 : userList.size();
-        return size;
+        return userList == null ? 0 : userList.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

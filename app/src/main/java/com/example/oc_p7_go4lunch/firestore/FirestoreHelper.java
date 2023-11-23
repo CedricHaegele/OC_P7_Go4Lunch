@@ -31,7 +31,6 @@ public class FirestoreHelper {
     }
 
     public void updateSelectedRestaurant(String userId, String restaurantId, boolean isSelected, RestaurantModel restaurant, OnUpdateCompleteListener listener) {
-        Log.d("FirestoreHelper", "updateSelectedRestaurant called with userId: " + userId + ", restaurantId: " + restaurantId + ", isSelected: " + isSelected);
         DocumentReference userDocRef = db.collection("users").document(userId);
         Map<String, Object> updateData = new HashMap<>();
         if (isSelected) {

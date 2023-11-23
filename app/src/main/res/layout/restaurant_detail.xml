@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,136 +8,119 @@
     android:fitsSystemWindows="true"
     tools:context=".activities.RestaurantDetail">
 
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="match_parent"
-            android:layout_height="230dp"
-            android:contentDescription="@string/restaurant_photo"
-            android:scaleType="centerCrop"/>
+    <!-- ImageView 'logo' -->
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="0dp"
+        android:layout_height="230dp"
+        android:contentDescription="@string/restaurant_photo"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- LinearLayout 'values' -->
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="230dp"
-        android:orientation="vertical">
+        android:id="@+id/values"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#D3352A"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo">
 
-        <LinearLayout
-            android:id="@+id/values"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_weight="2"
-            android:background="#D3352A"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/restaurantName"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="10dp"
-                    android:layout_weight="70"
-                    android:text=""
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp" />
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/restaurantAddress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:text=""
-                android:textColor="@android:color/white" />
-
-            <RatingBar
-                android:id="@+id/ratingDetail"
-                style="@style/Widget.AppCompat.RatingBar.Indicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:numStars="5"
-                android:stepSize="0.1"
-                android:progressTint="#339143"/>
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            style="?android:attr/buttonBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="5"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/callButton"
-                android:drawablePadding="5dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:padding="10dp"
-                android:layout_margin="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableTop="@drawable/ic_baseline_local_phone_24"
-                android:text="@string/call"
-                android:textColor="#D3352A" />
-
-            <Button
-                android:id="@+id/likeButton"
-                android:drawablePadding="5dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:padding="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:drawableTop="@drawable/button_like_selector"
-                android:text="@string/like"
-                android:textColor="#D3352A" />
-
-            <Button
-                android:id="@+id/websiteButton"
-                android:drawablePadding="5dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:padding="10dp"
-                android:layout_margin="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableTop="@drawable/ic_baseline_language_24"
-                android:text="@string/website"
-                android:textColor="#D3352A" />
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/userRecyclerView"
+        <!-- TextView 'restaurantName' -->
+        <TextView
+            android:id="@+id/restaurantName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="7"
-            android:layout_marginBottom="?android:attr/actionBarSize"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <!-- TextView 'restaurantAddress' -->
+        <TextView
+            android:id="@+id/restaurantAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@android:color/white" />
+
+        <!-- RatingBar 'ratingDetail' -->
+        <RatingBar
+            android:id="@+id/ratingDetail"
+            style="@style/Widget.AppCompat.RatingBar.Indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:progressTint="#339143"
+            android:stepSize="0.1" />
 
     </LinearLayout>
 
+    <!-- Boutons -->
+    <!-- Bouton 'callButton' -->
+    <Button
+        android:id="@+id/callButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:drawableTop="@drawable/ic_baseline_local_phone_24"
+        android:text="@string/call"
+        android:textColor="#D3352A"
+        app:layout_constraintEnd_toStartOf="@id/likeButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/values" />
+
+    <!-- Bouton 'likeButton' -->
+    <Button
+        android:id="@+id/likeButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:drawableTop="@drawable/button_like_selector"
+        android:text="@string/like"
+        android:textColor="#D3352A"
+        app:layout_constraintEnd_toStartOf="@id/websiteButton"
+        app:layout_constraintStart_toEndOf="@id/callButton"
+        app:layout_constraintTop_toBottomOf="@id/values" />
+
+    <!-- Bouton 'websiteButton' -->
+    <Button
+        android:id="@+id/websiteButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:drawableTop="@drawable/ic_baseline_language_24"
+        android:text="@string/website"
+        android:textColor="#D3352A"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/likeButton"
+        app:layout_constraintTop_toBottomOf="@id/values" />
+
+    <!-- RecyclerView 'userRecyclerView' -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/userRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/likeButton" />
+
+    <!-- FloatingActionButton 'fab' -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@android:color/white"
-        app:layout_anchor="@id/logo"
-        app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/baseline_check_circle_outline_24"/>
+        android:layout_marginTop="-16dp"
+        android:layout_marginBottom="-16dp"
+        app:backgroundTint="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/values"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo"
+        app:srcCompat="@drawable/baseline_check_circle_outline_24" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

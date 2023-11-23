@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.listView:
                 changeFragment(new RestoListView());
                 Objects.requireNonNull(getSupportActionBar()).setTitle("I'm Hungry !");
-                searchImageView.setVisibility(View.GONE);
+                searchImageView.setVisibility(View.VISIBLE);
                 break;
             case R.id.workmates:
                 changeFragment(new WorkmatesList());
@@ -287,14 +287,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     };
 
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         ImageView searchImageView = binding.searchImageView;
         final int myLunch = R.id.nav_lunch;
         final int settings = R.id.nav_settings;
         final int logOut = R.id.nav_logout;
-
 
         switch (item.getItemId()) {
 
@@ -327,5 +325,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     finish();
                 });
     }
-
 }
