@@ -27,6 +27,7 @@ import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
+import com.example.oc_p7_go4lunch.fragment.YourLunchFragment;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.settings.SettingsFragment;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
@@ -297,10 +298,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
 
             case myLunch:
+                changeFragment(new YourLunchFragment());
+                searchImageView.setVisibility(View.GONE);
                 break;
 
             case settings:
                 changeFragment(new SettingsFragment.PreferencesFragment());
+                searchImageView.setVisibility(View.GONE);
                 break;
 
             case logOut:

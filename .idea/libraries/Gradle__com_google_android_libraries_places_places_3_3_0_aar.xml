@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.android.libraries.places:places:3.3.0@aar">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/e730bc1ad622cf77e24eebb9adeee891/transformed/jetified-places-3.3.0/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/e730bc1ad622cf77e24eebb9adeee891/transformed/jetified-places-3.3.0/res" />
-      <root url="file://$PROJECT_DIR$/../../../../../../flutter/caches/transforms-3/e730bc1ad622cf77e24eebb9adeee891/transformed/jetified-places-3.3.0/AndroidManifest.xml" />
+      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/e730bc1ad622cf77e24eebb9adeee891/transformed/jetified-places-3.3.0/res" />
+      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/e730bc1ad622cf77e24eebb9adeee891/transformed/jetified-places-3.3.0/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/e730bc1ad622cf77e24eebb9adeee891/transformed/jetified-places-3.3.0/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$PROJECT_DIR$/../../../../../../flutter/caches/modules-2/files-2.1/com.google.android.libraries.places/places/3.3.0/d40427fdc3185deecb85e90d83bc6e4f57874587/places-3.3.0-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/com.google.android.libraries.places/places/3.3.0/d40427fdc3185deecb85e90d83bc6e4f57874587/places-3.3.0-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES />
   </library>

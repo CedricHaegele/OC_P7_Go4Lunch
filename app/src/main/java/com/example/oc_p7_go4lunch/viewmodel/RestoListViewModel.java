@@ -10,11 +10,12 @@ import com.example.oc_p7_go4lunch.repositories.RestaurantRepository;
 import java.util.List;
 
 public class RestoListViewModel extends ViewModel {
-    private final MutableLiveData<List<RestaurantModel>> restaurants;
+    private LiveData<List<RestaurantModel>> restaurants;
+    private RestaurantRepository repository;
 
     public RestoListViewModel() {
-        RestaurantRepository repository = new RestaurantRepository();
-        restaurants = (MutableLiveData<List<RestaurantModel>>) repository.getRestaurants(null);
+        repository = new RestaurantRepository();
+        restaurants = repository.getRestaurants(null);
     }
 
     public LiveData<List<RestaurantModel>> getRestaurants() {

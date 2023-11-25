@@ -68,7 +68,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
             Log.d("UserListAdapter", "Updating list with size: " + newUserList.size());
             userList.clear();
             for (UserModel newUser : newUserList) {
-                if (!isUserAlreadyInList(newUser)) {
+                if (!isUserAlreadyInList(newUser, userList)) {
                     userList.add(newUser);
                 }
             }
@@ -76,19 +76,15 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         }
     }
 
-    // Méthode pour vérifier si l'utilisateur est déjà dans la liste
-    private boolean isUserAlreadyInList(UserModel user) {
-        if (user == null || user.getUserId() == null) {
-            return false;
-        }
 
-        for (UserModel existingUser : userList) {
-            if (existingUser.getUserId() != null && existingUser.getUserId().equals(user.getUserId())) {
+    // Méthode pour vérifier si l'utilisateur est déjà dans la liste
+    private boolean isUserAlreadyInList(UserModel user, List<UserModel> usersList) {
+        for (UserModel existingUser : usersList) {
+            if (user.getUserId() != null && user.getUserId().equals(existingUser.getUserId())) {
                 return true;
             }
         }
         return false;
     }
-
 }
 

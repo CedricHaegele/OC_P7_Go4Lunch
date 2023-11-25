@@ -12,13 +12,4 @@ public class RestaurantApiService {
     public RestaurantApiService() {
         this.googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
     }
-
-    public void fetchRestaurantDetails(String placeId, String apiKey, Callback<RestoInformations> callback) {
-        Call<RestoInformations> call = googlePlacesApi.getRestaurantDetails(
-                placeId,
-                "formatted_phone_number,website,like",
-                apiKey
-        );
-        call.enqueue(callback);
-    }
 }
