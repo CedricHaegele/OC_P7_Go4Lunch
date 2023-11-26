@@ -65,16 +65,18 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
     public void updateUserList(List<UserModel> newUserList) {
         if (newUserList != null) {
-            Log.d("UserListAdapter", "Updating list with size: " + newUserList.size());
+            Log.d("RecyclerViewAdapter", "Mise à jour de l'adaptateur avec une nouvelle liste.");
             userList.clear();
             for (UserModel newUser : newUserList) {
                 if (!isUserAlreadyInList(newUser, userList)) {
                     userList.add(newUser);
+                    Log.d("RecyclerViewAdapter", "Utilisateur ajouté à l'adaptateur: " + newUser.getName());
                 }
             }
             notifyDataSetChanged();
         }
     }
+
 
     // Méthode pour vérifier si l'utilisateur est déjà dans la liste
     private boolean isUserAlreadyInList(UserModel user, List<UserModel> usersList) {

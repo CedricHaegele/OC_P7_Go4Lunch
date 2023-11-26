@@ -57,19 +57,21 @@ public class FirestoreHelper {
                 });
     }
 
-    public void saveRestaurantSelectionState(String userId, String restaurantId, boolean isSelected, FirestoreActionListener listener) {
+    public void saveRestaurantSelectionState(String userId, String restaurantId, boolean isSelected, RestaurantModel restaurant, FirestoreActionListener listener) {
         DocumentReference userDocRef = db.collection("users").document(userId);
         Map<String, Object> updateData = new HashMap<>();
         if (isSelected) {
             updateData.put("selectedRestaurantId", restaurantId);
-            updateData.put("selectedRestaurantName", restaurantId);
+            updateData.put("selectedRestaurantName", restaurant.getName());
         } else {
             updateData.put("selectedRestaurantId", FieldValue.delete());
+            updateData.put("selectedRestaurantName", FieldValue.delete());
         }
         userDocRef.update(updateData)
                 .addOnSuccessListener(aVoid -> listener.onSuccess())
                 .addOnFailureListener(listener::onError);
     }
+
 
 
     public interface OnSelectedUsersFetchedListener {
@@ -157,7 +159,7 @@ public class FirestoreHelper {
 
 
     // --- Utility Methods ---
-     public LiveData<Boolean> checkUserSelectionState(String restaurantId, String userId) {
+    public LiveData<Boolean> checkUserSelectionState(String restaurantId, String userId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users").document(userId)
                 .get()

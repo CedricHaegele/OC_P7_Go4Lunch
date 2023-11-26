@@ -160,24 +160,26 @@ public class RestaurantDetailViewModel extends ViewModel {
         }
         Boolean isSelected = isRestaurantSelected.getValue();
         if (isSelected != null && isSelected) {
-        firestoreHelper.updateSelectedRestaurant(userId, restaurantId, true, restaurant, new FirestoreHelper.FirestoreActionListener() {
-            @Override
-            public void onSuccess() {
-                isRestaurantSelected.postValue(true);
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (currentUser != null) {
-                    manageUserInRestaurantList(currentUser, true);
+            firestoreHelper.updateSelectedRestaurant(userId, restaurantId, true, restaurant, new FirestoreHelper.FirestoreActionListener() {
+                @Override
+                public void onSuccess() {
+                    isRestaurantSelected.postValue(true);
+                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                    if (currentUser != null) {
+                        manageUserInRestaurantList(currentUser, true);
+                    }
                 }
-            }
-            @Override
-            public void onError(Exception e) {
-                Log.e("DEBUG", "Firestore update error", e);
 
-            }
-        });
-        updateRestaurantSelectionInFirestore(userId, restaurantId, true);
+                @Override
+                public void onError(Exception e) {
+                    Log.e("DEBUG", "Firestore update error", e);
+
+                }
+            });
+            updateRestaurantSelectionInFirestore(userId, restaurantId, true);
             fetchSelectedUsersForRestaurant(restaurantId);
-    }}
+        }
+    }
 
 
     public void deselectRestaurant(String userId, String restaurantId, RestaurantModel restaurant) {
@@ -187,24 +189,25 @@ public class RestaurantDetailViewModel extends ViewModel {
         }
         Boolean isSelected = isRestaurantSelected.getValue();
         if (isSelected != null && isSelected) {
-        firestoreHelper.updateSelectedRestaurant(userId, restaurantId, false, restaurant, new FirestoreHelper.FirestoreActionListener() {
-            @Override
-            public void onSuccess() {
-                isRestaurantSelected.postValue(false);
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (currentUser != null) {
-                    manageUserInRestaurantList(currentUser, false);
+            firestoreHelper.updateSelectedRestaurant(userId, restaurantId, false, restaurant, new FirestoreHelper.FirestoreActionListener() {
+                @Override
+                public void onSuccess() {
+                    isRestaurantSelected.postValue(false);
+                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                    if (currentUser != null) {
+                        manageUserInRestaurantList(currentUser, false);
+                    }
                 }
-            }
 
-            @Override
-            public void onError(Exception e) {
+                @Override
+                public void onError(Exception e) {
 
-            }
-        });
-        updateRestaurantSelectionInFirestore(userId, restaurantId, false);
+                }
+            });
+            updateRestaurantSelectionInFirestore(userId, restaurantId, false);
             fetchSelectedUsersForRestaurant(restaurantId);
-    }}
+        }
+    }
 
     private void updateRestaurantSelectionInFirestore(String userId, String restaurantId, boolean isSelected) {
         Log.d("DEBUG", "Firestore update success");
@@ -250,19 +253,22 @@ public class RestaurantDetailViewModel extends ViewModel {
         return firestoreHelper.getLikeState(userId, restaurantId);
     }
 
-    // Méthodes pour sauvegarder et charger l'état de sélection
+    // Méthode pour sauvegarder l'état de sélection du restaurant
     public void saveRestaurantSelectionState(String userId, String restaurantId, boolean isSelected) {
-        firestoreHelper.saveRestaurantSelectionState(userId, restaurantId, isSelected, new FirestoreHelper.FirestoreActionListener() {
-            @Override
-            public void onSuccess() {
-                isRestaurantSelected.postValue(isSelected);
-            }
-            @Override
-            public void onError(Exception e) {
-                // Gérer l'erreur
-            }
-        });
+        if (restaurant != null) {
+            firestoreHelper.saveRestaurantSelectionState(userId, restaurantId, isSelected, restaurant.getValue(), new FirestoreHelper.FirestoreActionListener() {
+                @Override
+                public void onSuccess() {
+                    isRestaurantSelected.postValue(isSelected);
+                }
+                @Override
+                public void onError(Exception e) {
+                    // Traiter l'erreur
+                }
+            });
+        }
     }
+
 
     // Getter pour l'état de sélection
     public LiveData<Boolean> getIsRestaurantSelected() {
