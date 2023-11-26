@@ -1,57 +1,42 @@
 package com.example.oc_p7_go4lunch.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import com.example.oc_p7_go4lunch.databinding.YourlunchFragmentBinding;
 
-import com.bumptech.glide.Glide;
-import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.databinding.FragmentMylunchBinding;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class YourLunchFragment extends Fragment {
-    private FragmentMylunchBinding binding;
 
-    @Nullable
+    private YourlunchFragmentBinding binding;
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentMylunchBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment using View Binding
+        binding = YourlunchFragmentBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        if (user != null) {
-            String userName = user.getDisplayName();
 
-            if (userName == null || userName.isEmpty()) {
-                userName = " Inconnu ";
-            }
+        binding.restaurantName.setText("Restaurant XYZ");
+        binding.restaurantAddress.setText("123, Main Street, City");
 
-            // Récupération de l'URL de la photo de profil de l'utilisateur
-            String photoUrl = user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "";
 
-            Glide.with(this)
-                    .load(photoUrl)
-                    .placeholder(R.drawable.default_avatar)
-                    .circleCrop()
-                    .error(R.drawable.profil_user)
-                    .into(binding.userPhoto);
+    }
 
-            // Affichage du nom de l'utilisateur
-            binding.userName.setText(userName);
-        }
-
-        binding.restaurantName.setText("Nom du restaurant");
-        binding.restaurantAddress.setText("Adresse du restaurant");
-        binding.myLunch.setText("Mon déjeuner");
-
-        return view;
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

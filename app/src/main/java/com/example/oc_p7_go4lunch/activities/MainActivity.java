@@ -302,6 +302,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case myLunch:
                 changeFragment(new YourLunchFragment());
                 searchImageView.setVisibility(View.GONE);
+                getSupportActionBar().setTitle(" My Lunch Time");
                 break;
 
             case settings:
