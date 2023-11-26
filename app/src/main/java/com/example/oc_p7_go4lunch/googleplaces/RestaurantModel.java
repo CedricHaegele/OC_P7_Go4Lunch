@@ -1,17 +1,40 @@
 package com.example.oc_p7_go4lunch.googleplaces;
 
+import android.graphics.Bitmap;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
+import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
 public class RestaurantModel implements Serializable {
+    private PhotoMetadata photoMetadata;
 
     // Fields for various attributes of a restaurant
 
     @SerializedName("geometry")
     @Expose
     private Geometry geometry;
+
+    @SerializedName("photo_url")
+    @Expose
+    private String photoUrl;
+
+    // Getter et Setter pour photoUrl
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
 
     public RestaurantModel(String id, String name, String address) {
         this.placeId = id;
@@ -117,6 +140,32 @@ public class RestaurantModel implements Serializable {
 
     public Geometry getGeometry() {
         return geometry;
+    }
+
+    public PhotoMetadata getPhotoMetadata() {
+        return photoMetadata;
+    }
+
+    public void setPhotoMetadata(PhotoMetadata photoMetadata) {
+        this.photoMetadata = photoMetadata;
+    }
+    public LiveData<Bitmap> getPhoto(PlacesClient placesClient) {
+        MutableLiveData<Bitmap> photoLiveData = new MutableLiveData<>();
+
+        if (this.photoMetadata != null) {
+            FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                    .setMaxWidth(500)
+                    .build();
+
+            placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+                Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                photoLiveData.setValue(bitmap);
+            }).addOnFailureListener((exception) -> photoLiveData.setValue(null));
+        } else {
+            photoLiveData.setValue(null);
+        }
+
+        return photoLiveData;
     }
 
 }

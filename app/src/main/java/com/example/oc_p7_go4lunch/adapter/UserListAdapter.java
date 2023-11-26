@@ -76,7 +76,6 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         }
     }
 
-
     // Méthode pour vérifier si l'utilisateur est déjà dans la liste
     private boolean isUserAlreadyInList(UserModel user, List<UserModel> usersList) {
         for (UserModel existingUser : usersList) {

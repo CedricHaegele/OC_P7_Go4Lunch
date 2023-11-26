@@ -161,9 +161,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE && resultCode == RESULT_OK) {
+            assert data != null;
             Place place = Autocomplete.getPlaceFromIntent(data);
 
-            if (place.getTypes().contains(Place.Type.RESTAURANT)) {
+            if (Objects.requireNonNull(place.getTypes()).contains(Place.Type.RESTAURANT)) {
                 // Récupération des informations supplémentaires
                 String placeId = place.getId();
                 String name = place.getName();
@@ -183,8 +184,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(MainActivity.this, "Le lieu sélectionné n'est pas un restaurant", Toast.LENGTH_SHORT).show();
             }
         } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+            assert data != null;
             Status status = Autocomplete.getStatusFromIntent(data);
-            if (status != null && status.getStatusMessage() != null) {
+            if (status.getStatusMessage() != null) {
                 Log.i("PlaceAPI", status.getStatusMessage());
             }
         }
@@ -270,17 +272,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
             case R.id.mapView:
                 changeFragment(new MapViewFragment());
-                Objects.requireNonNull(getSupportActionBar()).setTitle("I'm Hungry !");
+                getSupportActionBar().setTitle("I'm Hungry !");
                 searchImageView.setVisibility(View.VISIBLE);
                 break;
             case R.id.listView:
                 changeFragment(new RestoListView());
-                Objects.requireNonNull(getSupportActionBar()).setTitle("I'm Hungry !");
+                getSupportActionBar().setTitle("I'm Hungry !");
                 searchImageView.setVisibility(View.VISIBLE);
                 break;
             case R.id.workmates:
                 changeFragment(new WorkmatesList());
-                Objects.requireNonNull(getSupportActionBar()).setTitle(" Workmates");
+                getSupportActionBar().setTitle(" Workmates");
                 searchImageView.setVisibility(View.GONE);
                 break;
         }
@@ -304,11 +306,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case settings:
                 changeFragment(new SettingsFragment.PreferencesFragment());
+                getSupportActionBar().setTitle("I'm Hungry !");
                 searchImageView.setVisibility(View.GONE);
                 break;
 
             case logOut:
-                Log.d("MainActivity", "LogOut Selected");
                 onSignOutButtonClicked();
                 break;
         }

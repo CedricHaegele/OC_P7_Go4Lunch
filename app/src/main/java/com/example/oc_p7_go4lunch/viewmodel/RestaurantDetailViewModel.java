@@ -16,7 +16,6 @@ import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.googleplaces.RestoInformations;
 import com.example.oc_p7_go4lunch.repositories.RestaurantRepository;
 import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
-import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,6 +32,7 @@ import java.util.Map;
 public class RestaurantDetailViewModel extends ViewModel {
     // LiveData variables
     private final MutableLiveData<Boolean> isRestaurantLiked = new MutableLiveData<>();
+    public final MutableLiveData<Boolean> isRestaurantSelected = new MutableLiveData<>();
     public final MutableLiveData<RestaurantModel> restaurant = new MutableLiveData<>();
     public final MutableLiveData<String> phoneNumber = new MutableLiveData<>();
     public final MutableLiveData<String> websiteUrl = new MutableLiveData<>();
@@ -41,14 +41,12 @@ public class RestaurantDetailViewModel extends ViewModel {
     public final MutableLiveData<String> restaurantName = new MutableLiveData<>();
     public final MutableLiveData<String> restaurantAddress = new MutableLiveData<>();
     public final MutableLiveData<Float> restaurantRating = new MutableLiveData<>();
-    public final MutableLiveData<Boolean> isButtonChecked = new MutableLiveData<>();
-    private final MutableLiveData<List<RestaurantModel>> likedRestaurants = new MutableLiveData<>();
     private final MutableLiveData<List<UserModel>> selectedUsers = new MutableLiveData<>();
     private MutableLiveData<List<UserModel>> userListLiveData = new MutableLiveData<>();
     private List<UserModel> userList = new ArrayList<>();
 
     // Service and repository instances
-    private final RestaurantApiService restaurantApiService;
+    public final RestaurantApiService restaurantApiService;
     private final FirestoreHelper firestoreHelper;
     private final RestaurantRepository restaurantRepository;
 
@@ -94,126 +92,122 @@ public class RestaurantDetailViewModel extends ViewModel {
         return resultLiveData;
     }
 
-    public void fetchSelectedUsersForRestaurant(String restaurantId) {
-        firestoreHelper.fetchSelectedUsers(restaurantId, users -> selectedUsers.setValue(users));
+    public void loadRestaurantDetails(PlacesClient placesClient, String placeId) {
+        LiveData<RestaurantModel> restaurantDetailsLiveData = restaurantRepository.fetchPlaceDetails(placesClient, placeId);
+        // Mettre à jour les données du restaurant
+        restaurantDetailsLiveData.observeForever(restaurant::setValue);
     }
+
+    public void fetchSelectedUsersForRestaurant(String restaurantId) {
+        firestoreHelper.fetchSelectedUsers(restaurantId, new FirestoreHelper.OnSelectedUsersFetchedListener() {
+            @Override
+            public void onSelectedUsersFetched(List<UserModel> users) {
+                selectedUsers.postValue(users);
+            }
+        });
+    }
+
 
     // --- User Management ---
     public LiveData<List<UserModel>> getSelectedUsers() {
         return selectedUsers;
     }
 
-    public void fetchSelectedUsers(String restaurantId, FirestoreHelper.OnSelectedUsersFetchedListener listener) {
-        firestoreHelper.fetchSelectedUsers(restaurantId, listener);
-    }
 
     public void manageUserInRestaurantList(FirebaseUser currentUser, boolean addUser) {
-        if (currentUser == null) {
-            return;
-        }
+        if (currentUser == null) return;
         String userId = currentUser.getUid();
+
+        List<UserModel> currentUsers = selectedUsers.getValue();
+        if (currentUsers == null) currentUsers = new ArrayList<>();
+
         if (addUser) {
-            if (!isUserInList(userId)) {
+            if (!isUserAlreadyInList(currentUser, currentUsers)) {
                 UserModel newUser = new UserModel();
                 newUser.setUserId(userId);
                 newUser.setName(currentUser.getDisplayName());
                 newUser.setPhoto(currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : null);
-                userList.add(newUser);
-                userListLiveData.setValue(userList);
+                currentUsers.add(newUser);
             }
         } else {
-            removeUserFromList(userId);
-            userListLiveData.setValue(userList);
+
+            Iterator<UserModel> iterator = currentUsers.iterator();
+            while (iterator.hasNext()) {
+                UserModel user = iterator.next();
+                if (userId.equals(user.getUserId())) {
+                    iterator.remove();
+                    break;
+                }
+            }
         }
+        selectedUsers.setValue(currentUsers);
     }
 
-    public void addUserToUserList(UserModel newUser) {
-        List<UserModel> currentUsers = userListLiveData.getValue() != null ? userListLiveData.getValue() : new ArrayList<>();
-        if (!isUserAlreadyInList(newUser, currentUsers)) {
-            currentUsers.add(newUser);
-            userListLiveData.setValue(currentUsers);
-        }
-    }
-
-    private boolean isUserAlreadyInList(UserModel user, List<UserModel> usersList) {
-        if (user == null || user.getUserId() == null) {
-            return false;
-        }
+    private boolean isUserAlreadyInList(FirebaseUser currentUser, List<UserModel> usersList) {
+        if (currentUser == null || currentUser.getUid() == null) return false;
         for (UserModel existingUser : usersList) {
-            if (user.getUserId().equals(existingUser.getUserId())) {
+            if (currentUser.getUid().equals(existingUser.getUserId())) {
                 return true;
             }
         }
         return false;
     }
 
-
-    private boolean isUserInList(String userId) {
-        List<UserModel> users = selectedUsers.getValue();
-        if (users != null) {
-            for (UserModel user : users) {
-                if (userId != null && userId.equals(user.getUserId())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private void removeUserFromList(String userId) {
-        List<UserModel> users = selectedUsers.getValue();
-        if (users != null) {
-            Iterator<UserModel> iterator = users.iterator();
-            while (iterator.hasNext()) {
-                UserModel user = iterator.next();
-                if (userId != null && userId.equals(user.getUserId())) {
-                    iterator.remove();
-                    break;
-                }
-            }
-        }
-    }
-
     public void selectRestaurant(String userId, String restaurantId, RestaurantModel restaurant) {
+        if (userId == null || restaurantId == null || restaurant == null) {
+            Log.e("RestaurantDetailViewMod", "userId, restaurantId, or restaurant is null");
+            return;
+        }
+        Boolean isSelected = isRestaurantSelected.getValue();
+        if (isSelected != null && isSelected) {
         firestoreHelper.updateSelectedRestaurant(userId, restaurantId, true, restaurant, new FirestoreHelper.FirestoreActionListener() {
             @Override
             public void onSuccess() {
+                isRestaurantSelected.postValue(true);
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 if (currentUser != null) {
                     manageUserInRestaurantList(currentUser, true);
                 }
-                // Autres traitements en cas de succès
             }
-
             @Override
             public void onError(Exception e) {
-                // Gérer l'erreur
+                Log.e("DEBUG", "Firestore update error", e);
+
             }
         });
         updateRestaurantSelectionInFirestore(userId, restaurantId, true);
-    }
+            fetchSelectedUsersForRestaurant(restaurantId);
+    }}
 
 
     public void deselectRestaurant(String userId, String restaurantId, RestaurantModel restaurant) {
+        if (userId == null || restaurantId == null || restaurant == null) {
+            Log.e("RestaurantDetailViewMod", "userId, restaurantId, or restaurant is null");
+            return;
+        }
+        Boolean isSelected = isRestaurantSelected.getValue();
+        if (isSelected != null && isSelected) {
         firestoreHelper.updateSelectedRestaurant(userId, restaurantId, false, restaurant, new FirestoreHelper.FirestoreActionListener() {
             @Override
             public void onSuccess() {
+                isRestaurantSelected.postValue(false);
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 if (currentUser != null) {
                     manageUserInRestaurantList(currentUser, false);
                 }
-                // Autres traitements en cas de succès
             }
 
             @Override
             public void onError(Exception e) {
-                // Gérer l'erreur
+
             }
         });
         updateRestaurantSelectionInFirestore(userId, restaurantId, false);
-    }
+            fetchSelectedUsersForRestaurant(restaurantId);
+    }}
 
     private void updateRestaurantSelectionInFirestore(String userId, String restaurantId, boolean isSelected) {
+        Log.d("DEBUG", "Firestore update success");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference restaurantRef = db.collection("users").document(userId).collection("restaurants").document(restaurantId);
         Map<String, Object> restaurantData = new HashMap<>();
@@ -231,13 +225,12 @@ public class RestaurantDetailViewModel extends ViewModel {
         firestoreHelper.saveLikeState(userId, restaurantId, isLiked, new FirestoreHelper.FirestoreActionListener() {
             @Override
             public void onSuccess() {
-                // Traitement en cas de succès
                 isRestaurantLiked.setValue(isLiked);
             }
 
             @Override
             public void onError(Exception e) {
-                // Gérer l'erreur
+
             }
         });
     }
@@ -249,7 +242,7 @@ public class RestaurantDetailViewModel extends ViewModel {
     public LiveData<Boolean> checkIfRestaurantIsLiked(String userId, String restaurantId) {
         if (userId == null || restaurantId == null) {
             Log.e("ERROR", "UserId or RestaurantId is null");
-            // Retournez un LiveData avec une valeur par défaut ou gérez l'erreur comme vous le souhaitez
+
             MutableLiveData<Boolean> defaultLiveData = new MutableLiveData<>();
             defaultLiveData.setValue(false);
             return defaultLiveData;
@@ -257,16 +250,23 @@ public class RestaurantDetailViewModel extends ViewModel {
         return firestoreHelper.getLikeState(userId, restaurantId);
     }
 
-    // --- Utility Methods ---
-    private RestaurantModel convertPlaceToRestaurantModel(Place place, PlacesClient placesClient) {
-        RestaurantModel restaurantModel = new RestaurantModel();
-        restaurantModel.setName(place.getName());
-        restaurantModel.setVicinity(place.getAddress());
-        restaurantModel.setRating(place.getRating());
+    // Méthodes pour sauvegarder et charger l'état de sélection
+    public void saveRestaurantSelectionState(String userId, String restaurantId, boolean isSelected) {
+        firestoreHelper.saveRestaurantSelectionState(userId, restaurantId, isSelected, new FirestoreHelper.FirestoreActionListener() {
+            @Override
+            public void onSuccess() {
+                isRestaurantSelected.postValue(isSelected);
+            }
+            @Override
+            public void onError(Exception e) {
+                // Gérer l'erreur
+            }
+        });
+    }
 
-        restaurantName.setValue(place.getName());
-        restaurantAddress.setValue(place.getAddress());
-        return restaurantModel;
+    // Getter pour l'état de sélection
+    public LiveData<Boolean> getIsRestaurantSelected() {
+        return isRestaurantSelected;
     }
 
     public boolean isPhoneNumberValid(String noPhoneNumberString) {

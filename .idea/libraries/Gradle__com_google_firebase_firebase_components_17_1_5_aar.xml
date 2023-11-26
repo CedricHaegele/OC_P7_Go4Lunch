@@ -4,8 +4,8 @@
       <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/4ba36ecba51cde65931266a8fb55be95/transformed/jetified-firebase-components-17.1.5/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/4ba36ecba51cde65931266a8fb55be95/transformed/jetified-firebase-components-17.1.5/AndroidManifest.xml" />
       <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/4ba36ecba51cde65931266a8fb55be95/transformed/jetified-firebase-components-17.1.5/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/4ba36ecba51cde65931266a8fb55be95/transformed/jetified-firebase-components-17.1.5/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

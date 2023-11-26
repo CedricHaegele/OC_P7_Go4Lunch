@@ -57,6 +57,21 @@ public class FirestoreHelper {
                 });
     }
 
+    public void saveRestaurantSelectionState(String userId, String restaurantId, boolean isSelected, FirestoreActionListener listener) {
+        DocumentReference userDocRef = db.collection("users").document(userId);
+        Map<String, Object> updateData = new HashMap<>();
+        if (isSelected) {
+            updateData.put("selectedRestaurantId", restaurantId);
+            updateData.put("selectedRestaurantName", restaurantId);
+        } else {
+            updateData.put("selectedRestaurantId", FieldValue.delete());
+        }
+        userDocRef.update(updateData)
+                .addOnSuccessListener(aVoid -> listener.onSuccess())
+                .addOnFailureListener(listener::onError);
+    }
+
+
     public interface OnSelectedUsersFetchedListener {
         void onSelectedUsersFetched(List<UserModel> users);
     }
@@ -138,6 +153,8 @@ public class FirestoreHelper {
     public interface OnLikeStateFetchedListener {
         void onLikeStateFetched(boolean isLiked);
     }
+
+
 
     // --- Utility Methods ---
      public LiveData<Boolean> checkUserSelectionState(String restaurantId, String userId) {

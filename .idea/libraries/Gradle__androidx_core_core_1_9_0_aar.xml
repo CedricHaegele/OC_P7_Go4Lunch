@@ -5,8 +5,8 @@
     </ANNOTATIONS>
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/372fc989a5893ace2fba6a3a23e41f9d/transformed/core-1.9.0/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/372fc989a5893ace2fba6a3a23e41f9d/transformed/core-1.9.0/AndroidManifest.xml" />
       <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/372fc989a5893ace2fba6a3a23e41f9d/transformed/core-1.9.0/res" />
+      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/372fc989a5893ace2fba6a3a23e41f9d/transformed/core-1.9.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

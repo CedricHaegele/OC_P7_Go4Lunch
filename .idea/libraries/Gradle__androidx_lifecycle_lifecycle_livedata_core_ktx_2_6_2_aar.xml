@@ -2,8 +2,8 @@
   <library name="Gradle: androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.2@aar">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/dda6ac8c74cd2b6196c6f78ef1bec526/transformed/jetified-lifecycle-livedata-core-ktx-2.6.2/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/dda6ac8c74cd2b6196c6f78ef1bec526/transformed/jetified-lifecycle-livedata-core-ktx-2.6.2/AndroidManifest.xml" />
       <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/dda6ac8c74cd2b6196c6f78ef1bec526/transformed/jetified-lifecycle-livedata-core-ktx-2.6.2/res" />
+      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/dda6ac8c74cd2b6196c6f78ef1bec526/transformed/jetified-lifecycle-livedata-core-ktx-2.6.2/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.bumptech.glide:okhttp3-integration:4.16.0@aar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/8e050b3a31d9d19cf22234bacf39c2be/transformed/jetified-okhttp3-integration-4.16.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/8e050b3a31d9d19cf22234bacf39c2be/transformed/jetified-okhttp3-integration-4.16.0/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/com.github.bumptech.glide/okhttp3-integration/4.16.0/d1624f77a6b132ce8385954744d0525a570c2627/okhttp3-integration-4.16.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/com.github.bumptech.glide/okhttp3-integration/4.16.0/c10c4b54d61c077cafe5fe02561b606bcc69f96e/okhttp3-integration-4.16.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

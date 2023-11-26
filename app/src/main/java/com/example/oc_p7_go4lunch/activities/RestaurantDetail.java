@@ -1,12 +1,14 @@
 package com.example.oc_p7_go4lunch.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -21,6 +23,7 @@ import com.example.oc_p7_go4lunch.repositories.RestaurantRepository;
 import com.example.oc_p7_go4lunch.viewmodel.RestaurantDetailViewModel;
 import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -29,7 +32,7 @@ import java.util.List;
 
 public class RestaurantDetail extends AppCompatActivity {
     // Déclaration des variables de la classe
-    private RestaurantRepository restaurantRepository;
+    public RestaurantRepository restaurantRepository;
     private RestaurantDetailBinding binding;
     private RestaurantDetailViewModel restaurantDetailViewModel;
     private RestaurantModel restaurant;
@@ -78,11 +81,13 @@ public class RestaurantDetail extends AppCompatActivity {
         restaurant = (RestaurantModel) callingIntent.getSerializableExtra("Restaurant");
 
         // Initialisation des identifiants de restaurant et d'utilisateur
+        assert restaurant != null;
         restaurantId = restaurant.getPlaceId();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser != null) {
             userId = currentUser.getUid();
+            restaurantDetailViewModel.loadLikeState(userId, restaurantId);
 
             // Appeler la méthode checkUserSelection et observer le LiveData
             restaurantDetailViewModel.checkUserSelection(restaurantId, userId)
@@ -100,10 +105,25 @@ public class RestaurantDetail extends AppCompatActivity {
             Log.e("RestaurantDetail", "Place ID is null.");
             return;
         }
+        PlacesClient placesClient = Places.createClient(this);
+        restaurantDetailViewModel.loadRestaurantDetails(placesClient, placeId);
+
+        restaurantDetailViewModel.getRestaurant().observe(this, restaurantModel -> {
+
+            binding.restaurantName.setText(restaurantModel.getName());
+            binding.restaurantAddress.setText(restaurantModel.getVicinity());
+            binding.ratingDetail.setRating(restaurantModel.getRating().floatValue());
+
+            LiveData<Bitmap> photoLiveData = restaurantModel.getPhoto(placesClient);
+            photoLiveData.observe(this, bitmap -> {
+                if (bitmap != null) {
+                    binding.logo.setImageBitmap(bitmap);
+                }
+
+            });
+        });
         restaurantDetailViewModel.fetchSelectedUsersForRestaurant(placeId);
-        restaurantDetailViewModel.fetchRestaurantDetails(placeId, BuildConfig.API_KEY, this)
-                .observe(this, restoInformations -> {
-                });
+
         Intent callingIntent = getIntent();
         restaurantDetailViewModel.fetchRestaurantData(callingIntent);
         restaurantDetailViewModel.checkIfRestaurantIsLiked(userId, restaurantId)
@@ -111,12 +131,13 @@ public class RestaurantDetail extends AppCompatActivity {
                 });
         restaurantDetailViewModel.selectRestaurant(userId, restaurantId, restaurant);
         restaurantDetailViewModel.deselectRestaurant(userId, restaurantId, restaurant);
-    }
+    };
 
     private void setupUI() {
         initializeViewBindings();
         initRecyclerView();
         updateButtonUI(isButtonChecked);
+        //restaurantDetailViewModel.getRestaurant().observe(this, this::updateRestaurantUI);
     }
 
     private void initializeViewBindings() {
@@ -131,8 +152,17 @@ public class RestaurantDetail extends AppCompatActivity {
                 restaurantDetailViewModel.restaurantName.observe(this, name -> binding.restaurantName.setText(name));
                 restaurantDetailViewModel.restaurantAddress.observe(this, address -> binding.restaurantAddress.setText(address));
                 restaurantDetailViewModel.restaurantRating.observe(this, rating -> binding.ratingDetail.setRating(rating));
-                restaurantDetailViewModel.isButtonChecked.observe(this, this::updateButtonUI);
-                restaurantDetailViewModel.getSelectedUsers().observe(this, users -> userListAdapter.updateUserList(users));
+
+                restaurantDetailViewModel.getIsRestaurantSelected().observe(this, isSelected -> {
+                    updateButtonUI(isSelected);
+                    updateButtonUI(isButtonChecked);
+                });
+
+                restaurantDetailViewModel.getSelectedUsers().observe(this, newUsers -> {
+                    userListAdapter.updateUserList(newUsers);
+                });
+
+
                 restaurantDetailViewModel.restaurant.observe(this, newRestaurantData -> {
                     binding.restaurantName.setText(newRestaurantData.getName());
                     binding.restaurantAddress.setText(newRestaurantData.getVicinity());
@@ -144,7 +174,7 @@ public class RestaurantDetail extends AppCompatActivity {
                 });
                 restaurantDetailViewModel.checkIfRestaurantIsLiked(userId, restaurantId);
                 restaurantDetailViewModel.getIsRestaurantLiked().observe(this, isLiked -> {
-
+                    updateLikeButtonUI(isLiked);
                 });
 
                 restaurantDetailViewModel.phoneNumber.observe(this, number -> {
@@ -179,6 +209,10 @@ public class RestaurantDetail extends AppCompatActivity {
             if (currentUser != null && restaurant != null) {
                 isButtonChecked = !isButtonChecked;
                 updateButtonUI(isButtonChecked);
+                Log.d("DEBUG", "Button checked: " + isButtonChecked);
+                String restaurantId = restaurant.getPlaceId();
+                restaurantDetailViewModel.saveRestaurantSelectionState(currentUser.getUid(), restaurantId, isButtonChecked);
+
                 if (isButtonChecked) {
                     restaurantDetailViewModel.selectRestaurant(currentUser.getUid(), restaurant.getPlaceId(), restaurant);
                 } else {

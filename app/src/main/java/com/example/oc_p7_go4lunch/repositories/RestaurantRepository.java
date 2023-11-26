@@ -11,11 +11,9 @@ import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantResponse;
 import com.example.oc_p7_go4lunch.googleplaces.RestoInformations;
-import com.example.oc_p7_go4lunch.utils.ResponseTransformer;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
-import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
 import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
-import com.google.android.gms.common.api.ApiException;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -23,7 +21,6 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,7 +52,7 @@ public class RestaurantRepository {
 
         call.enqueue(new Callback<RestaurantResponse>() {
             @Override
-            public void onResponse(Call<RestaurantResponse> call, Response<RestaurantResponse> response) {
+            public void onResponse(@NonNull Call<RestaurantResponse> call, @NonNull Response<RestaurantResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     // Assurez-vous que RestaurantResponse a une méthode pour obtenir la liste des restaurants
                     liveData.setValue(response.body().getRestaurants());
@@ -65,7 +62,7 @@ public class RestaurantRepository {
             }
 
             @Override
-            public void onFailure(Call<RestaurantResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<RestaurantResponse> call, @NonNull Throwable t) {
                 liveData.setValue(new ArrayList<>());
                 Log.e("RestaurantRepository", "Error fetching restaurants: " + t.getMessage());
             }
@@ -74,24 +71,35 @@ public class RestaurantRepository {
         return liveData;
     }
 
-
     // Récupère les détails d'un lieu via Google Places
     public LiveData<RestaurantModel> fetchPlaceDetails(PlacesClient placesClient, String placeId) {
         MutableLiveData<RestaurantModel> liveData = new MutableLiveData<>();
-
         List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
         FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
 
         placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
             Place place = response.getPlace();
-            liveData.setValue(convertPlaceToRestaurantModel(place));
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                liveData.setValue(null);
+            RestaurantModel restaurantModel = convertPlaceToRestaurantModel(place);
+
+            // Vérifiez et affectez les métadonnées de la photo ici
+            if (place.getPhotoMetadatas() != null && !place.getPhotoMetadatas().isEmpty()) {
+                PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);
+                restaurantModel.setPhotoMetadata(photoMetadata);
             }
-        });
+
+            liveData.setValue(restaurantModel);
+        }).addOnFailureListener((exception) -> liveData.setValue(null));
 
         return liveData;
+    }
+
+    private RestaurantModel convertPlaceToRestaurantModel(Place place, PlacesClient placesClient) {
+        RestaurantModel restaurantModel = new RestaurantModel();
+        restaurantModel.setName(place.getName());
+        restaurantModel.setVicinity(place.getAddress());
+        restaurantModel.setRating(place.getRating());
+
+        return restaurantModel;
     }
 
     // Méthode pour récupérer les détails d'un restaurant
@@ -102,7 +110,7 @@ public class RestaurantRepository {
 
         call.enqueue(new Callback<RestoInformations>() {
             @Override
-            public void onResponse(Call<RestoInformations> call, Response<RestoInformations> response) {
+            public void onResponse(@NonNull Call<RestoInformations> call, @NonNull Response<RestoInformations> response) {
                 if (response.isSuccessful()) {
                     liveData.setValue(response.body());
                 } else {
@@ -111,7 +119,7 @@ public class RestaurantRepository {
             }
 
             @Override
-            public void onFailure(Call<RestoInformations> call, Throwable t) {
+            public void onFailure(@NonNull Call<RestoInformations> call, @NonNull Throwable t) {
                 liveData.setValue(null);
                 Log.e("RestaurantRepository", "Error fetching restaurant details: " + t.getMessage());
             }
@@ -129,23 +137,5 @@ public class RestaurantRepository {
         return restaurantModel;
     }
 
-    // Méthode générique pour gérer les appels réseau
-    private <T, R> void enqueueCall(Call<T> call, MutableLiveData<R> liveData, ResponseTransformer<T, R> transformer) {
-        call.enqueue(new Callback<T>() {
-            @Override
-            public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    liveData.setValue(transformer.apply(response.body()));
-                } else {
-                    liveData.setValue(null);
-                }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
-                liveData.setValue(null);
-                Log.e("RestaurantRepository", "Error: " + t.getMessage());
-            }
-        });
-    }
 }

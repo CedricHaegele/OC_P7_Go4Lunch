@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.firebase:firebase-messaging:22.0.0@aar">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/89242d295465dc713d17646488a9831e/transformed/jetified-firebase-messaging-22.0.0/res" />
       <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/89242d295465dc713d17646488a9831e/transformed/jetified-firebase-messaging-22.0.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/89242d295465dc713d17646488a9831e/transformed/jetified-firebase-messaging-22.0.0/res" />
       <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/89242d295465dc713d17646488a9831e/transformed/jetified-firebase-messaging-22.0.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
