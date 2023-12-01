@@ -34,7 +34,8 @@ import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
 import com.example.oc_p7_go4lunch.viewmodel.RestoListViewModel;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
-import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
+
+import com.example.oc_p7_go4lunch.webservices.RetrofitService;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -149,7 +150,7 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
                     + "&radius=" + 1500
                     + "&type=restaurant"
                     + "&key=" + BuildConfig.API_KEY;
-            GooglePlacesApi googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
+            GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
             googlePlacesApi.getAllPlaces(url).enqueue(new Callback<MyPlaces>() {
                 @Override
                 public void onResponse(@NonNull Call<MyPlaces> call, @NonNull Response<MyPlaces> response) {

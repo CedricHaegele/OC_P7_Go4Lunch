@@ -12,7 +12,6 @@ import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantResponse;
 import com.example.oc_p7_go4lunch.googleplaces.RestoInformations;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
-import com.example.oc_p7_go4lunch.webservices.RetrofitClient;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
@@ -28,33 +27,35 @@ import retrofit2.Response;
 
 public class RestaurantRepository {
 
-    private final GooglePlacesApi googlePlacesApi;
+    //private final GooglePlacesApi googlePlacesApi;
 
     // Constantes pour la requête
     private static final int SEARCH_RADIUS = 1500;
     private static final String SEARCH_TYPE = "restaurant";
 
     public RestaurantRepository() {
-        googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
+        //googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
     }
 
     // Méthode pour récupérer les restaurants à proximité d'une location donnée
+
     public LiveData<List<RestaurantModel>> getRestaurants(Location location) {
         MutableLiveData<List<RestaurantModel>> liveData = new MutableLiveData<>();
 
+        // Vérifiez si l'objet 'location' est null
         if (location == null) {
-            liveData.setValue(new ArrayList<>()); // ou gérer autrement le cas où location est null
+            liveData.setValue(new ArrayList<>());
             return liveData;
         }
 
         String locationString = location.getLatitude() + "," + location.getLongitude();
-        Call<RestaurantResponse> call = googlePlacesApi.getNearbyPlaces(locationString, SEARCH_RADIUS, SEARCH_TYPE, BuildConfig.API_KEY);
+       //Call<RestaurantResponse> call = googlePlacesApi.getNearbyPlaces(locationString, SEARCH_RADIUS, SEARCH_TYPE, BuildConfig.API_KEY);
 
-        call.enqueue(new Callback<RestaurantResponse>() {
+        /**call.enqueue(new Callback<RestaurantResponse>() {
             @Override
             public void onResponse(@NonNull Call<RestaurantResponse> call, @NonNull Response<RestaurantResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Assurez-vous que RestaurantResponse a une méthode pour obtenir la liste des restaurants
+
                     liveData.setValue(response.body().getRestaurants());
                 } else {
                     liveData.setValue(new ArrayList<>());
@@ -66,7 +67,7 @@ public class RestaurantRepository {
                 liveData.setValue(new ArrayList<>());
                 Log.e("RestaurantRepository", "Error fetching restaurants: " + t.getMessage());
             }
-        });
+        });*/
 
         return liveData;
     }
@@ -106,9 +107,9 @@ public class RestaurantRepository {
     public LiveData<RestoInformations> fetchRestaurantDetails(String placeId, String apiKey) {
         MutableLiveData<RestoInformations> liveData = new MutableLiveData<>();
 
-        Call<RestoInformations> call = googlePlacesApi.getRestaurantDetails(placeId, "formatted_phone_number,website,like", apiKey);
+        //Call<RestoInformations> call = googlePlacesApi.getRestaurantDetails(placeId, "formatted_phone_number,website,like", apiKey);
 
-        call.enqueue(new Callback<RestoInformations>() {
+        /**call.enqueue(new Callback<RestoInformations>() {
             @Override
             public void onResponse(@NonNull Call<RestoInformations> call, @NonNull Response<RestoInformations> response) {
                 if (response.isSuccessful()) {
@@ -123,7 +124,7 @@ public class RestaurantRepository {
                 liveData.setValue(null);
                 Log.e("RestaurantRepository", "Error fetching restaurant details: " + t.getMessage());
             }
-        });
+        });*/
 
         return liveData;
     }

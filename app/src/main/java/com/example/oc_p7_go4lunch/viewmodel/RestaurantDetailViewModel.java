@@ -51,10 +51,11 @@ public class RestaurantDetailViewModel extends ViewModel {
     private final RestaurantRepository restaurantRepository;
 
     // Constructor
-    public RestaurantDetailViewModel(RestaurantApiService restaurantApiService) {
+    public RestaurantDetailViewModel(RestaurantApiService restaurantApiService, FirestoreHelper firestoreHelper, RestaurantRepository restaurantRepository) {
         this.restaurantApiService = restaurantApiService;
-        this.restaurantRepository = new RestaurantRepository();
-        firestoreHelper = new FirestoreHelper();
+        this.firestoreHelper = firestoreHelper;
+        this.restaurantRepository = restaurantRepository;
+        isRestaurantSelected.setValue(false);
     }
 
     // --- Restaurant Data Management ---
@@ -154,15 +155,18 @@ public class RestaurantDetailViewModel extends ViewModel {
     }
 
     public void selectRestaurant(String userId, String restaurantId, RestaurantModel restaurant) {
+        Log.d("DEBUG", "selectRestaurant called for userId: " + userId + ", restaurantId: " + restaurantId);
         if (userId == null || restaurantId == null || restaurant == null) {
             Log.e("RestaurantDetailViewMod", "userId, restaurantId, or restaurant is null");
             return;
         }
         Boolean isSelected = isRestaurantSelected.getValue();
-        if (isSelected != null && isSelected) {
+        Log.d("DEBUG", "isSelected: " + isSelected);
+        if (Boolean.TRUE.equals(isSelected)) {
             firestoreHelper.updateSelectedRestaurant(userId, restaurantId, true, restaurant, new FirestoreHelper.FirestoreActionListener() {
                 @Override
                 public void onSuccess() {
+                    Log.d("DEBUG", "Firestore update success, user added");
                     isRestaurantSelected.postValue(true);
                     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                     if (currentUser != null) {
@@ -173,14 +177,14 @@ public class RestaurantDetailViewModel extends ViewModel {
                 @Override
                 public void onError(Exception e) {
                     Log.e("DEBUG", "Firestore update error", e);
-
                 }
             });
             updateRestaurantSelectionInFirestore(userId, restaurantId, true);
             fetchSelectedUsersForRestaurant(restaurantId);
+        } else {
+            Log.d("DEBUG", "User selection not updated due to isSelected condition");
         }
     }
-
 
     public void deselectRestaurant(String userId, String restaurantId, RestaurantModel restaurant) {
         if (userId == null || restaurantId == null || restaurant == null) {

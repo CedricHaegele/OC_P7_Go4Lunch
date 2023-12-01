@@ -1,5 +1,6 @@
 package com.example.oc_p7_go4lunch.activities;
 
+import android.app.Application;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -16,12 +17,15 @@ import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.adapter.UserListAdapter;
 import com.example.oc_p7_go4lunch.databinding.RestaurantDetailBinding;
-import com.example.oc_p7_go4lunch.factories.RestaurantDetailViewModelFactory;
+import com.example.oc_p7_go4lunch.factory.ViewModelFactory;
 import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
+import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.repositories.RestaurantRepository;
 import com.example.oc_p7_go4lunch.viewmodel.RestaurantDetailViewModel;
+import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
+import com.example.oc_p7_go4lunch.webservices.RetrofitService;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,6 +50,7 @@ public class RestaurantDetail extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setupBindingAndViewModel();
         if (!retrieveAndSetupRestaurantData()) return;
         setupUI();
@@ -64,10 +69,16 @@ public class RestaurantDetail extends AppCompatActivity {
     }
 
     private void initializeViewModel() {
-        RestaurantDetailViewModelFactory factory = new RestaurantDetailViewModelFactory(new RestaurantApiService());
+        Application application = getApplication();
+        GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
+        RestaurantApiService restaurantApiService = new RestaurantApiService();
+        FirestoreHelper firestoreHelper = new FirestoreHelper();
+        RestaurantRepository restaurantRepository = new RestaurantRepository();
+
+        ViewModelFactory factory = new ViewModelFactory(application, googlePlacesApi, restaurantApiService, firestoreHelper, restaurantRepository);
         restaurantDetailViewModel = new ViewModelProvider(this, factory).get(RestaurantDetailViewModel.class);
-        restaurantRepository = new RestaurantRepository();
     }
+
 
     private boolean retrieveAndSetupRestaurantData() {
         Intent callingIntent = getIntent();
@@ -131,13 +142,24 @@ public class RestaurantDetail extends AppCompatActivity {
                 });
         restaurantDetailViewModel.selectRestaurant(userId, restaurantId, restaurant);
         restaurantDetailViewModel.deselectRestaurant(userId, restaurantId, restaurant);
-    };
+    }
 
     private void setupUI() {
         initializeViewBindings();
         initRecyclerView();
-        updateButtonUI(isButtonChecked);
-        //restaurantDetailViewModel.getRestaurant().observe(this, this::updateRestaurantUI);
+
+        // Observer for the list of users who selected the restaurant
+        restaurantDetailViewModel.getSelectedUsers().observe(this, newUsers -> {
+            userListAdapter.updateUserList(newUsers);
+            userListAdapter.notifyDataSetChanged();
+        });
+
+        // Observer for the restaurant selection state
+        restaurantDetailViewModel.getIsRestaurantSelected().observe(this, isSelected -> {
+            isButtonChecked = isSelected; // Synchronize isButtonChecked with the LiveData state
+            updateButtonUI(isSelected);
+        });
+
     }
 
     private void initializeViewBindings() {
@@ -158,9 +180,7 @@ public class RestaurantDetail extends AppCompatActivity {
                     updateButtonUI(isButtonChecked);
                 });
 
-                restaurantDetailViewModel.getSelectedUsers().observe(this, newUsers -> {
-                    userListAdapter.updateUserList(newUsers);
-                });
+                restaurantDetailViewModel.getSelectedUsers().observe(this, newUsers -> userListAdapter.updateUserList(newUsers));
 
 
                 restaurantDetailViewModel.restaurant.observe(this, newRestaurantData -> {
@@ -173,9 +193,7 @@ public class RestaurantDetail extends AppCompatActivity {
                     }
                 });
                 restaurantDetailViewModel.checkIfRestaurantIsLiked(userId, restaurantId);
-                restaurantDetailViewModel.getIsRestaurantLiked().observe(this, isLiked -> {
-                    updateLikeButtonUI(isLiked);
-                });
+                restaurantDetailViewModel.getIsRestaurantLiked().observe(this, this::updateLikeButtonUI);
 
                 restaurantDetailViewModel.phoneNumber.observe(this, number -> {
                     if (number != null && !number.isEmpty()) {
@@ -244,8 +262,8 @@ public class RestaurantDetail extends AppCompatActivity {
         });
     }
 
-    private void updateButtonUI(boolean isButtonChecked) {
-        int imageRes = isButtonChecked ? R.drawable.ic_button_is_checked : R.drawable.baseline_check_circle_outline_24;
+    private void updateButtonUI(boolean isSelected) {
+        int imageRes = isSelected ? R.drawable.ic_button_is_checked : R.drawable.baseline_check_circle_outline_24;
         binding.fab.setImageResource(imageRes);
     }
 

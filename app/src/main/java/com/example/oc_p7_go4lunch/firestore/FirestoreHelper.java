@@ -8,11 +8,13 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +39,22 @@ public class FirestoreHelper {
         return selectedUsers;
     }
 
+    public void addOrUpdateUserToFirestore(FirebaseUser firebaseUser) {
+        if (firebaseUser != null) {
+            // Create a map to hold the user data
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("mail", firebaseUser.getEmail());
+            userData.put("name", firebaseUser.getDisplayName());
+            userData.put("photo", firebaseUser.getPhotoUrl() != null ? firebaseUser.getPhotoUrl().toString() : null);
+
+            // Use set() with merge option to update user data without overwriting existing fields
+            db.collection("users").document(firebaseUser.getUid())
+                    .set(userData, SetOptions.merge())
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User successfully written/updated!"))
+                    .addOnFailureListener(e -> Log.w("Firestore", "Error writing/updating user", e));
+        }
+    }
+
     public void fetchSelectedUsers(String restaurantId, OnSelectedUsersFetchedListener listener) {
         db.collection("users")
                 .whereEqualTo("selectedRestaurantId", restaurantId)
@@ -56,6 +74,12 @@ public class FirestoreHelper {
                     listener.onSelectedUsersFetched(new ArrayList<>());
                 });
     }
+
+    public interface OnRestaurantDataFetchedListener {
+        void onRestaurantDataFetched(RestaurantModel restaurant);
+    }
+
+
 
     public void saveRestaurantSelectionState(String userId, String restaurantId, boolean isSelected, RestaurantModel restaurant, FirestoreActionListener listener) {
         DocumentReference userDocRef = db.collection("users").document(userId);

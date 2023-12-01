@@ -1,7 +1,6 @@
 package com.example.oc_p7_go4lunch.viewmodel;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
@@ -10,7 +9,7 @@ import com.example.oc_p7_go4lunch.repositories.RestaurantRepository;
 import java.util.List;
 
 public class RestoListViewModel extends ViewModel {
-    private LiveData<List<RestaurantModel>> restaurants;
+    private final LiveData<List<RestaurantModel>> restaurants;
     private RestaurantRepository repository;
 
     public RestoListViewModel() {

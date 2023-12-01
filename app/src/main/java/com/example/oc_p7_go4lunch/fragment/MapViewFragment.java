@@ -1,6 +1,7 @@
 package com.example.oc_p7_go4lunch.fragment;
 
 import android.Manifest;
+import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -20,11 +21,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
-import com.example.oc_p7_go4lunch.factories.MapViewModelFactory;
-import com.example.oc_p7_go4lunch.googleplaces.ApiProvider;
+import com.example.oc_p7_go4lunch.factory.ViewModelFactory;
+import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
-import com.example.oc_p7_go4lunch.viewmodel.MapViewModel;
+import com.example.oc_p7_go4lunch.repositories.RestaurantRepository;
+import com.example.oc_p7_go4lunch.viewmodel.GoogleMapsViewModel;
 import com.example.oc_p7_go4lunch.webservices.GooglePlacesApi;
+import com.example.oc_p7_go4lunch.webservices.RestaurantApiService;
+import com.example.oc_p7_go4lunch.webservices.RetrofitService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,22 +37,23 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.List;
+
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     // GoogleMap object to display the map
     private GoogleMap mMap;
     // ViewModel to manage data logic
-    private MapViewModel mapViewModel;
+    private GoogleMapsViewModel googleMapsViewModel;
     // Constants for default zoom and permission request code
     private static final float DEFAULT_ZOOM = 15.0f;
     private static final int YOUR_REQUEST_CODE = 1234;
-
-
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_container);
+
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
@@ -61,55 +66,50 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         initMapAndViewModel();
+        checkLocationPermissionAndEnable(); // Cette méthode gère la demande de permission
 
-        // Ask permission first
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    YOUR_REQUEST_CODE
-            );
-        } else {
-            Log.d("MapViewFragment", "Location permission already granted");
-
-        }
-        mapViewModel.getLastLocation().observe(getViewLifecycleOwner(), location -> {
+        // Vous n'avez plus besoin de vérifier à nouveau les permissions ici
+        googleMapsViewModel.getLastLocation().observe(getViewLifecycleOwner(), location -> {
             if (location != null) {
                 updateCameraPosition(location);
             }
         });
     }
 
-    private void initMapAndViewModel() {
-        Log.d("MapViewFragment", "initMapAndViewModel called");
-        // Initialize Google MyPlaces API
-        GooglePlacesApi googlePlacesApiInstance = ApiProvider.getGooglePlacesApi();
-
-        // Initialize ViewModel using a factory to pass in additional dependencies
-        mapViewModel = new ViewModelProvider(
-                this,
-                new MapViewModelFactory(requireActivity().getApplication(), googlePlacesApiInstance)
-        ).get(MapViewModel.class);
-        Log.d("MapViewFragment", "MapViewModel initialized");
-
-        // Observe isLocationReady
-        mapViewModel.isLocationReady().observe(getViewLifecycleOwner(), isReady -> {
-            Log.d("MapViewFragment", "isLocationReady observed: " + isReady);
-            if (isReady && mMap == null) {
-                // Init Google Map only if mMap is null
-                SupportMapFragment mapFragment = new SupportMapFragment();
-                getChildFragmentManager().beginTransaction().replace(R.id.map_container, mapFragment).commit();
-                mapFragment.getMapAsync(this);
-            }
-        });
-
+    private void checkLocationPermissionAndEnable() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, YOUR_REQUEST_CODE);
+        } else {
+            Log.d("MapViewFragment", "Location permission already granted");
+            enableLocationFeatures();
+        }
     }
+
+    private void initMapAndViewModel() {
+        Application application = requireActivity().getApplication();
+        GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
+        RestaurantApiService restaurantApiService = new RestaurantApiService();
+        FirestoreHelper firestoreHelper = new FirestoreHelper();
+        RestaurantRepository restaurantRepository = new RestaurantRepository();
+
+        ViewModelFactory factory = new ViewModelFactory(application, googlePlacesApi, restaurantApiService, firestoreHelper, restaurantRepository);
+        googleMapsViewModel = new ViewModelProvider(this, factory).get(GoogleMapsViewModel.class);
+
+        // Observez les données nécessaires ici
+        googleMapsViewModel.getLastLocation().observe(getViewLifecycleOwner(), this::updateCameraPosition);
+        googleMapsViewModel.getNearbyRestaurants().observe(getViewLifecycleOwner(), this::addRestaurantsToMap);
+    }
+
+    // Méthode pour ajouter des restaurants sur la carte
+    private void addRestaurantsToMap(List<RestaurantModel> restaurants) {
+        // Logique pour ajouter des marqueurs sur la carte en fonction des restaurants
+    }
+
     private void enableLocationFeatures() {
         if (mMap != null) {
             try {
@@ -117,14 +117,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                         == PackageManager.PERMISSION_GRANTED) {
                     mMap.setMyLocationEnabled(true);
                     mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                    mapViewModel.requestLocationUpdates();
+                    googleMapsViewModel.requestLocationUpdates();
                 }
             } catch (SecurityException e) {
                 Log.e("MapViewFragment", "Permission not granted for location features");
             }
         }
     }
-
 
     private void updateCameraPosition(Location location) {
         if (location != null && mMap != null) {
@@ -137,14 +136,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == YOUR_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted
-                initMapAndViewModel();
+                enableLocationFeatures();
             } else {
-                // Permission refused
                 Toast.makeText(requireContext(), "Location permission is required for this feature", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -153,15 +151,16 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         enableLocationFeatures();
 
         // Observe last known location to update map camera and fetch nearby restaurants
-        mapViewModel.getLastLocation().observe(getViewLifecycleOwner(), location -> {
+        googleMapsViewModel.getLastLocation().observe(getViewLifecycleOwner(), location -> {
             if (location != null) {
                 updateCameraPosition(location);
-                mapViewModel.fetchNearbyRestaurants(location.getLatitude(), location.getLongitude());
+                googleMapsViewModel.fetchNearbyRestaurants(location.getLatitude(), location.getLongitude());
 
-                mapViewModel.getNearbyRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
+                googleMapsViewModel.getNearbyRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
+
                     if (restaurants != null && !restaurants.isEmpty()) {
-
                         for (RestaurantModel restaurant : restaurants) {
+                            Log.d("Restaurant","Il y a "+ restaurant.getName());
                             restaurant.extractCoordinates();
                             LatLng latLng = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
 

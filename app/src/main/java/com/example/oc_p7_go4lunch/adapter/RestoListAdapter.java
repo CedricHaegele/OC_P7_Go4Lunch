@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.oc_p7_go4lunch.databinding.FragmentRestoItemBinding;
 import com.example.oc_p7_go4lunch.googleplaces.OpeningHours;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
+import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
 
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +26,8 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     // Member variables
     private List<RestaurantModel> placesList;
     private final LayoutInflater layoutInflater;
+    private List<RestaurantModel> restaurants;
+    private ItemClickSupport.OnItemClickListener listener;
 
     public interface PhotoLoader {
         void loadRestaurantPhoto(String placeId, ImageView imageView);
@@ -46,10 +50,11 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, int position) {
         RestaurantModel restaurantModel = placesList.get(position);
         holder.bindData(restaurantModel);
     }
+
 
     @SuppressLint("NotifyDataSetChanged")
     public void updateData(List<RestaurantModel> newPlacesList) {
@@ -73,6 +78,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             this.binding = binding;
             this.photoLoader = photoLoader;
         }
+
 
         @SuppressLint("SetTextI18n")
         public void bindData(RestaurantModel restaurantModel) {
