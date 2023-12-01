@@ -82,17 +82,21 @@ public class RestaurantRepository {
             Place place = response.getPlace();
             RestaurantModel restaurantModel = convertPlaceToRestaurantModel(place);
 
-            // Vérifiez et affectez les métadonnées de la photo ici
+            // Définir les métadonnées de la photo
             if (place.getPhotoMetadatas() != null && !place.getPhotoMetadatas().isEmpty()) {
                 PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);
                 restaurantModel.setPhotoMetadata(photoMetadata);
             }
 
             liveData.setValue(restaurantModel);
-        }).addOnFailureListener((exception) -> liveData.setValue(null));
+        }).addOnFailureListener((exception) -> {
+            Log.e("fetchPlaceDetailsError", "Erreur lors de la récupération des détails du lieu", exception);
+            liveData.setValue(null);
+        });
 
         return liveData;
     }
+
 
     private RestaurantModel convertPlaceToRestaurantModel(Place place, PlacesClient placesClient) {
         RestaurantModel restaurantModel = new RestaurantModel();

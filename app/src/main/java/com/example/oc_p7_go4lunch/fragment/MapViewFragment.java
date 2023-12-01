@@ -20,7 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
+import com.example.oc_p7_go4lunch.activities.RestaurantDetailActivity;
 import com.example.oc_p7_go4lunch.factory.ViewModelFactory;
 import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
@@ -185,7 +185,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         mMap.setOnMarkerClickListener(marker -> {
             RestaurantModel clickedRestaurant = (RestaurantModel) marker.getTag();
             if (clickedRestaurant != null) {
-                Intent detailIntent = new Intent(getActivity(), RestaurantDetail.class);
+                Intent detailIntent = new Intent(getActivity(), RestaurantDetailActivity.class);
                 detailIntent.putExtra("Restaurant", clickedRestaurant);
                 startActivity(detailIntent);
             } else {

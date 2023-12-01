@@ -32,7 +32,7 @@
 
         <!-- Restaurant Detail Activity -->
         <activity
-            android:name=".activities.RestaurantDetail"
+            android:name=".activities.RestaurantDetailActivity"
             android:exported="true" />
 
         <!-- Login Activity -->

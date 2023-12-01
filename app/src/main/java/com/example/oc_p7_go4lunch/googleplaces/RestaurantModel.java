@@ -1,6 +1,7 @@
 package com.example.oc_p7_go4lunch.googleplaces;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -15,8 +16,16 @@ import java.io.Serializable;
 
 public class RestaurantModel implements Serializable {
     private PhotoMetadata photoMetadata;
+    private String webSite;
 
-    // Fields for various attributes of a restaurant
+    public String getWebSite() {
+        return webSite;
+    }
+
+    public void setWebSite(String webSite) {
+        this.webSite = webSite;
+    }
+// Fields for various attributes of a restaurant
 
     @SerializedName("geometry")
     @Expose
@@ -160,7 +169,11 @@ public class RestaurantModel implements Serializable {
             placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();
                 photoLiveData.setValue(bitmap);
-            }).addOnFailureListener((exception) -> photoLiveData.setValue(null));
+            }).addOnFailureListener((exception) -> {
+                Log.e("PhotoFetchError", "Erreur lors de la récupération de la photo", exception);
+                photoLiveData.setValue(null);
+            });
+
         } else {
             photoLiveData.setValue(null);
         }

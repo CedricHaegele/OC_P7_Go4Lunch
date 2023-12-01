@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.activities.RestaurantDetail;
+import com.example.oc_p7_go4lunch.activities.RestaurantDetailActivity;
 import com.example.oc_p7_go4lunch.adapter.RestoListAdapter;
 import com.example.oc_p7_go4lunch.databinding.FragmentRestoListBinding;
 import com.example.oc_p7_go4lunch.googleplaces.MyPlaces;
@@ -248,10 +248,9 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
         ItemClickSupport.addTo(recyclerView, R.layout.fragment_resto_list)
                 .setOnItemClickListener((recyclerView, position, v) -> {
                     RestaurantModel restaurant = restoListAdapter.getPlacesList().get(position);
-                    Log.d("RestoListView", "Selected restaurant: " + restaurant.getName() + ", Place ID: " + restaurant.getPlaceId());
 
                     if (restaurant.getPlaceId() != null) {
-                        Intent intent = new Intent(requireActivity(), RestaurantDetail.class);
+                        Intent intent = new Intent(requireActivity(), RestaurantDetailActivity.class);
                         intent.putExtra("Restaurant", restaurant);
                         startActivity(intent);
                     } else {

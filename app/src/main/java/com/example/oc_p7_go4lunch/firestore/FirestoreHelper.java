@@ -81,20 +81,25 @@ public class FirestoreHelper {
 
 
 
-    public void saveRestaurantSelectionState(String userId, String restaurantId, boolean isSelected, RestaurantModel restaurant, FirestoreActionListener listener) {
+    public void saveRestaurantSelectionState(String userId, boolean isSelected, RestaurantModel restaurant, FirestoreActionListener listener) {
+        Log.d("tagii", "saveRestaurantSelectionState isSelected: " + isSelected);
         DocumentReference userDocRef = db.collection("users").document(userId);
         Map<String, Object> updateData = new HashMap<>();
-        if (isSelected) {
-            updateData.put("selectedRestaurantId", restaurantId);
+
+        if (isSelected && restaurant != null) {
+            updateData.put("selectedRestaurantId", restaurant.getPlaceId());
             updateData.put("selectedRestaurantName", restaurant.getName());
         } else {
+
             updateData.put("selectedRestaurantId", FieldValue.delete());
             updateData.put("selectedRestaurantName", FieldValue.delete());
         }
+
         userDocRef.update(updateData)
                 .addOnSuccessListener(aVoid -> listener.onSuccess())
                 .addOnFailureListener(listener::onError);
     }
+
 
 
 
@@ -148,6 +153,10 @@ public class FirestoreHelper {
     }
 
     public void saveLikeState(String userId, String restaurantId, boolean isLiked, FirestoreActionListener listener) {
+        Log.d("tagii", "saveLikeState userId: "+userId);
+        Log.d("tagii", "saveLikeState restaurantId: "+restaurantId);
+        Log.d("tagii", "saveLikeState isLiked: "+isLiked);
+
         DocumentReference userDoc = db.collection("users").document(userId);
         if (isLiked) {
             userDoc.update("likedRestaurants", FieldValue.arrayUnion(restaurantId))
@@ -180,17 +189,25 @@ public class FirestoreHelper {
         void onLikeStateFetched(boolean isLiked);
     }
 
-
-
     // --- Utility Methods ---
     public LiveData<Boolean> checkUserSelectionState(String restaurantId, String userId) {
+        Log.d("tagii", "checkUserSelectionState restaurantId: " + restaurantId);
+        Log.d("tagii", "checkUserSelectionState userId: " + userId);
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users").document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String selectedRestaurantId = documentSnapshot.getString("selectedRestaurantId");
-                        isRestaurantSelected.setValue(restaurantId.equals(selectedRestaurantId));
+                        Log.d("tagii", "selectedRestaurantId: " + selectedRestaurantId);
+
+                        // Ici, remplacez 'myString' et 'someValue' par les variables appropriées
+                        if (selectedRestaurantId != null && selectedRestaurantId.equals(restaurantId)) {
+                            isRestaurantSelected.setValue(true);
+                        } else {
+                            isRestaurantSelected.setValue(false);
+                        }
                     } else {
                         isRestaurantSelected.setValue(false);
                     }
@@ -199,6 +216,8 @@ public class FirestoreHelper {
                     Log.e("Firestore", "Error fetching user data", e);
                     isRestaurantSelected.setValue(false);
                 });
+
         return isRestaurantSelected;
     }
+
 }

@@ -40,12 +40,11 @@ public class RestaurantApiService {
      * Get details of a specific restaurant from Google Places API.
      *
      * @param placeId String unique identifier for the place.
-     * @param fields  String fields to include in the response.
      * @param apiKey  String API key for the Google Places API.
      * @return A call object for the API request.
      */
-    public Call<RestoInformations> getRestaurantDetails(String placeId, String fields, String apiKey) {
-        // Make the API call to get restaurant details
+    public Call<RestoInformations> getRestaurantDetails(String placeId, String apiKey) {
+        String fields = "name,rating,photo";
         return googlePlacesApi.getRestaurantDetails(placeId, fields, apiKey);
     }
 

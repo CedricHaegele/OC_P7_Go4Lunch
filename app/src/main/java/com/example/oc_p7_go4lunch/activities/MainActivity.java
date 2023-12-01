@@ -29,7 +29,6 @@ import com.example.oc_p7_go4lunch.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.fragment.WorkmatesList;
-import com.example.oc_p7_go4lunch.fragment.YourLunchFragment;
 import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
 import com.example.oc_p7_go4lunch.login.LoginActivity;
 import com.example.oc_p7_go4lunch.settings.SettingsFragment;
@@ -65,30 +64,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
+
+        // Définition du thème avant toute action d'interface utilisateur
+        setTheme(R.style.AppTheme);
+
+        // Initialisation du binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Initialise Firestore
+        // Initialisation de Firestore
         firestoreHelper = new FirestoreHelper();
 
-        navigationView = binding.navigationView;
-
+        // Récupération de l'utilisateur Firebase actuel et mise à jour dans Firestore
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firestoreHelper.addOrUpdateUserToFirestore(firebaseUser);
 
+        // Configuration de la barre d'outils
+        setSupportActionBar(binding.toolbar);
 
+        // Initialisation de Places API, si nécessaire
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
+        }
+
+        // Configuration de la barre de navigation inférieure
+        mBottomNavigationView = binding.bottomNav;
+        mBottomNavigationView.setSelectedItemId(R.id.mapView);
+        mBottomNavigationView.setOnItemSelectedListener(navy);
+
+        // Configuration du Navigation Drawer
+        setUpNavDrawer();
+
+        // Configuration du Navigation View
+        navigationView = binding.navigationView;
         if (navigationView != null) {
             navigationView.setNavigationItemSelectedListener(this);
         } else {
             Log.e("MainActivity", "NavigationView is null");
         }
 
-        setSupportActionBar(binding.toolbar);
-
+        // Configuration du SearchImageView et de son écouteur
         ImageView searchImageView = binding.searchImageView;
         searchImageView.setOnClickListener(v -> {
+            // Configuration de l'intention Autocomplete
             List<Place.Field> fields = Arrays.asList(
                     Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS,
                     Place.Field.RATING, Place.Field.TYPES);
@@ -97,31 +116,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setTypeFilter(TypeFilter.ESTABLISHMENT)
                     .build(MainActivity.this);
             startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
-
         });
 
-        // Initialize MyPlaces API if it's not already initialized
-        if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
-
-        }
-
-        // UI Component Initializations
-        setUpNavView();
-
-        // Change the fragment and set the action bar title
+        // Changement du fragment initial et configuration du titre de la barre d'action
         changeFragment(new MapViewFragment());
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("I'm Hungry !");
         }
 
-        setUpNavDrawer();
+        // Initialisation des autres composants de l'interface utilisateur
         initUIComponents();
-
-        mBottomNavigationView = binding.bottomNav;
-        mBottomNavigationView.setSelectedItemId(R.id.mapView);
-        mBottomNavigationView.setOnItemSelectedListener(navy);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -132,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (Objects.requireNonNull(place.getTypes()).contains(Place.Type.RESTAURANT)) {
 
-                Intent intent = new Intent(MainActivity.this, RestaurantDetail.class);
+                Intent intent = new Intent(MainActivity.this, RestaurantDetailActivity.class);
                 RestaurantModel restaurantModel = new RestaurantModel();
                 restaurantModel.setPlaceId(place.getId());
                 restaurantModel.setName(place.getName());
@@ -156,7 +162,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      // Initialize UI components
         private void initUIComponents() {
         toolbar = binding.toolbar;
-
         mBottomNavigationView = binding.bottomNav;
     }
 
@@ -254,10 +259,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
 
             case myLunch:
-                changeFragment(new YourLunchFragment());
-                searchImageView.setVisibility(View.GONE);
-                getSupportActionBar().setTitle(" My Lunch Time");
-                break;
+                Intent intent = new Intent(this, RestaurantDetailActivity.class);
+                return true;
+
 
             case settings:
                 changeFragment(new SettingsFragment.PreferencesFragment());
