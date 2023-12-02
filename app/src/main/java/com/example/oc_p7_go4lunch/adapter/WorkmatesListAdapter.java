@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.databinding.FragmentWorkmateItemBinding;
-import com.example.oc_p7_go4lunch.firebaseUser.UserModel;
+import com.example.oc_p7_go4lunch.model.firebaseUser.UserModel;
 
 import java.util.List;
 

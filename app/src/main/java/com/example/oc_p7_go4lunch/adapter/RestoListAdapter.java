@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -15,8 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.oc_p7_go4lunch.databinding.FragmentRestoItemBinding;
-import com.example.oc_p7_go4lunch.googleplaces.OpeningHours;
-import com.example.oc_p7_go4lunch.googleplaces.RestaurantModel;
+import com.example.oc_p7_go4lunch.model.googleplaces.OpeningHours;
+import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
 import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
 
 import java.util.List;
@@ -24,9 +23,9 @@ import java.util.Locale;
 
 public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyViewHolder> {
     // Member variables
-    private List<RestaurantModel> placesList;
+    private List<PlaceModel> placesList;
     private final LayoutInflater layoutInflater;
-    private List<RestaurantModel> restaurants;
+    private List<PlaceModel> restaurants;
     private ItemClickSupport.OnItemClickListener listener;
 
     public interface PhotoLoader {
@@ -36,7 +35,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     private final PhotoLoader photoLoader;
 
     // Constructor
-    public RestoListAdapter(List<RestaurantModel> placesList, Context context,PhotoLoader photoLoader) {
+    public RestoListAdapter(List<PlaceModel> placesList, Context context, PhotoLoader photoLoader) {
         this.photoLoader = photoLoader;
         this.layoutInflater = LayoutInflater.from(context);
         updateData(placesList);
@@ -51,13 +50,13 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        RestaurantModel restaurantModel = placesList.get(position);
-        holder.bindData(restaurantModel);
+        PlaceModel placeModel = placesList.get(position);
+        holder.bindData(placeModel);
     }
 
 
     @SuppressLint("NotifyDataSetChanged")
-    public void updateData(List<RestaurantModel> newPlacesList) {
+    public void updateData(List<PlaceModel> newPlacesList) {
         this.placesList = newPlacesList;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             placesList.sort((r1, r2) -> Float.compare(r1.getDistanceFromCurrentLocation(), r2.getDistanceFromCurrentLocation()));
@@ -81,10 +80,10 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
 
         @SuppressLint("SetTextI18n")
-        public void bindData(RestaurantModel restaurantModel) {
-            binding.name.setText(restaurantModel.getName());
-            binding.address.setText(restaurantModel.getVicinity());
-            Double rating = restaurantModel.getRating();
+        public void bindData(PlaceModel placeModel) {
+            binding.name.setText(placeModel.getName());
+            binding.address.setText(placeModel.getVicinity());
+            Double rating = placeModel.getRating();
             if (rating != null) {
                 binding.ratingBar.setRating(rating.floatValue());
             } else {
@@ -92,13 +91,13 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             }
 
             if (photoLoader != null) {
-                String placeId = restaurantModel.getPlaceId();
+                String placeId = placeModel.getPlaceId();
                 if (placeId != null) {
                     photoLoader.loadRestaurantPhoto(placeId, binding.photo);
                 }
             }
 
-            OpeningHours openingHours = restaurantModel.getOpeningHours();
+            OpeningHours openingHours = placeModel.getOpeningHours();
             if (openingHours != null) {
                 if (openingHours.getOpenNow()) {
                     binding.openingHours.setText("OPEN");
@@ -108,7 +107,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
                     binding.openingHours.setTextColor(Color.RED);
                 }
             }
-            float distance = restaurantModel.getDistanceFromCurrentLocation();
+            float distance = placeModel.getDistanceFromCurrentLocation();
             binding.distance.setText(String.format(Locale.getDefault(), "%.2f km", distance / 1000));
         }
     }
@@ -118,7 +117,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
         return placesList.size();
     }
 
-    public List<RestaurantModel> getPlacesList() {
+    public List<PlaceModel> getPlacesList() {
         return placesList;
     }
 }

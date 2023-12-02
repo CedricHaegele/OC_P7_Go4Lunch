@@ -27,17 +27,17 @@
 
         <!-- Main Activity -->
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".view.activities.MainActivity"
             android:exported="false" />
 
         <!-- Restaurant Detail Activity -->
         <activity
-            android:name=".activities.RestaurantDetailActivity"
+            android:name=".view.activities.RestaurantDetailActivity"
             android:exported="true" />
 
         <!-- Login Activity -->
         <activity
-            android:name=".login.LoginActivity"
+            android:name=".view.activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <!-- This makes LoginActivity the first activity to launch when the app is opened. -->
@@ -48,7 +48,7 @@
 
         <!-- Settings Activity -->
         <activity
-            android:name=".settings.SettingsFragment"
+            android:name=".view.fragment.SettingsFragment"
             android:exported="false"
             android:label="@string/title_activity_settings" />
 
@@ -67,7 +67,7 @@
 
         <!-- NOTIFICATION SERVICE -->
         <service
-            android:name=".NotificationService"
+            android:name=".utils.option.NotificationService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
