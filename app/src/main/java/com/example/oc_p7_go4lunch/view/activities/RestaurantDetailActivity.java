@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.adapter.UserListAdapter;
@@ -50,6 +52,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private UserListAdapter userListAdapter;
     private String restaurantId;
     private String userId;
+    public static final String RESTAURANT_PLACE_ID = "placeId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +77,14 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     }
 
     private void initListener() {
-        binding.callButton.setOnClickListener(v -> openDialer("restaurant.getPhoneNumber())"));
+        binding.callButton.setOnClickListener(v -> {
+            if (restaurant != null && restaurant.getPhoneNumber() != null) {
+                openDialer(restaurant.getPhoneNumber());
+            } else {
+                Toast.makeText(this, "Numéro de téléphone non disponible", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         binding.likeButton.setOnClickListener(v -> restaurantDetailViewModel.saveLikeState(restaurantId));
         binding.websiteButton.setOnClickListener(v -> {
             if (restaurant != null) {
@@ -115,12 +125,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
     private boolean retrieveAndSetupRestaurantData() {
         Intent callingIntent = getIntent();
-        if (callingIntent == null || !callingIntent.hasExtra("Restaurant")) {
-            Toast.makeText(this, "Détails du restaurant non fournis", Toast.LENGTH_SHORT).show();
-            finish();
-            return false;
-        }
-
         restaurant = (PlaceModel) callingIntent.getSerializableExtra("Restaurant");
         if (restaurant == null) {
             Toast.makeText(this, "Détails du restaurant non disponibles", Toast.LENGTH_SHORT).show();
@@ -134,25 +138,29 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             return false;
         }
 
-        // Afficher les informations du restaurant
-        binding.restaurantName.setText(restaurant.getName());
-        binding.restaurantAddress.setText(restaurant.getVicinity());
-        binding.ratingDetail.setRating(restaurant.getRating().floatValue());
-
-        // Charger la photo du restaurant
+        updateBasicRestaurantInfo();
         fetchRestaurantPhoto(restaurantId);
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             userId = currentUser.getUid();
-            restaurantDetailViewModel.loadLikeState(userId, restaurantId);
-            restaurantDetailViewModel.checkUserSelection(restaurantId, userId).observe(this, this::updateButtonUI);
+            manageRestaurantLikeAndSelection();
         }
 
-        // Appel de la méthode fetchRestaurantDetails avec le restaurantId
         fetchRestaurantDetails(restaurantId);
 
         return true;
+    }
+
+    private void updateBasicRestaurantInfo() {
+        binding.restaurantName.setText(restaurant.getName());
+        binding.restaurantAddress.setText(restaurant.getVicinity());
+        binding.ratingDetail.setRating(restaurant.getRating().floatValue());
+    }
+
+    private void manageRestaurantLikeAndSelection() {
+        restaurantDetailViewModel.loadLikeState(userId, restaurantId);
+        restaurantDetailViewModel.checkUserSelection(restaurantId, userId).observe(this, this::updateButtonUI);
     }
 
 
@@ -176,6 +184,44 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         restaurantDetailViewModel.fetchRestaurantData(callingIntent);
     }
 
+    private void getRestaurantPlaceId() {
+        if (getIntent().hasExtra(RESTAURANT_PLACE_ID)) {
+            String placeId = getIntent().getStringExtra(RESTAURANT_PLACE_ID);
+            getRestaurantDetail(placeId);
+            initCoworkersList();
+        }
+    }
+
+    private void getRestaurantDetail(String placeId) {
+        restaurantDetailViewModel.getRestaurant().observe(this, this::displayInfoRestaurant);
+    }
+
+    private void displayInfoRestaurant(PlaceModel restaurant) {
+        this.restaurant = restaurant;
+        binding.restaurantName.setText(restaurant.getName());
+        binding.restaurantAddress.setText(restaurant.getVicinity());
+
+        if (restaurant.getPhotoUrl() != null) {
+            Glide.with(RestaurantDetailActivity.this)
+                    .load(restaurant.getPhotoUrl())
+                    .apply(RequestOptions.centerCropTransform())
+                    .into(this.binding.logo);
+        }
+
+        restaurantDetailViewModel.fetchSelectedUsersForRestaurant(restaurantId);
+        restaurantDetailViewModel.getIsRestaurantLiked();
+    }
+
+    private void initCoworkersList() {
+        UserListAdapter coworkerDetailAdapter = new UserListAdapter(new ArrayList<UserModel>());
+        binding.userRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        binding.userRecyclerView.setAdapter(coworkerDetailAdapter);
+
+        restaurantDetailViewModel.getSelectedUsers().observe(this, coworkerDetailAdapter::updateUserList);
+        //restaurantDetailViewModel.isRestaurantLiked.observe(this, this::changeLikeStatus);
+        //restaurantDetailViewModel.isRestaurantSelected.observe(this, this::changeChoiceStatus);
+    }
+
     private void fetchRestaurantPhoto(String placeId) {
         // Construire la requête pour récupérer les métadonnées de la photo
         List<Place.Field> fields = Arrays.asList(Place.Field.PHOTO_METADATAS);
@@ -195,7 +241,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                 });
             }
         }).addOnFailureListener((exception) -> {
-            // Gérer l'échec de récupération des détails du lieu
+            Log.e("fetchRestaurantPhoto", "Erreur lors de la récupération de la photo", exception);
         });
     }
 

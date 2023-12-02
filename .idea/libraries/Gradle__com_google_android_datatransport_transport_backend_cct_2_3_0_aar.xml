@@ -1,11 +1,11 @@
 <component name="libraryTable">
-  <library name="Gradle: com.google.android.datatransport:transport-backend-cct:2.3.0@aar">
+  <library name="Gradle: com.google.android.datatransport:transport-backend-cct:2.3.0@aar" external-system-id="GRADLE">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/e9c22c8fca0cf1bc65bd4e3cc297dccf/transformed/jetified-transport-backend-cct-2.3.0/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/e9c22c8fca0cf1bc65bd4e3cc297dccf/transformed/jetified-transport-backend-cct-2.3.0/AndroidManifest.xml" />
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-3/c8d4428ee1a17af7379531e889d7c29c/transformed/jetified-transport-backend-cct-2.3.0/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/transforms-3/c8d4428ee1a17af7379531e889d7c29c/transformed/jetified-transport-backend-cct-2.3.0/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/com.google.android.datatransport/transport-backend-cct/2.3.0/ca2b7b73a1022b9f8e7e9f74e5cef8edee55db4/transport-backend-cct-2.3.0-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/modules-2/files-2.1/com.google.android.datatransport/transport-backend-cct/2.3.0/ca2b7b73a1022b9f8e7e9f74e5cef8edee55db4/transport-backend-cct-2.3.0-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES />
   </library>

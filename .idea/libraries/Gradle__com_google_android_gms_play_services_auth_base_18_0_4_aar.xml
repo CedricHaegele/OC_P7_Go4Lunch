@@ -1,11 +1,11 @@
 <component name="libraryTable">
-  <library name="Gradle: com.google.android.gms:play-services-auth-base:18.0.4@aar">
+  <library name="Gradle: com.google.android.gms:play-services-auth-base:18.0.4@aar" external-system-id="GRADLE">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/0497de169aad73db8958fb0bffc63faf/transformed/jetified-play-services-auth-base-18.0.4/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/0497de169aad73db8958fb0bffc63faf/transformed/jetified-play-services-auth-base-18.0.4/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/transforms-3/f32f236fd661cdd3f7c83749a830f77b/transformed/jetified-play-services-auth-base-18.0.4/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-3/f32f236fd661cdd3f7c83749a830f77b/transformed/jetified-play-services-auth-base-18.0.4/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/com.google.android.gms/play-services-auth-base/18.0.4/4b7787e0e66302f46261e84cbdd60ccf21d5d0a0/play-services-auth-base-18.0.4-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/modules-2/files-2.1/com.google.android.gms/play-services-auth-base/18.0.4/4b7787e0e66302f46261e84cbdd60ccf21d5d0a0/play-services-auth-base-18.0.4-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES />
   </library>

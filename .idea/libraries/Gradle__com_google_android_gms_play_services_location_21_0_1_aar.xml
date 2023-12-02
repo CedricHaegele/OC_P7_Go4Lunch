@@ -1,11 +1,11 @@
 <component name="libraryTable">
-  <library name="Gradle: com.google.android.gms:play-services-location:21.0.1@aar">
+  <library name="Gradle: com.google.android.gms:play-services-location:21.0.1@aar" external-system-id="GRADLE">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/9636000ca154276450cf4492794f04e3/transformed/jetified-play-services-location-21.0.1/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/9636000ca154276450cf4492794f04e3/transformed/jetified-play-services-location-21.0.1/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/transforms-3/1c42dbd4bdac7884b57d7c5029e0d8ac/transformed/jetified-play-services-location-21.0.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-3/1c42dbd4bdac7884b57d7c5029e0d8ac/transformed/jetified-play-services-location-21.0.1/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/com.google.android.gms/play-services-location/21.0.1/428b246a58c2045e2fe6c23478dc88595a110e52/play-services-location-21.0.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/modules-2/files-2.1/com.google.android.gms/play-services-location/21.0.1/428b246a58c2045e2fe6c23478dc88595a110e52/play-services-location-21.0.1-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES />
   </library>

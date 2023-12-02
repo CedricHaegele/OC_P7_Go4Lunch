@@ -34,8 +34,8 @@ import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 
 
+import com.example.oc_p7_go4lunch.view.fragment.YourLunchFragment;
 import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
-import com.example.oc_p7_go4lunch.view.activities.RestaurantDetailActivity;
 import com.example.oc_p7_go4lunch.view.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.view.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.view.fragment.SettingsFragment;
@@ -74,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     RestaurantApiService restaurantApiService = new RestaurantApiService();
     RestaurantRepository restaurantRepository = new RestaurantRepository();
     private RestaurantDetailViewModel restaurantDetailViewModel;
+    private String restaurantId;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Initialisation des autres composants de l'interface utilisateur
         initUIComponents();
     }
-
 
 
     @Override
@@ -284,14 +285,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()) {
             case myLunch:
-                PlaceModel selectedRestaurant = restaurantDetailViewModel.getRestaurant().getValue();
-                if (selectedRestaurant != null) {
-                    Intent intent = new Intent(this, RestaurantDetailActivity.class);
-                    intent.putExtra("Restaurant", selectedRestaurant);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, "Aucun restaurant sélectionné", Toast.LENGTH_SHORT).show();
-                }
+                changeFragment(new YourLunchFragment());
+                getSupportActionBar().setTitle(" My Lunch Time ");
+                searchImageView.setVisibility(View.GONE);
                 break;
 
 
@@ -308,8 +304,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
 
     //Log out the user and navigate back to LoginActivity.
     public void onSignOutButtonClicked() {

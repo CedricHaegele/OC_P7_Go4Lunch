@@ -1,14 +1,14 @@
 <component name="libraryTable">
-  <library name="Gradle: io.grpc:grpc-android:1.28.0@aar">
+  <library name="Gradle: io.grpc:grpc-android:1.28.0@aar" external-system-id="GRADLE">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/6fc75d38bea9c75506c7cc7a1d3c2b6a/transformed/jetified-grpc-android-1.28.0/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/6fc75d38bea9c75506c7cc7a1d3c2b6a/transformed/jetified-grpc-android-1.28.0/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/transforms-3/497a0fd2e5ed39034fc8d3626994a6eb/transformed/jetified-grpc-android-1.28.0/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-3/497a0fd2e5ed39034fc8d3626994a6eb/transformed/jetified-grpc-android-1.28.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/io.grpc/grpc-android/1.28.0/e7c3f4a90a5862818fc0ff52806ab2b2986bea67/grpc-android-1.28.0-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/modules-2/files-2.1/io.grpc/grpc-android/1.28.0/e7c3f4a90a5862818fc0ff52806ab2b2986bea67/grpc-android-1.28.0-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/io.grpc/grpc-android/1.28.0/64355636f33bb77e4e0677e3de8ba7a48d6a74d/grpc-android-1.28.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/modules-2/files-2.1/io.grpc/grpc-android/1.28.0/64355636f33bb77e4e0677e3de8ba7a48d6a74d/grpc-android-1.28.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

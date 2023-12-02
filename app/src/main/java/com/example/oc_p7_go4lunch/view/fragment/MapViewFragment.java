@@ -33,9 +33,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -45,7 +48,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     // ViewModel to manage data logic
     private GoogleMapsViewModel googleMapsViewModel;
     // Constants for default zoom and permission request code
-    private static final float DEFAULT_ZOOM = 15.0f;
+    private static final float DEFAULT_ZOOM = 15f;
     private static final int YOUR_REQUEST_CODE = 1234;
 
     @Nullable
@@ -71,9 +74,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         super.onActivityCreated(savedInstanceState);
 
         initMapAndViewModel();
-        checkLocationPermissionAndEnable(); // Cette méthode gère la demande de permission
+        checkLocationPermissionAndEnable();
 
-        // Vous n'avez plus besoin de vérifier à nouveau les permissions ici
         googleMapsViewModel.getLastLocation().observe(getViewLifecycleOwner(), location -> {
             if (location != null) {
                 updateCameraPosition(location);
@@ -105,9 +107,31 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         googleMapsViewModel.getNearbyRestaurants().observe(getViewLifecycleOwner(), this::addRestaurantsToMap);
     }
 
-    // Méthode pour ajouter des restaurants sur la carte
+
     private void addRestaurantsToMap(List<PlaceModel> restaurants) {
-        // Logique pour ajouter des marqueurs sur la carte en fonction des restaurants
+        if (restaurants != null && !restaurants.isEmpty()) {
+            for (PlaceModel restaurant : restaurants) {
+                restaurant.extractCoordinates();
+                LatLng latLng = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
+
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                String userId = null;
+                if (currentUser != null) {
+                    userId = currentUser.getUid();
+                }
+                if (userId != null) {
+                    FirestoreHelper firestoreHelper = new FirestoreHelper();
+                    firestoreHelper.checkUserSelectionState(restaurant.getPlaceId(), userId)
+                            .observe(getViewLifecycleOwner(), isSelected -> {
+                                MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(restaurant.getName());
+                                if (isSelected) {
+                                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                                }
+                                Marker marker = mMap.addMarker(markerOptions);
+                            });
+                }
+            }
+        }
     }
 
     private void enableLocationFeatures() {
@@ -160,7 +184,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
                     if (restaurants != null && !restaurants.isEmpty()) {
                         for (PlaceModel restaurant : restaurants) {
-                            Log.d("Restaurant","Il y a "+ restaurant.getName());
+                            Log.d("Restaurant", "Il y a " + restaurant.getName());
                             restaurant.extractCoordinates();
                             LatLng latLng = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
 
@@ -171,7 +195,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                         }
                     }
                 });
-            }else{
+            } else {
                 Log.d("MapViewFragment", "Location is null");
             }
         });
@@ -194,4 +218,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             return true;
         });
     }
+
+
 }

@@ -16,6 +16,7 @@ import java.io.Serializable;
 
 public class PlaceModel implements Serializable {
     private PhotoMetadata photoMetadata;
+    private String phoneNumber;
     private String webSite;
 
     public String getWebSite() {
@@ -25,7 +26,16 @@ public class PlaceModel implements Serializable {
     public void setWebSite(String webSite) {
         this.webSite = webSite;
     }
-// Fields for various attributes of a restaurant
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    // Fields for various attributes of a restaurant
 
     @SerializedName("geometry")
     @Expose

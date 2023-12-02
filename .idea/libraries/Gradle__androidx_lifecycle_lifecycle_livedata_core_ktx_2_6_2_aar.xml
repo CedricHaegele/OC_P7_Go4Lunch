@@ -1,13 +1,13 @@
 <component name="libraryTable">
-  <library name="Gradle: androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.2@aar">
+  <library name="Gradle: androidx.lifecycle:lifecycle-livedata-core-ktx:2.6.2@aar" external-system-id="GRADLE">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/transforms-3/dda6ac8c74cd2b6196c6f78ef1bec526/transformed/jetified-lifecycle-livedata-core-ktx-2.6.2/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/dda6ac8c74cd2b6196c6f78ef1bec526/transformed/jetified-lifecycle-livedata-core-ktx-2.6.2/res" />
-      <root url="file://$PROJECT_DIR$/../../../flutter/caches/transforms-3/dda6ac8c74cd2b6196c6f78ef1bec526/transformed/jetified-lifecycle-livedata-core-ktx-2.6.2/AndroidManifest.xml" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/transforms-3/353846e6d734844f47b2930306d98d3e/transformed/jetified-lifecycle-livedata-core-ktx-2.6.2/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-3/353846e6d734844f47b2930306d98d3e/transformed/jetified-lifecycle-livedata-core-ktx-2.6.2/AndroidManifest.xml" />
+      <root url="file://$PROJECT_DIR$/../.gradle/caches/transforms-3/353846e6d734844f47b2930306d98d3e/transformed/jetified-lifecycle-livedata-core-ktx-2.6.2/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-livedata-core-ktx/2.6.2/679a0782faddfa90863d19babbe2b44ded7d13b/lifecycle-livedata-core-ktx-2.6.2-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../.gradle/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-livedata-core-ktx/2.6.2/679a0782faddfa90863d19babbe2b44ded7d13b/lifecycle-livedata-core-ktx-2.6.2-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

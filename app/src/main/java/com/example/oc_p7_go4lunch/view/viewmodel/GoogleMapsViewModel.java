@@ -3,6 +3,7 @@ package com.example.oc_p7_go4lunch.view.viewmodel;
 import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Looper;
 
@@ -11,6 +12,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.MVVM.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
 import com.example.oc_p7_go4lunch.MVVM.repositories.MapRepository;
@@ -22,6 +24,8 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.List;
 
@@ -29,7 +33,7 @@ import java.util.List;
  * ViewModel to manage data for Google Maps related functionality.
  */
 public class GoogleMapsViewModel extends ViewModel {
-
+    private PlacesClient placesClient;
     private final MapRepository mapRepository;
     private FusedLocationProviderClient fusedLocationClient;
     private final RestaurantRepository restaurantRepository;
@@ -48,8 +52,12 @@ public class GoogleMapsViewModel extends ViewModel {
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(application);
         this.mapRepository = new MapRepository(googlePlacesApi);
         this.restaurantRepository = restaurantRepository;
-
+        if (!Places.isInitialized()) {
+            Places.initialize(application.getApplicationContext(), BuildConfig.API_KEY);
+        }
+        placesClient = Places.createClient(application);
     }
+
 
     public LiveData<Location> getLastLocation() {
         return lastLocation;
@@ -149,6 +157,13 @@ public class GoogleMapsViewModel extends ViewModel {
      */
     public LiveData<List<PlaceModel>> getNearbyRestaurants() {
         return nearbyRestaurants;
+    }
+
+    public LiveData<Bitmap> fetchPlacePhoto(PlaceModel place) {
+        if (place != null && place.getPhotoMetadata() != null) {
+            return place.getPhoto(placesClient);
+        }
+        return new MutableLiveData<>(null);
     }
 
 }

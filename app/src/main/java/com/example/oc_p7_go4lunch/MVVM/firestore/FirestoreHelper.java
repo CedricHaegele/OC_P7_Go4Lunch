@@ -80,7 +80,6 @@ public class FirestoreHelper {
     }
 
 
-
     public void saveRestaurantSelectionState(String userId, boolean isSelected, PlaceModel restaurant, FirestoreActionListener listener) {
         Log.d("tagii", "saveRestaurantSelectionState isSelected: " + isSelected);
         DocumentReference userDocRef = db.collection("users").document(userId);
@@ -89,18 +88,22 @@ public class FirestoreHelper {
         if (isSelected && restaurant != null) {
             updateData.put("selectedRestaurantId", restaurant.getPlaceId());
             updateData.put("selectedRestaurantName", restaurant.getName());
+            updateData.put("selectedRestaurantAdress", restaurant.getVicinity());
+            updateData.put("selectedRestuarantRating", restaurant.getRating());
+            updateData.put("selectedRestaurantPhoto", restaurant.getPhotoUrl());
         } else {
 
             updateData.put("selectedRestaurantId", FieldValue.delete());
             updateData.put("selectedRestaurantName", FieldValue.delete());
+            updateData.put("selectedRestaurantAdress", FieldValue.delete());
+            updateData.put("selectedRestuarantRating", FieldValue.delete());
+            updateData.put("selectedRestaurantPhoto", FieldValue.delete());
         }
 
         userDocRef.update(updateData)
                 .addOnSuccessListener(aVoid -> listener.onSuccess())
                 .addOnFailureListener(listener::onError);
     }
-
-
 
 
     public interface OnSelectedUsersFetchedListener {
@@ -130,6 +133,7 @@ public class FirestoreHelper {
 
     public interface FirestoreActionListener {
         void onSuccess();
+
         void onError(Exception e);
     }
 
@@ -153,9 +157,9 @@ public class FirestoreHelper {
     }
 
     public void saveLikeState(String userId, String restaurantId, boolean isLiked, FirestoreActionListener listener) {
-        Log.d("tagii", "saveLikeState userId: "+userId);
-        Log.d("tagii", "saveLikeState restaurantId: "+restaurantId);
-        Log.d("tagii", "saveLikeState isLiked: "+isLiked);
+        Log.d("tagii", "saveLikeState userId: " + userId);
+        Log.d("tagii", "saveLikeState restaurantId: " + restaurantId);
+        Log.d("tagii", "saveLikeState isLiked: " + isLiked);
 
         DocumentReference userDoc = db.collection("users").document(userId);
         if (isLiked) {
@@ -168,6 +172,7 @@ public class FirestoreHelper {
                     .addOnFailureListener(listener::onError);
         }
     }
+
     public void fetchLikeState(String userId, String restaurantId, OnLikeStateFetchedListener listener) {
         db.collection("users").document(userId).get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -219,5 +224,56 @@ public class FirestoreHelper {
 
         return isRestaurantSelected;
     }
+
+    public void fetchRestaurantData(String restaurantId, OnRestaurantDataFetchedListener listener) {
+        db.collection("restaurants").document(restaurantId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        PlaceModel restaurant = documentSnapshot.toObject(PlaceModel.class);
+                        listener.onRestaurantDataFetched(restaurant);
+                    } else {
+                        listener.onRestaurantDataFetched(null);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirestoreHelper", "Error fetching restaurant data", e);
+                    listener.onRestaurantDataFetched(null);
+                });
+    }
+
+
+    public void fetchUserSelectedRestaurant(String userId, OnUserRestaurantDataFetchedListener listener) {
+        if (userId == null) {
+
+            listener.onUserRestaurantDataFetched(null, null, null);
+            return;
+        }
+
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String selectedRestaurantName = documentSnapshot.getString("selectedRestaurantName");
+                        String selectedRestaurantAddress = documentSnapshot.getString("selectedRestaurantAdress");
+                        Double selectedRestaurantRating = documentSnapshot.getDouble("selectedRestuarantRating");
+                        // Vous pouvez également récupérer l'URL de la photo ici si nécessaire
+                        listener.onUserRestaurantDataFetched(selectedRestaurantName, selectedRestaurantAddress, selectedRestaurantRating);
+                    } else {
+                        listener.onUserRestaurantDataFetched(null, null, null);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirestoreHelper", "Error fetching user's selected restaurant", e);
+                    listener.onUserRestaurantDataFetched(null, null, null);
+                });
+    }
+
+    public interface OnUserRestaurantDataFetchedListener {
+        void onUserRestaurantDataFetched(String selectedRestaurantName, String selectedRestaurantAddress, Double selectedRestaurantRating);
+    }
+
+
+
 
 }
