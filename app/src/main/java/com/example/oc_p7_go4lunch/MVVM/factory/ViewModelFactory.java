@@ -12,6 +12,7 @@ import com.example.oc_p7_go4lunch.MVVM.webservices.request.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.MVVM.webservices.RestaurantApiService;
 import com.example.oc_p7_go4lunch.view.viewmodel.GoogleMapsViewModel;
 import com.example.oc_p7_go4lunch.view.viewmodel.RestaurantDetailViewModel;
+import com.example.oc_p7_go4lunch.view.viewmodel.SharedViewModel;
 
 /**
  * Factory for creating various ViewModels with necessary dependencies.
@@ -40,15 +41,14 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-
         if (modelClass.isAssignableFrom(GoogleMapsViewModel.class)) {
             return (T) new GoogleMapsViewModel(application, googlePlacesApi, restaurantApiService, firestoreHelper, restaurantRepository);
-
-    } else if (modelClass.isAssignableFrom(RestaurantDetailViewModel.class)) {
+        } else if (modelClass.isAssignableFrom(RestaurantDetailViewModel.class)) {
             return (T) new RestaurantDetailViewModel(restaurantApiService, firestoreHelper, restaurantRepository);
+        } else if (modelClass.isAssignableFrom(SharedViewModel.class)) {
+            return (T) new SharedViewModel(firestoreHelper);
         }
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }
-
 
 }

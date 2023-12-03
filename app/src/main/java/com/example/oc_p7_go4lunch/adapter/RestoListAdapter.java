@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +28,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     private final LayoutInflater layoutInflater;
     private List<PlaceModel> restaurants;
     private ItemClickSupport.OnItemClickListener listener;
+
 
     public interface PhotoLoader {
         void loadRestaurantPhoto(String placeId, ImageView imageView);
@@ -51,8 +53,10 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         PlaceModel placeModel = placesList.get(position);
+        holder.usersNbr.setText(String.valueOf(placeModel.getUserNumber()));
         holder.bindData(placeModel);
     }
+
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -71,11 +75,13 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
 
         private final FragmentRestoItemBinding binding;
         private final PhotoLoader photoLoader;
+        public final TextView usersNbr;
 
         public MyViewHolder(@NonNull FragmentRestoItemBinding binding, PhotoLoader photoLoader) {
             super(binding.getRoot());
             this.binding = binding;
             this.photoLoader = photoLoader;
+            usersNbr = binding.usersNbr;
         }
 
 
@@ -109,6 +115,16 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
             }
             float distance = placeModel.getDistanceFromCurrentLocation();
             binding.distance.setText(String.format(Locale.getDefault(), "%.2f km", distance / 1000));
+        }
+    }
+
+    public void setUserNumberForRestaurant(String restaurantId, int userNumber) {
+        for (PlaceModel restaurant : this.placesList) {
+            if (restaurant.getPlaceId().equals(restaurantId)) {
+                restaurant.setUserNumber(userNumber);
+                notifyDataSetChanged();
+                break;
+            }
         }
     }
 

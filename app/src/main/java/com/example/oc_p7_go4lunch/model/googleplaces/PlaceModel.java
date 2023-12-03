@@ -18,21 +18,22 @@ public class PlaceModel implements Serializable {
     private PhotoMetadata photoMetadata;
     private String phoneNumber;
     private String webSite;
+    private int userNumber;
+
+    public int getUserNumber() {
+        return userNumber;
+    }
+
+    public void setUserNumber(int userNumber) {
+        this.userNumber = userNumber;
+    }
 
     public String getWebSite() {
         return webSite;
     }
 
-    public void setWebSite(String webSite) {
-        this.webSite = webSite;
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     // Fields for various attributes of a restaurant
@@ -48,10 +49,6 @@ public class PlaceModel implements Serializable {
     // Getter et Setter pour photoUrl
     public String getPhotoUrl() {
         return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
     }
 
 
@@ -191,4 +188,11 @@ public class PlaceModel implements Serializable {
         return photoLiveData;
     }
 
+    public void setWebSite(String webSite) {
+        this.webSite = webSite;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 }

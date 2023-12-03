@@ -1,12 +1,20 @@
 package com.example.oc_p7_go4lunch.MVVM.repositories;
 
+
+
+
 import android.location.Location;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.oc_p7_go4lunch.BuildConfig;
+import com.example.oc_p7_go4lunch.MVVM.webservices.RetrofitService;
+import com.example.oc_p7_go4lunch.MVVM.webservices.request.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
+import com.example.oc_p7_go4lunch.model.googleplaces.results.RestaurantResponse;
 import com.example.oc_p7_go4lunch.model.restaurant.RestoInformations;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
@@ -17,6 +25,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class RestaurantRepository {
 
     //private final GooglePlacesApi googlePlacesApi;
@@ -26,7 +38,7 @@ public class RestaurantRepository {
     private static final String SEARCH_TYPE = "restaurant";
 
     public RestaurantRepository() {
-        //googlePlacesApi = RetrofitClient.getClient().create(GooglePlacesApi.class);
+        GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
     }
 
     // Méthode pour récupérer les restaurants à proximité d'une location donnée
@@ -34,16 +46,16 @@ public class RestaurantRepository {
     public LiveData<List<PlaceModel>> getRestaurants(Location location) {
         MutableLiveData<List<PlaceModel>> liveData = new MutableLiveData<>();
 
-        // Vérifiez si l'objet 'location' est null
         if (location == null) {
             liveData.setValue(new ArrayList<>());
             return liveData;
         }
 
         String locationString = location.getLatitude() + "," + location.getLongitude();
-       //Call<RestaurantResponse> call = googlePlacesApi.getNearbyPlaces(locationString, SEARCH_RADIUS, SEARCH_TYPE, BuildConfig.API_KEY);
+        GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
+        Call<RestaurantResponse> call = googlePlacesApi.getNearbyPlaces(locationString, SEARCH_RADIUS, SEARCH_TYPE, BuildConfig.API_KEY);
 
-        /**call.enqueue(new Callback<RestaurantResponse>() {
+        call.enqueue(new Callback<RestaurantResponse>() {
             @Override
             public void onResponse(@NonNull Call<RestaurantResponse> call, @NonNull Response<RestaurantResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -59,7 +71,7 @@ public class RestaurantRepository {
                 liveData.setValue(new ArrayList<>());
                 Log.e("RestaurantRepository", "Error fetching restaurants: " + t.getMessage());
             }
-        });*/
+        });
 
         return liveData;
     }
@@ -103,9 +115,11 @@ public class RestaurantRepository {
     public LiveData<RestoInformations> fetchRestaurantDetails(String placeId, String apiKey) {
         MutableLiveData<RestoInformations> liveData = new MutableLiveData<>();
 
-        //Call<RestoInformations> call = googlePlacesApi.getRestaurantDetails(placeId, "formatted_phone_number,website,like", apiKey);
+        GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
 
-        /**call.enqueue(new Callback<RestoInformations>() {
+        Call<RestoInformations> call = googlePlacesApi.getRestaurantDetails(placeId, "formatted_phone_number,website,like", apiKey);
+
+        call.enqueue(new Callback<RestoInformations>() {
             @Override
             public void onResponse(@NonNull Call<RestoInformations> call, @NonNull Response<RestoInformations> response) {
                 if (response.isSuccessful()) {
@@ -120,7 +134,7 @@ public class RestaurantRepository {
                 liveData.setValue(null);
                 Log.e("RestaurantRepository", "Error fetching restaurant details: " + t.getMessage());
             }
-        });*/
+        });
 
         return liveData;
     }

@@ -34,6 +34,7 @@ import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 
 
+import com.example.oc_p7_go4lunch.model.firebaseUser.UserModel;
 import com.example.oc_p7_go4lunch.view.fragment.YourLunchFragment;
 import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
 import com.example.oc_p7_go4lunch.view.fragment.MapViewFragment;
@@ -41,6 +42,7 @@ import com.example.oc_p7_go4lunch.view.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.view.fragment.SettingsFragment;
 import com.example.oc_p7_go4lunch.view.fragment.WorkmatesList;
 import com.example.oc_p7_go4lunch.view.viewmodel.RestaurantDetailViewModel;
+import com.example.oc_p7_go4lunch.view.viewmodel.SharedViewModel;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     RestaurantApiService restaurantApiService = new RestaurantApiService();
     RestaurantRepository restaurantRepository = new RestaurantRepository();
     private RestaurantDetailViewModel restaurantDetailViewModel;
+    private SharedViewModel sharedViewModel;
     private String restaurantId;
 
 
@@ -93,18 +96,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firestoreHelper.addOrUpdateUserToFirestore(firebaseUser);
 
-        // Créer une instance de la ViewModelFactory avec les dépendances requises
-        ViewModelFactory factory = new ViewModelFactory(
+        ViewModelFactory factory = new ViewModelFactory(getApplication(), googlePlacesApi, restaurantApiService, firestoreHelper, restaurantRepository);
+
+        factory = new ViewModelFactory(
                 getApplication(),
-                RetrofitService.getGooglePlacesApi(),
-                new RestaurantApiService(),
-                new FirestoreHelper(),
-                new RestaurantRepository()
+                googlePlacesApi,
+                restaurantApiService,
+                firestoreHelper,
+                restaurantRepository
         );
+        sharedViewModel = new ViewModelProvider(this, factory).get(SharedViewModel.class);
 
         // Utiliser factory pour obtenir l'instance de ViewModel
         restaurantDetailViewModel = new ViewModelProvider(this, factory).get(RestaurantDetailViewModel.class);
 
+        // Observer les données du restaurant sélectionné
+        sharedViewModel.getSelectedRestaurant().observe(this, restaurant -> {
+
+        });
 
         // Configuration de la barre d'outils
         setSupportActionBar(binding.toolbar);
@@ -285,11 +294,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()) {
             case myLunch:
-                changeFragment(new YourLunchFragment());
-                getSupportActionBar().setTitle(" My Lunch Time ");
-                searchImageView.setVisibility(View.GONE);
+                // Utiliser sharedViewModel pour obtenir l'état actuel de l'utilisateur
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser != null) {
+                    sharedViewModel.fetchSelectedRestaurant(currentUser.getUid()).observe(this, selectedRestaurant -> {
+                        if (selectedRestaurant != null) {
+                            Intent detailIntent = new Intent(MainActivity.this, RestaurantDetailActivity.class);
+                            detailIntent.putExtra("Restaurant", selectedRestaurant);
+                            startActivity(detailIntent);
+                        } else {
+                            Toast.makeText(MainActivity.this, "No restaurant information available.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(MainActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+                }
                 break;
-
 
             case settings:
                 changeFragment(new SettingsFragment.PreferencesFragment());

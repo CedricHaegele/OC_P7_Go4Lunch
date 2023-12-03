@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.oc_p7_go4lunch.BuildConfig;
+import com.example.oc_p7_go4lunch.MVVM.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
 import com.example.oc_p7_go4lunch.view.activities.RestaurantDetailActivity;
@@ -36,6 +37,7 @@ import com.example.oc_p7_go4lunch.view.viewmodel.RestoListViewModel;
 import com.example.oc_p7_go4lunch.MVVM.webservices.request.GooglePlacesApi;
 
 import com.example.oc_p7_go4lunch.MVVM.webservices.RetrofitService;
+import com.example.oc_p7_go4lunch.view.viewmodel.SharedViewModel;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -161,6 +163,7 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
                                 if (restaurantList != null && restaurantList.size() > 0) {
                                     calculateDistances(restaurantList, lastKnownLocation);
                                     restoListAdapter.updateData(restaurantList);
+                                    updateRestaurantsWithUserCount();
                                     // Tri des restaurants par distance
                                     Location currentLocation = new Location("current");
                                     currentLocation.setLatitude(lastKnownLocation.getLatitude());
@@ -250,15 +253,22 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
                     PlaceModel restaurant = restoListAdapter.getPlacesList().get(position);
 
                     if (restaurant.getPlaceId() != null) {
+                        // Obtenir l'instance de SharedViewModel
+                        SharedViewModel sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+                        // Mettre à jour SharedViewModel avec le restaurant sélectionné
+                        sharedViewModel.selectRestaurant(restaurant);
+
+                        // Lancer RestaurantDetailActivity avec les informations du restaurant
                         Intent intent = new Intent(requireActivity(), RestaurantDetailActivity.class);
                         intent.putExtra("Restaurant", restaurant);
                         startActivity(intent);
                     } else {
-                        Log.w("RestoListView", "Restaurant is null or doesn't have a valid Place ID.");
                         Toast.makeText(getContext(), "The Restaurant isn't available !!!", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 
 
     @Override
@@ -297,4 +307,13 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
         });
     }
 
+    private void updateRestaurantsWithUserCount() {
+        FirestoreHelper firestoreHelper = new FirestoreHelper();
+        for (PlaceModel restaurant : restaurantList) {
+            firestoreHelper.fetchSelectedUsers(restaurant.getPlaceId(), users -> {
+                restoListAdapter.setUserNumberForRestaurant(restaurant.getPlaceId(), users.size());
+            });
+
+        }
+    }
 }

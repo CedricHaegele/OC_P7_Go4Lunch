@@ -19,13 +19,15 @@ public class RestoInformations {
     return formattedPhoneNumber;
   }
 
+  public void setFormattedPhoneNumber(String formattedPhoneNumber) {
+    this.formattedPhoneNumber = formattedPhoneNumber;
+  }
+
   public String getWebsite() {
     return website;
   }
 
-  public boolean isLiked() {
-    return isLiked;
+  public void setWebsite(String website) {
+    this.website = website;
   }
-
-
 }

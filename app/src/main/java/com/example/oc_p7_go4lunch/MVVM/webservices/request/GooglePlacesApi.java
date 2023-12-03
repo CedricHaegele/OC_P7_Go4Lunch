@@ -42,6 +42,7 @@ public interface GooglePlacesApi {
                                                  @Query("fields") String fields,
                                                  @Query("key") String apiKey);
 
+
     /**
      * Get places using a custom URL.
      * This method can be used for more flexible API requests.

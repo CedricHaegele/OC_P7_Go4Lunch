@@ -114,25 +114,18 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 restaurant.extractCoordinates();
                 LatLng latLng = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
 
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                String userId = null;
-                if (currentUser != null) {
-                    userId = currentUser.getUid();
-                }
-                if (userId != null) {
-                    FirestoreHelper firestoreHelper = new FirestoreHelper();
-                    firestoreHelper.checkUserSelectionState(restaurant.getPlaceId(), userId)
-                            .observe(getViewLifecycleOwner(), isSelected -> {
-                                MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(restaurant.getName());
-                                if (isSelected) {
-                                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                                }
-                                Marker marker = mMap.addMarker(markerOptions);
-                            });
-                }
+                FirestoreHelper firestoreHelper = new FirestoreHelper();
+                firestoreHelper.fetchSelectedUsers(restaurant.getPlaceId(), users -> {
+                    MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(restaurant.getName());
+                    if (!users.isEmpty()) {
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    }
+                    mMap.addMarker(markerOptions);
+                });
             }
         }
     }
+
 
     private void enableLocationFeatures() {
         if (mMap != null) {
