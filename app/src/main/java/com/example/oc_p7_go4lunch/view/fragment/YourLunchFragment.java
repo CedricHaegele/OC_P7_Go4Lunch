@@ -1,7 +1,13 @@
 package com.example.oc_p7_go4lunch.view.fragment;
 
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.AlignmentSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,12 +99,34 @@ public class YourLunchFragment extends Fragment {
                             if (user != null && user.getSelectedRestaurantId() != null) {
                                 placeId = user.getSelectedRestaurantId();
                                 getRestaurantDetails(placeId);
+                            } else {
+                                // No restaurant chosen, display default message and image
+                                displayNoRestaurantChosen();
                             }
+                        } else {
+                            // No user data found, display default message and image
+                            displayNoRestaurantChosen();
                         }
                     })
                     .addOnFailureListener(e -> Log.e("YourLunchFragment", "Error getting user details", e));
         }
     }
+
+    private void displayNoRestaurantChosen() {
+        String noRestaurantSelected = getString(R.string.no_restaurant_selected);
+        // Set the text centered and bold
+        SpannableStringBuilder builder = new SpannableStringBuilder(noRestaurantSelected);
+        builder.setSpan(new StyleSpan(Typeface.BOLD), 0, noRestaurantSelected.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        builder.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), 0, noRestaurantSelected.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        binding.restaurantName.setText(builder);
+        binding.restaurantAddress.setText("");
+        binding.restaurantRating.setRating(0.0f);
+        // Set the default image
+        binding.restaurantImage.setImageResource(R.drawable.lunch_time);
+    }
+
+
 
     private void getRestaurantDetails(String restaurantId) {
         final List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.PHOTO_METADATAS);

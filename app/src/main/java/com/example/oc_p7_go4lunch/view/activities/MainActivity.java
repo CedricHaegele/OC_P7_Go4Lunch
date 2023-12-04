@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -34,6 +33,8 @@ import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 
 
 import com.example.oc_p7_go4lunch.model.firebaseUser.UserModel;
+import com.example.oc_p7_go4lunch.view.activities.LoginActivity;
+import com.example.oc_p7_go4lunch.view.activities.RestaurantDetailActivity;
 import com.example.oc_p7_go4lunch.view.fragment.YourLunchFragment;
 import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
 import com.example.oc_p7_go4lunch.view.fragment.MapViewFragment;
@@ -44,6 +45,8 @@ import com.example.oc_p7_go4lunch.view.viewmodel.RestaurantDetailViewModel;
 import com.example.oc_p7_go4lunch.view.viewmodel.SharedViewModel;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
@@ -55,6 +58,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Arrays;
 import java.util.List;
@@ -76,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RestaurantDetailViewModel restaurantDetailViewModel;
     private SharedViewModel sharedViewModel;
     private String restaurantId;
+
 
 
     @Override
@@ -159,6 +164,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Initialisation des autres composants de l'interface utilisateur
         initUIComponents();
+
+        getFCMToken();
+    }
+
+    private void getFCMToken() {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                String token = task.getResult();
+                //FirebaseUtil.currentUserDetails().update("fcmToken", token);
+            }
+        });
+
     }
 
 
@@ -322,4 +339,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     finish();
                 });
     }
+
 }

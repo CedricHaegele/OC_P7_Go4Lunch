@@ -25,7 +25,6 @@ public class RestaurantDetailViewModel extends ViewModel {
     public final MutableLiveData<String> restaurantAddress = new MutableLiveData<>();
     public final MutableLiveData<Float> restaurantRating = new MutableLiveData<>();
     private final MutableLiveData<List<UserModel>> selectedUsers = new MutableLiveData<>();
-
     private final FirestoreHelper firestoreHelper;
     private final RestaurantRepository restaurantRepository;
 

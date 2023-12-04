@@ -5,11 +5,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
 import android.os.Build;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
-
+import androidx.preference.PreferenceManager;
 import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.view.activities.MainActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -17,52 +17,60 @@ import com.google.firebase.messaging.RemoteMessage;
 
 public class NotificationService extends FirebaseMessagingService {
 
-    private static final String CHANNEL_ID = "YOUR_CHANNEL_ID";
+    // Constants for notification ID and tag
+    private final int NOTIFICATION_ID = 007;
+    private final String NOTIFICATION_TAG = "GO4LUNCH";
 
     @Override
+    // Method called when a message is received
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        if (remoteMessage.getNotification() != null) {
+
+        // Check if notifications are enabled in settings
+        boolean notificationsEnabled = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean("notifications_enabled", true);
+
+        // If a notification is received and notifications are enabled
+        if (remoteMessage.getNotification() != null && notificationsEnabled) {
+            // Get the notification details from Firebase
             RemoteMessage.Notification notification = remoteMessage.getNotification();
+            // Send a visual notification
             sendVisualNotification(notification);
         }
     }
 
+    // Method to create and show a visual notification
     private void sendVisualNotification(RemoteMessage.Notification notification) {
-        // Création d'une intention
+
+        // Intent to launch MainActivity when notification is clicked
         Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
-        // Création du canal de notification pour les versions Android récentes
-        createNotificationChannel();
+        // Define a notification channel ID (required for Android 8 and above)
+        String channelId = getString(R.string.channel_name);
 
-        // Construction de la notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-                .setContentTitle(notification.getTitle())
-                .setContentText(notification.getBody())
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent);
+        // Building the notification
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, channelId)
+                        .setSmallIcon(R.drawable.ic_baseline_local_dining_24)
+                        .setContentTitle(notification.getTitle())
+                        .setContentText(notification.getBody())
+                        .setAutoCancel(true) // Notification disappears after click
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)) // Set the notification sound
+                        .setContentIntent(pendingIntent); // Set the intent that will fire when the user taps the notification
 
-        // Affichage de la notification
+        // Get the NotificationManager system service
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            int notificationId = (int) System.currentTimeMillis();
-            notificationManager.notify(notificationId, builder.build());
-        }
-    }
 
-    private void createNotificationChannel() {
+        // Check and create a notification channel for Android 8 and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
-            }
+            CharSequence channelName = "Firebase Messages";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
+            notificationManager.createNotificationChannel(mChannel);
         }
+
+        // Display the notification
+        notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
     }
 }

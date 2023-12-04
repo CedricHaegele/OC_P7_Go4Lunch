@@ -96,8 +96,17 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private void initListener() {
         binding.fab.setOnClickListener(v -> restaurantDetailViewModel.saveRestaurantSelectionState());
         binding.likeButton.setOnClickListener(v -> restaurantDetailViewModel.saveLikeState(restaurantId));
-        binding.callButton.setOnClickListener(v -> openDialer(restaurant.getPhoneNumber()));
-        binding.websiteButton.setOnClickListener(v -> openWebSite(restaurant.getWebSite()));
+
+        binding.callButton.setOnClickListener(v -> {
+            String phoneNumber = restaurant.getPhoneNumber();
+            openDialer(phoneNumber);
+        });
+
+        binding.websiteButton.setOnClickListener(v -> {
+            String webSite = restaurant.getWebSite();
+            openWebSite(webSite);
+        });
+
 
     }
 
@@ -286,22 +295,24 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         userListAdapter = new UserListAdapter(combinedList);
         binding.userRecyclerView.setAdapter(userListAdapter);
     }
-
+    // Ouvre le site web du restaurant
     private void openWebSite(String webSite) {
         if (webSite != null) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(webSite));
+            Uri uri = Uri.parse(webSite);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         } else {
-            Toast.makeText(RestaurantDetailActivity.this, getString(R.string.no_website), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No website attached", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void openDialer(String phone) {
-        if ((phone != null) && (phone.trim().length() > 0)) {
-            Intent lIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + Uri.encode(phone)));
-            startActivity(lIntent);
+    // Compose le numéro de téléphone du restaurant
+    private void openDialer(String phoneNumber) {
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
+            startActivity(intent);
         } else {
-            Toast.makeText(RestaurantDetailActivity.this, getString(R.string.no_phone_number), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No phone number to dial", Toast.LENGTH_SHORT).show();
         }
     }
 }

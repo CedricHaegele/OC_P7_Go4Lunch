@@ -12,6 +12,7 @@ public class UserModel implements Serializable {
     private String photo;
     private String selectedRestaurantId;
     private String selectedRestaurantName;
+    private String fcmToken;
 
     public UserModel() {
     }
@@ -59,6 +60,14 @@ public class UserModel implements Serializable {
     public void setPhoto(String photo) {
         Log.d("UserModel", "setPhoto: " + photo);
         this.photo = photo;
+    }
+
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 
     public String getSelectedRestaurantName() {
