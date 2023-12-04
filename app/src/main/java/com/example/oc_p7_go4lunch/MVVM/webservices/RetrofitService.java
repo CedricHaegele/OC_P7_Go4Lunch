@@ -7,15 +7,11 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Service class to manage Retrofit instance and provide access to GooglePlacesApi.
- */
 public class RetrofitService {
 
     // Static variables for single instances of Retrofit and GooglePlacesApi
     private static Retrofit retrofit;
     private static GooglePlacesApi googlePlacesApi;
-    private static RestaurantApiService restaurantApiService;
 
     // Base URL for API requests
     private static final String BASE_URL = "https://maps.googleapis.com/maps/api/";
@@ -23,13 +19,7 @@ public class RetrofitService {
     // Interceptor for counting API calls
     private static CountingInterceptor countingInterceptor = new CountingInterceptor();
 
-    /**
-     * Private method to create and get the Retrofit instance.
-     * Initializes Retrofit with a base URL, Gson converter, and custom interceptors.
-     *
-     * @return The singleton Retrofit instance.
-     */
-    private static Retrofit getRetrofitInstance() {
+    public static Retrofit getRetrofitInstance() {
         if (retrofit == null) {
             // Creating the logging interceptor
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -51,27 +41,11 @@ public class RetrofitService {
         return retrofit;
     }
 
-    /**
-     * Public method to get the GooglePlacesApi instance.
-     * Ensures that only one instance of GooglePlacesApi is used throughout the application.
-     *
-     * @return The singleton GooglePlacesApi instance.
-     */
     public static GooglePlacesApi getGooglePlacesApi() {
         if (googlePlacesApi == null) {
             googlePlacesApi = getRetrofitInstance().create(GooglePlacesApi.class);
         }
         return googlePlacesApi;
-    }
-
-    /**
-     * Public method to get the count of API calls.
-     * Useful for monitoring and debugging API usage.
-     *
-     * @return The number of API calls made.
-     */
-    public static int getApiCallCount() {
-        return countingInterceptor.getApiCallCount();
     }
 
 }

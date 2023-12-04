@@ -26,7 +26,6 @@ import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.MVVM.factory.ViewModelFactory;
 import com.example.oc_p7_go4lunch.MVVM.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.MVVM.repositories.RestaurantRepository;
-import com.example.oc_p7_go4lunch.MVVM.webservices.RestaurantApiService;
 import com.example.oc_p7_go4lunch.MVVM.webservices.RetrofitService;
 import com.example.oc_p7_go4lunch.MVVM.webservices.request.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.R;
@@ -73,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActivityMainBinding binding;
     private FirestoreHelper firestoreHelper;
     GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
-    RestaurantApiService restaurantApiService = new RestaurantApiService();
     RestaurantRepository restaurantRepository = new RestaurantRepository();
     private RestaurantDetailViewModel restaurantDetailViewModel;
     private SharedViewModel sharedViewModel;
@@ -96,12 +94,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firestoreHelper.addOrUpdateUserToFirestore(firebaseUser);
 
-        ViewModelFactory factory = new ViewModelFactory(getApplication(), googlePlacesApi, restaurantApiService, firestoreHelper, restaurantRepository);
+        ViewModelFactory factory = new ViewModelFactory(getApplication(), googlePlacesApi, firestoreHelper, restaurantRepository);
 
         factory = new ViewModelFactory(
                 getApplication(),
                 googlePlacesApi,
-                restaurantApiService,
                 firestoreHelper,
                 restaurantRepository
         );
@@ -294,21 +291,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()) {
             case myLunch:
-                // Utiliser sharedViewModel pour obtenir l'état actuel de l'utilisateur
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (currentUser != null) {
-                    sharedViewModel.fetchSelectedRestaurant(currentUser.getUid()).observe(this, selectedRestaurant -> {
-                        if (selectedRestaurant != null) {
-                            Intent detailIntent = new Intent(MainActivity.this, RestaurantDetailActivity.class);
-                            detailIntent.putExtra("Restaurant", selectedRestaurant);
-                            startActivity(detailIntent);
-                        } else {
-                            Toast.makeText(MainActivity.this, "No restaurant information available.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    Toast.makeText(MainActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
-                }
+                changeFragment(new YourLunchFragment());
+                getSupportActionBar().setTitle(" My Lunch Today");
+                searchImageView.setVisibility(View.GONE);
                 break;
 
             case settings:

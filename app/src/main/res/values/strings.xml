@@ -14,7 +14,7 @@
     <!-- Bottom Navigation -->
     <string name="map_view">Map View</string>
     <string name="list_view">List View</string>
-    <string name="workmates" translatable="false">Workmates</string>
+    <string name="workmates">Workmates</string>
     <string name="chat">Chat</string>
 
     <!-- Main Activity -->
@@ -95,4 +95,5 @@
     <string name="sync_header">Notifications</string>
     <string name="signature_title">Your signature</string>
     <string name="reply_title">Default reply action</string>
+    <string name="sign_in">SIGN IN</string>
 </resources>

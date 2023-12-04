@@ -17,7 +17,6 @@ import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.MVVM.factory.ViewModelFactory;
 import com.example.oc_p7_go4lunch.MVVM.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.MVVM.repositories.RestaurantRepository;
-import com.example.oc_p7_go4lunch.MVVM.webservices.RestaurantApiService;
 import com.example.oc_p7_go4lunch.MVVM.webservices.RetrofitService;
 import com.example.oc_p7_go4lunch.MVVM.webservices.request.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.R;
@@ -63,12 +62,10 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
         initView();
         initListener();
-        setupBindingAndViewModel();
-        observeViewModelState();
 
         // Initialisation de GooglePlacesApi et autres services
         GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
-        RestaurantApiService restaurantApiService = new RestaurantApiService();
+
         FirestoreHelper firestoreHelper = new FirestoreHelper();
         RestaurantRepository restaurantRepository = new RestaurantRepository();
 
@@ -76,17 +73,19 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         ViewModelFactory factory = new ViewModelFactory(
                 getApplication(),
                 googlePlacesApi,
-                restaurantApiService,
+
                 firestoreHelper,
                 restaurantRepository
         );
 
-        // Initialisation de sharedViewModel avec la factory
+        restaurantDetailViewModel = new ViewModelProvider(this, factory).get(RestaurantDetailViewModel.class);
         sharedViewModel = new ViewModelProvider(this, factory).get(SharedViewModel.class);
 
         if (!retrieveAndSetupRestaurantData()) return;
-        setupUI();
 
+        setupBindingAndViewModel();
+        setupUI();
+        observeViewModelState();
     }
 
     private void observeViewModelState() {
@@ -95,21 +94,11 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     }
 
     private void initListener() {
-        binding.callButton.setOnClickListener(v -> {
-            if (restaurant != null && restaurant.getPhoneNumber() != null) {
-                openDialer(restaurant.getPhoneNumber());
-            } else {
-                Toast.makeText(this, "Numéro de téléphone non disponible", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        binding.likeButton.setOnClickListener(v -> restaurantDetailViewModel.saveLikeState(restaurantId));
-        binding.websiteButton.setOnClickListener(v -> {
-            if (restaurant != null) {
-                openWebSite(restaurant.getWebSite());
-            }
-        });
         binding.fab.setOnClickListener(v -> restaurantDetailViewModel.saveRestaurantSelectionState());
+        binding.likeButton.setOnClickListener(v -> restaurantDetailViewModel.saveLikeState(restaurantId));
+        binding.callButton.setOnClickListener(v -> openDialer(restaurant.getPhoneNumber()));
+        binding.websiteButton.setOnClickListener(v -> openWebSite(restaurant.getWebSite()));
+
     }
 
     private void initView() {
@@ -130,23 +119,21 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private void initializeViewModel() {
         Application application = getApplication();
         GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
-        RestaurantApiService restaurantApiService = new RestaurantApiService();
+
         FirestoreHelper firestoreHelper = new FirestoreHelper();
         RestaurantRepository restaurantRepository = new RestaurantRepository();
 
-        ViewModelFactory factory = new ViewModelFactory(application, googlePlacesApi, restaurantApiService, firestoreHelper, restaurantRepository);
+        ViewModelFactory factory = new ViewModelFactory(application, googlePlacesApi, firestoreHelper, restaurantRepository);
         restaurantDetailViewModel = new ViewModelProvider(this, factory).get(RestaurantDetailViewModel.class);
         PlaceModel restaurant = restaurantDetailViewModel.getRestaurant().getValue();
 
     }
-
 
     private boolean retrieveAndSetupRestaurantData() {
         Intent callingIntent = getIntent();
         restaurant = (PlaceModel) callingIntent.getSerializableExtra("Restaurant");
 
         if (restaurant == null) {
-            // Si aucune donnée n'est passée via l'intent, essayez de récupérer à partir de ViewModel
             restaurant = restaurantDetailViewModel.getRestaurant().getValue();
         }
 
@@ -156,24 +143,30 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             return false;
         }
 
+        // Mise à jour des informations de base du restaurant
         updateBasicRestaurantInfo();
-        sharedViewModel.selectRestaurant(restaurant);
 
+        // Récupération de l'ID du restaurant
         restaurantId = restaurant.getPlaceId();
         if (restaurantId == null) {
             Toast.makeText(this, "ID du restaurant non disponible", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        updateBasicRestaurantInfo();
+        // Appel pour récupérer des informations supplémentaires sur le restaurant
+        //restaurantDetailViewModel.fetchRestaurantInfo(restaurantId);
+
+        // Récupération de la photo du restaurant
         fetchRestaurantPhoto(restaurantId);
 
+        // Gestion des likes et de la sélection du restaurant
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             userId = currentUser.getUid();
             manageRestaurantLikeAndSelection();
         }
 
+        // Récupération des détails supplémentaires du restaurant
         fetchRestaurantDetails(restaurantId);
 
         return true;
@@ -295,24 +288,20 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     }
 
     private void openWebSite(String webSite) {
-
-        if (webSite != null && (webSite.startsWith("http://") || webSite.startsWith("https://"))) {
+        if (webSite != null) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(webSite));
             startActivity(intent);
         } else {
-            Toast.makeText(this, "URL non valide ou manquante", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RestaurantDetailActivity.this, getString(R.string.no_website), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void openDialer(String phone) {
-
-        Intent lIntent = new Intent(Intent.ACTION_DIAL);
-        lIntent.setData(Uri.parse("tel:" + phone));
-        if (lIntent.resolveActivity(getPackageManager()) != null) {
+        if ((phone != null) && (phone.trim().length() > 0)) {
+            Intent lIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + Uri.encode(phone)));
             startActivity(lIntent);
         } else {
-            Toast.makeText(this, "Aucune application disponible pour composer le numéro", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RestaurantDetailActivity.this, getString(R.string.no_phone_number), Toast.LENGTH_SHORT).show();
         }
     }
-
 }

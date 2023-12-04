@@ -34,29 +34,26 @@ public class SharedViewModel extends ViewModel {
         return currentUserState;
     }
 
-        public LiveData<PlaceModel> fetchSelectedRestaurant(String userId) {
-            MutableLiveData<PlaceModel> selectedRestaurantLiveData = new MutableLiveData<>();
+    public LiveData<PlaceModel> fetchSelectedRestaurant(String userId) {
+        MutableLiveData<PlaceModel> selectedRestaurantLiveData = new MutableLiveData<>();
 
-            firestoreHelper.fetchUserSelectedRestaurant(userId, new FirestoreHelper.OnUserRestaurantDataFetchedListener() {
-                @Override
-                public void onUserRestaurantDataFetched(String selectedRestaurantName, String selectedRestaurantAddress, Double selectedRestaurantRating) {
-                    if (selectedRestaurantName != null) {
-                        PlaceModel restaurant = new PlaceModel();
+        firestoreHelper.fetchUserSelectedRestaurant(userId, new FirestoreHelper.OnUserRestaurantDataFetchedListener() {
+            @Override
+            public void onUserRestaurantDataFetched(String selectedRestaurantName, String selectedRestaurantAddress, Double selectedRestaurantRating) {
+                if (selectedRestaurantName != null) {
+                    PlaceModel restaurant = new PlaceModel();
 
-                        restaurant.setName(selectedRestaurantName);
-                        restaurant.setVicinity(selectedRestaurantAddress);
-                        restaurant.setRating(selectedRestaurantRating);
+                    restaurant.setName(selectedRestaurantName);
+                    restaurant.setVicinity(selectedRestaurantAddress);
+                    restaurant.setRating(selectedRestaurantRating);
 
-                        selectedRestaurantLiveData.setValue(restaurant);
-                    } else {
-                        selectedRestaurantLiveData.setValue(null);
-                    }
+                    selectedRestaurantLiveData.setValue(restaurant);
+                } else {
+                    selectedRestaurantLiveData.setValue(null);
                 }
-            });
+            }
+        });
 
-            return selectedRestaurantLiveData;
-        }
+        return selectedRestaurantLiveData;
     }
-
-
-
+}

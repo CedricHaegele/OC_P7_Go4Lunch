@@ -64,16 +64,21 @@ public class FirestoreHelper {
                     for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                         UserModel user = document.toObject(UserModel.class);
                         if (user != null) {
+                            user.setName(document.getString("name"));
+                            user.setMail(document.getString("mail"));
+
                             users.add(user);
                         }
                     }
                     listener.onSelectedUsersFetched(users);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("FirestoreHelper", "Error: ", e);
+                    Log.e("FirestoreHelper", "Error fetching users", e);
                     listener.onSelectedUsersFetched(new ArrayList<>());
                 });
     }
+
+
 
     public interface OnRestaurantDataFetchedListener {
         void onRestaurantDataFetched(PlaceModel restaurant);
@@ -90,14 +95,14 @@ public class FirestoreHelper {
             updateData.put("selectedRestaurantName", restaurant.getName());
             updateData.put("selectedRestaurantAdress", restaurant.getVicinity());
             updateData.put("selectedRestuarantRating", restaurant.getRating());
-            updateData.put("selectedRestaurantPhoto", restaurant.getPhotoUrl());
+
         } else {
 
             updateData.put("selectedRestaurantId", FieldValue.delete());
             updateData.put("selectedRestaurantName", FieldValue.delete());
             updateData.put("selectedRestaurantAdress", FieldValue.delete());
             updateData.put("selectedRestuarantRating", FieldValue.delete());
-            updateData.put("selectedRestaurantPhoto", FieldValue.delete());
+
         }
 
         userDocRef.update(updateData)
@@ -267,6 +272,33 @@ public class FirestoreHelper {
                     Log.e("FirestoreHelper", "Error fetching user's selected restaurant", e);
                     listener.onUserRestaurantDataFetched(null, null, null);
                 });
+    }
+
+    public void fetchUsersForRestaurant(String restaurantId, OnUsersForRestaurantFetchedListener listener) {
+        db.collection("users")
+                .whereEqualTo("selectedRestaurantId", restaurantId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<UserModel> users = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                        UserModel user = document.toObject(UserModel.class);
+                        if (user != null) {
+                            user.setName(document.getString("name"));
+                            user.setMail(document.getString("mail"));
+
+                            users.add(user);
+                        }
+                    }
+                    listener.onUsersForRestaurantFetched(users);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirestoreHelper", "Error fetching users", e);
+                    listener.onUsersForRestaurantFetched(new ArrayList<>());
+                });
+    }
+
+    public interface OnUsersForRestaurantFetchedListener {
+        void onUsersForRestaurantFetched(List<UserModel> users);
     }
 
     public interface OnUserRestaurantDataFetchedListener {

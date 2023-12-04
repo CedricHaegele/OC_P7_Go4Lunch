@@ -11,7 +11,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/profileAppBar"
         android:layout_width="0dp"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
         android:background="#D3352A"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -60,7 +60,6 @@
 
                 <ImageView
                     android:id="@+id/restaurantImage"
-                    android:src="@drawable/lunch_time"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:scaleType="centerCrop"/>

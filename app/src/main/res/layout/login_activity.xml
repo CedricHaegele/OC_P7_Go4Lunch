@@ -23,7 +23,7 @@ android:padding="5dp">
         android:id="@+id/loginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SIGN IN"
+        android:text="@string/sign_in"
         android:padding="7dp"
         style="@style/RoundedButton"/>
 

@@ -110,7 +110,7 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
         getLocationPermission();
         getDeviceLocation();
 
-        viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurantModels -> restoListAdapter.updateData(restaurantModels));
+        //viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurantModels -> restoListAdapter.updateData(restaurantModels));
 
         return view;
     }

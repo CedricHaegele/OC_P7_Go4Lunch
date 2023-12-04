@@ -11,7 +11,7 @@ import com.example.oc_p7_go4lunch.model.firebaseUser.UserModel;
 import com.example.oc_p7_go4lunch.MVVM.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
 import com.example.oc_p7_go4lunch.MVVM.repositories.RestaurantRepository;
-import com.example.oc_p7_go4lunch.MVVM.webservices.RestaurantApiService;
+
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
@@ -26,13 +26,11 @@ public class RestaurantDetailViewModel extends ViewModel {
     public final MutableLiveData<Float> restaurantRating = new MutableLiveData<>();
     private final MutableLiveData<List<UserModel>> selectedUsers = new MutableLiveData<>();
 
-    public final RestaurantApiService restaurantApiService;
     private final FirestoreHelper firestoreHelper;
     private final RestaurantRepository restaurantRepository;
 
     // Constructor
-    public RestaurantDetailViewModel(RestaurantApiService restaurantApiService, FirestoreHelper firestoreHelper, RestaurantRepository restaurantRepository) {
-        this.restaurantApiService = restaurantApiService;
+    public RestaurantDetailViewModel(FirestoreHelper firestoreHelper, RestaurantRepository restaurantRepository) {
         this.firestoreHelper = firestoreHelper;
         this.restaurantRepository = restaurantRepository;
     }

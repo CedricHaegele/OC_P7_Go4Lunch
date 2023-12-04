@@ -18,7 +18,6 @@ import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
 import com.example.oc_p7_go4lunch.MVVM.repositories.MapRepository;
 import com.example.oc_p7_go4lunch.MVVM.repositories.RestaurantRepository;
 import com.example.oc_p7_go4lunch.MVVM.webservices.request.GooglePlacesApi;
-import com.example.oc_p7_go4lunch.MVVM.webservices.RestaurantApiService;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -47,7 +46,7 @@ public class GoogleMapsViewModel extends ViewModel {
     /**
      * Constructor for GoogleMapsViewModel.
      */
-    public GoogleMapsViewModel(Application application, GooglePlacesApi googlePlacesApi, RestaurantApiService restaurantApiService, FirestoreHelper firestoreHelper, RestaurantRepository restaurantRepository) {
+    public GoogleMapsViewModel(Application application, GooglePlacesApi googlePlacesApi, FirestoreHelper firestoreHelper, RestaurantRepository restaurantRepository) {
         this.application = application;
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(application);
         this.mapRepository = new MapRepository(googlePlacesApi);

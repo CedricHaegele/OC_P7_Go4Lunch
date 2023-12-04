@@ -27,7 +27,6 @@ import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
 import com.example.oc_p7_go4lunch.MVVM.repositories.RestaurantRepository;
 import com.example.oc_p7_go4lunch.view.viewmodel.GoogleMapsViewModel;
 import com.example.oc_p7_go4lunch.MVVM.webservices.request.GooglePlacesApi;
-import com.example.oc_p7_go4lunch.MVVM.webservices.RestaurantApiService;
 import com.example.oc_p7_go4lunch.MVVM.webservices.RetrofitService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,8 +36,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.List;
 
@@ -50,6 +48,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     // Constants for default zoom and permission request code
     private static final float DEFAULT_ZOOM = 15f;
     private static final int YOUR_REQUEST_CODE = 1234;
+    private PlacesClient placesClient;
 
     @Nullable
     @Override
@@ -95,11 +94,11 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private void initMapAndViewModel() {
         Application application = requireActivity().getApplication();
         GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
-        RestaurantApiService restaurantApiService = new RestaurantApiService();
+
         FirestoreHelper firestoreHelper = new FirestoreHelper();
         RestaurantRepository restaurantRepository = new RestaurantRepository();
 
-        ViewModelFactory factory = new ViewModelFactory(application, googlePlacesApi, restaurantApiService, firestoreHelper, restaurantRepository);
+        ViewModelFactory factory = new ViewModelFactory(application, googlePlacesApi,  firestoreHelper, restaurantRepository);
         googleMapsViewModel = new ViewModelProvider(this, factory).get(GoogleMapsViewModel.class);
 
         // Observez les données nécessaires ici
@@ -147,18 +146,37 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
         }
+
     }
+
+    private void zoomToLocation(LatLng latLng, float zoomLevel) {
+        if (mMap != null) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
+        }
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == YOUR_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 enableLocationFeatures();
+
+                if (mMap != null) {
+
+                    Location lastKnownLocation = googleMapsViewModel.getLastLocation().getValue();
+                    if (lastKnownLocation != null) {
+                        LatLng latLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                        float zoomLevel = 15f;
+                        zoomToLocation(latLng, zoomLevel);
+                    }
+                }
             } else {
                 Toast.makeText(requireContext(), "Location permission is required for this feature", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
 
 
     @Override
@@ -187,6 +205,14 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
                         }
                     }
+
+                    // Après avoir ajouté les marqueurs, vous pouvez appeler zoomToLocation
+                    if (!restaurants.isEmpty()) {
+                        PlaceModel firstRestaurant = restaurants.get(0); // Par exemple, choisissez le premier restaurant
+                        LatLng firstRestaurantLatLng = new LatLng(firstRestaurant.getLatitude(), firstRestaurant.getLongitude());
+                        float zoomLevel = 15f; // Niveau de zoom que vous souhaitez appliquer
+                        zoomToLocation(firstRestaurantLatLng, zoomLevel);
+                    }
                 });
             } else {
                 Log.d("MapViewFragment", "Location is null");
@@ -211,6 +237,5 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             return true;
         });
     }
-
 
 }

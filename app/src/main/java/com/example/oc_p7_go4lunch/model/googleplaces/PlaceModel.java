@@ -18,6 +18,7 @@ public class PlaceModel implements Serializable {
     private PhotoMetadata photoMetadata;
     private String phoneNumber;
     private String webSite;
+    private String mail;
     private int userNumber;
 
     public int getUserNumber() {
@@ -34,6 +35,14 @@ public class PlaceModel implements Serializable {
 
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     // Fields for various attributes of a restaurant
