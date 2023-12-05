@@ -3,7 +3,6 @@ package com.example.oc_p7_go4lunch.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 

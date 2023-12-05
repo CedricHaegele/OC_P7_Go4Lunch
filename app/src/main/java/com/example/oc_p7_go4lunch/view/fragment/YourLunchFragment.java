@@ -47,9 +47,7 @@ public class YourLunchFragment extends Fragment {
     private final FirestoreHelper firestoreHelper = new FirestoreHelper();
     private UserListAdapter userListAdapter;
 
-    /**
-     * Initializes the Places API on fragment creation.
-     */
+    // Initialize the Places API on fragment creation
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,24 +55,22 @@ public class YourLunchFragment extends Fragment {
         placesClient = Places.createClient(requireContext());
     }
 
-    /**
-     * Inflates the fragment layout and initializes UI components.
-     */
+    // Inflates the fragment layout and initializes UI components
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = YourlunchFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        // Set up the RecyclerView with a user list adapter
         setupRecyclerView(view);
+        // Get the place ID based on the current user's selection
         getPlaceIdAccordingToCurrentUser();
 
         return view;
     }
 
-    /**
-     * Sets up the RecyclerView with user list adapter.
-     */
+    // Sets up the RecyclerView with a user list adapter
     private void setupRecyclerView(View view) {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview_users);
         userListAdapter = new UserListAdapter(new ArrayList<>());
@@ -82,9 +78,7 @@ public class YourLunchFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
     }
 
-    /**
-     * Fetches the place ID based on the current user's selection.
-     */
+    // Fetches the place ID based on the current user's selection
     private void getPlaceIdAccordingToCurrentUser() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -112,6 +106,7 @@ public class YourLunchFragment extends Fragment {
         }
     }
 
+    // Helper method to display a message when no restaurant is chosen
     private void displayNoRestaurantChosen() {
         String noRestaurantSelected = getString(R.string.no_restaurant_selected);
         // Set the text centered and bold
@@ -126,8 +121,7 @@ public class YourLunchFragment extends Fragment {
         binding.restaurantImage.setImageResource(R.drawable.lunch_time);
     }
 
-
-
+    // Fetch restaurant details using Place Details API
     private void getRestaurantDetails(String restaurantId) {
         final List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
         final FetchPlaceRequest placeRequest = FetchPlaceRequest.newInstance(restaurantId, fields);
@@ -143,6 +137,7 @@ public class YourLunchFragment extends Fragment {
         }).addOnFailureListener((exception) -> Log.e("YourLunchFragment", "Error fetching place details", exception));
     }
 
+    // Convert Place object to PlaceModel
     private PlaceModel convertPlaceToPlaceModel(Place place) {
         PlaceModel placeDetail = new PlaceModel();
         placeDetail.setName(place.getName());
@@ -151,6 +146,7 @@ public class YourLunchFragment extends Fragment {
         return placeDetail;
     }
 
+    // Fetch and display restaurant photo
     private void fetchPhotoAndDisplay(PhotoMetadata photoMetadata) {
         final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
                 .setMaxWidth(500)
@@ -163,6 +159,7 @@ public class YourLunchFragment extends Fragment {
         }).addOnFailureListener((exception) -> Log.e("YourLunchFragment", "Error fetching photo", exception));
     }
 
+    // Set up restaurant data in the UI
     private void setupRestaurantData(PlaceModel placeDetail) {
         binding.restaurantName.setText(placeDetail.getName());
         binding.restaurantAddress.setText(placeDetail.getVicinity());
@@ -172,6 +169,7 @@ public class YourLunchFragment extends Fragment {
             binding.restaurantRating.setRating(0.0f);
         }
 
+        // Fetch users for the selected restaurant and update the user list
         firestoreHelper.fetchUsersForRestaurant(placeId, users -> userListAdapter.updateUserList(users));
     }
 

@@ -75,4 +75,15 @@ public class UserModel implements Serializable {
         return result; // Return the final hash code.
     }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setSelectedRestaurantName(String selectedRestaurantName) {
+        this.selectedRestaurantName = selectedRestaurantName;
+    }
+
+    public void setSelectedRestaurantId(String selectedRestaurantId) {
+        this.selectedRestaurantId = selectedRestaurantId;
+    }
 }

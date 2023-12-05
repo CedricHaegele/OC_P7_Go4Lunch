@@ -1,7 +1,7 @@
 package com.example.oc_p7_go4lunch.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -75,6 +75,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     }
 
     // Update the list of users in the adapter.
+    @SuppressLint("NotifyDataSetChanged")
     public void updateUserList(List<UserModel> newUserList) {
         if (newUserList != null) {
             userList.clear();

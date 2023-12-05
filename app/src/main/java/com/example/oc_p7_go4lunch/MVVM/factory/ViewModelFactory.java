@@ -46,7 +46,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         // Check if the class is GoogleMapsViewModel. If yes, create and return a new instance of it.
         if (modelClass.isAssignableFrom(GoogleMapsViewModel.class)) {
-            return (T) new GoogleMapsViewModel(application, googlePlacesApi, firestoreHelper, restaurantRepository);
+            return (T) new GoogleMapsViewModel(application, googlePlacesApi);
         }
         // Check if the class is RestaurantDetailViewModel. If yes, create and return a new instance of it.
         else if (modelClass.isAssignableFrom(RestaurantDetailViewModel.class)) {
@@ -54,7 +54,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         }
         // Check if the class is SharedViewModel. If yes, create and return a new instance of it.
         else if (modelClass.isAssignableFrom(SharedViewModel.class)) {
-            return (T) new SharedViewModel(firestoreHelper);
+            return (T) new SharedViewModel();
         }
         // If none of the above, throw an exception indicating that the ViewModel class is unknown.
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());

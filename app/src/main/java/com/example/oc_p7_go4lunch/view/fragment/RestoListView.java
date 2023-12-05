@@ -26,17 +26,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.MVVM.firestore.FirestoreHelper;
+import com.example.oc_p7_go4lunch.MVVM.webservices.RetrofitService;
+import com.example.oc_p7_go4lunch.MVVM.webservices.request.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
-import com.example.oc_p7_go4lunch.view.activities.RestaurantDetailActivity;
 import com.example.oc_p7_go4lunch.adapter.RestoListAdapter;
 import com.example.oc_p7_go4lunch.databinding.FragmentRestoListBinding;
+import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
 import com.example.oc_p7_go4lunch.model.googleplaces.results.MyPlaces;
 import com.example.oc_p7_go4lunch.utils.ItemClickSupport;
-import com.example.oc_p7_go4lunch.view.viewmodel.RestoListViewModel;
-import com.example.oc_p7_go4lunch.MVVM.webservices.request.GooglePlacesApi;
-
-import com.example.oc_p7_go4lunch.MVVM.webservices.RetrofitService;
+import com.example.oc_p7_go4lunch.view.activities.RestaurantDetailActivity;
 import com.example.oc_p7_go4lunch.view.viewmodel.SharedViewModel;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -61,11 +59,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoader {
+    // PlacesClient for interacting with Google Places API
     private PlacesClient placesClient;
     RecyclerView recyclerView;
     List<PlaceModel> placesList = new ArrayList<>();
     RestoListAdapter restoListAdapter;
-    // The entry point to the MyPlaces API.
     private Context mContext;
     GoogleMap map;
     List<PlaceModel> restaurantList = new ArrayList<>();
@@ -73,10 +71,7 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
     private static final int DEFAULT_ZOOM = 15;
-    // The entry point to the Fused Location Provider.
     private FusedLocationProviderClient fusedLocationProviderClient;
-    // The geographical location where the device is currently located. That is, the last-known
-    // location retrieved by the Fused Location Provider.
     private Location lastKnownLocation;
 
     @Override
@@ -88,37 +83,31 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // A default location (Sydney, Australia) and default zoom to use when location permission is
-        // not granted.
+        // Inflate the fragment's layout
         com.example.oc_p7_go4lunch.databinding.FragmentRestoListBinding binding = FragmentRestoListBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        // Initialize PlacesClient if not already done
         if (placesClient == null) {
             placesClient = Places.createClient(mContext);
         }
 
         recyclerView = binding.listRestos;
 
+        // Create and set up the RecyclerView adapter
         restoListAdapter = new RestoListAdapter(new ArrayList<>(), mContext, this);
         recyclerView.setAdapter(restoListAdapter);
         this.configureOnClickRecyclerView();
 
-        RestoListViewModel viewModel = new ViewModelProvider(this).get(RestoListViewModel.class);
-
-        // Construct a FusedLocationProviderClient
+        // Initialize FusedLocationProviderClient and check for location permission
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         getLocationPermission();
         getDeviceLocation();
 
-        //viewModel.getRestaurants().observe(getViewLifecycleOwner(), restaurantModels -> restoListAdapter.updateData(restaurantModels));
-
         return view;
     }
 
-    /**
-     * Get the best and most recent location of the device, which may be null in rare
-     * cases when a location is not available.
-     */
+    // Get the device's last known location
     private void getDeviceLocation() {
         try {
             if (locationPermissionGranted) {
@@ -130,11 +119,13 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
                             makeRequest(lastKnownLocation);
                         }
                     } else {
+                        // If location is not available, set the map to default location
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                         map.getUiSettings().setMyLocationButtonEnabled(false);
                     }
                 });
             } else {
+                // Request location permission if not granted
                 ActivityCompat.requestPermissions(requireActivity(),
                         new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                         PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
@@ -144,6 +135,7 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
         }
     }
 
+    // Make a request to Google Places API to get nearby restaurants
     private void makeRequest(Location location) {
         if (isAdded()) {
             String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
@@ -164,7 +156,7 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
                                     calculateDistances(restaurantList, lastKnownLocation);
                                     restoListAdapter.updateData(restaurantList);
                                     updateRestaurantsWithUserCount();
-                                    // Tri des restaurants par distance
+                                    // Sort restaurants by distance
                                     Location currentLocation = new Location("current");
                                     currentLocation.setLatitude(lastKnownLocation.getLatitude());
                                     currentLocation.setLongitude(lastKnownLocation.getLongitude());
@@ -212,11 +204,7 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
         }
     }
 
-    /**
-     * Request location permission, so that we can get the location of the
-     * device. The result of the permission request is handled by a callback,
-     * onRequestPermissionsResult.
-     */
+    // Request location permission
     private void getLocationPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -229,15 +217,13 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
         }
     }
 
-    /**
-     * callback to handle the result of the permission request
-     */
+    // Handle the result of location permission request
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         locationPermissionGranted = false;
-        if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {// If request is cancelled, the result arrays are empty.
+        if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 locationPermissionGranted = true;
@@ -253,13 +239,13 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
                     PlaceModel restaurant = restoListAdapter.getPlacesList().get(position);
 
                     if (restaurant.getPlaceId() != null) {
-                        // Obtenir l'instance de SharedViewModel
+                        // Get the instance of SharedViewModel
                         SharedViewModel sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
-                        // Mettre à jour SharedViewModel avec le restaurant sélectionné
+                        // Update SharedViewModel with the selected restaurant
                         sharedViewModel.selectRestaurant(restaurant);
 
-                        // Lancer RestaurantDetailActivity avec les informations du restaurant
+                        // Launch RestaurantDetailActivity with restaurant information
                         Intent intent = new Intent(requireActivity(), RestaurantDetailActivity.class);
                         intent.putExtra("Restaurant", restaurant);
                         startActivity(intent);
@@ -269,8 +255,7 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
                 });
     }
 
-
-
+    // Load restaurant photo using Place Photos API
     @Override
     public void loadRestaurantPhoto(String placeId, ImageView imageView) {
         final List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
@@ -296,24 +281,16 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
             }).addOnFailureListener((exception) -> {
                 if (exception instanceof ApiException) {
                     Log.e(TAG, "Place not found: " + exception.getMessage());
-
                 }
             });
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                Log.e(TAG, "Place not found: " + exception.getMessage());
-
-            }
         });
     }
 
+    // Update restaurants with the count of users
     private void updateRestaurantsWithUserCount() {
         FirestoreHelper firestoreHelper = new FirestoreHelper();
         for (PlaceModel restaurant : restaurantList) {
-            firestoreHelper.fetchSelectedUsers(restaurant.getPlaceId(), users -> {
-                restoListAdapter.setUserNumberForRestaurant(restaurant.getPlaceId(), users.size());
-            });
-
+            firestoreHelper.fetchSelectedUsers(restaurant.getPlaceId(), users -> restoListAdapter.setUserNumberForRestaurant(restaurant.getPlaceId(), users.size()));
         }
     }
 }

@@ -12,18 +12,15 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.view.viewmodel.SettingsViewModel;
 
 // Extends Fragment and implements OnSharedPreferenceChangeListener to listen for preference changes
 public class SettingsFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     // Declaration of ViewModel and SharedPreferences
-    private SettingsViewModel viewModel;
     private SharedPreferences sharedPreferences;
     // LiveData to track the state of dark mode
     private final MutableLiveData<Boolean> darkModeEnabled = new MutableLiveData<>();
@@ -36,7 +33,6 @@ public class SettingsFragment extends Fragment implements SharedPreferences.OnSh
         View view = inflater.inflate(R.layout.settings, container, false);
 
         // Initialize the ViewModel
-        viewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
 
         // Initialize SharedPreferences to store and retrieve user preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
@@ -53,7 +49,7 @@ public class SettingsFragment extends Fragment implements SharedPreferences.OnSh
         }
 
         // Set up the action bar for the fragment
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }

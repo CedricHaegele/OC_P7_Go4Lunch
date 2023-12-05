@@ -117,6 +117,7 @@ public class RestoListAdapter extends RecyclerView.Adapter<RestoListAdapter.MyVi
     }
 
     // Method to update the user number for a specific restaurant.
+    @SuppressLint("NotifyDataSetChanged")
     public void setUserNumberForRestaurant(String restaurantId, int phoneNumber) {
         for (PlaceModel restaurant : this.placesList) {
             if (restaurant.getPlaceId().equals(restaurantId)) {
