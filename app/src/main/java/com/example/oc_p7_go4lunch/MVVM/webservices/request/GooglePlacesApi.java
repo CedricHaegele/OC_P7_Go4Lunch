@@ -16,9 +16,6 @@ public interface GooglePlacesApi {
                                              @Query("radius") int radius,
                                              @Query("type") String type,
                                              @Query("key") String apiKey);
-    @GET
-    Call<RestaurantResponse> getPlaceDetails(@Url String url);
-
 
     @GET("maps/api/place/details/json")
     Call<RestoInformations> getRestaurantDetails(@Query("place_id") String placeId,

@@ -98,4 +98,11 @@
     <string name="john_smith">John Smith</string>
     <string name="jsmith1337_gmail_com">Jsmith1337@gmail.com</string>
     <string name="place_name">Place Name</string>
+
+    <string name="title_im_hungry">I\'m Hungry !</string>
+    <string name="title_workmates">Workmates</string>
+    <string name="title_my_lunch_today">My Lunch Today</string>
+    <string name="user_eating_at">%1$s is eating at %2$s</string>
+    <string name="user_not_decided">%1$s hasn\'t decided yet.</string>
+    <string name="user_joining">%1$s is joining</string>
 </resources>

@@ -17,20 +17,19 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class LoginActivity extends AppCompatActivity {
 
-    // Déclaration du ViewModel qui gère la logique de l'authentification.
+    // Declaration of the LoginViewModel to manage the logic of authentication.
     private LoginViewModel loginViewModel;
 
-    // Gère le résultat de l'authentification.
-    // Définition d'un launcher d'activité pour gérer le résultat de l'authentification Firebase.
+    // Managing the result of authentication.
+    // Setting up an ActivityResultLauncher for handling Firebase authentication result.
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
             new FirebaseAuthUIActivityResultContract(),
             this::onSignInResult
     );
 
-    // Liste des fournisseurs d'authentification (e-mail et Google).
+    // List of authentication providers (email, Google, and Twitter).
     private final List<AuthUI.IdpConfig> providers = Arrays.asList(
             new AuthUI.IdpConfig.EmailBuilder().build(),
             new AuthUI.IdpConfig.GoogleBuilder().build(),
@@ -40,38 +39,38 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialisation du ViewModel.
+        // Initializing the ViewModel.
         loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
-        // Observer les changements dans l'état d'authentification de l'utilisateur.
+        // Observing changes in the user's authentication status.
         loginViewModel.getUserLiveData().observe(this, this::updateUI);
 
-        // Déclenche le processus d'authentification.
+        // Triggering the authentication process.
         loginViewModel.authenticate();
     }
 
-    // Met à jour l'interface utilisateur en fonction de l'état de connexion de l'utilisateur.
+    // Updates the UI based on the user's login status.
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            // Si l'utilisateur est connecté, navigue vers MainActivity.
+            // If the user is logged in, navigate to MainActivity.
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
-            finish();  // Termine l'activité actuelle pour empêcher le retour à l'écran de connexion.
+            finish();  // Ends the current activity to prevent returning to the login screen.
         } else {
-            // Si aucun utilisateur n'est connecté, lance le processus de connexion Firebase UI.
+            // If no user is logged in, launches Firebase UI login process.
             Intent signInIntent = AuthUI.getInstance()
                     .createSignInIntentBuilder()
-                    .setAvailableProviders(providers)  // Définit les fournisseurs d'authentification.
-                    .setTheme(R.style.MyFirebaseUIToolbar)  // Définit le thème de l'interface de connexion.
+                    .setAvailableProviders(providers)  // Sets the authentication providers.
+                    .setTheme(R.style.MyFirebaseUIToolbar)  // Sets the theme for the login UI.
                     .build();
-            signInLauncher.launch(signInIntent);  // Lance l'intention de connexion.
+            signInLauncher.launch(signInIntent);  // Launches the sign-in intent.
         }
     }
 
-    // Gère le résultat du processus de connexion.
+    // Handles the result of the sign-in process.
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         if (result.getResultCode() == RESULT_OK) {
-            // Si la connexion est réussie, réauthentifie l'utilisateur.
+            // If login is successful, re-authenticate the user.
             loginViewModel.authenticate();
         }
     }

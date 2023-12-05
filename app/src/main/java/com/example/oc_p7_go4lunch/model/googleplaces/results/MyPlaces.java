@@ -6,20 +6,20 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+// This class represents a collection of places.
 public class MyPlaces {
 
-    // Field with serialized name for Gson to map JSON field
+    // The 'placesList' field stores a list of PlaceModel objects.
+    // The @SerializedName annotation is used by Gson to map the JSON field named "results" to this 'placesList' field.
+    // The @Expose annotation indicates that this field should be exposed for JSON serialization and deserialization.
     @SerializedName("results")
     @Expose
     private List<PlaceModel> placesList;
 
-    // Getter method for placesList
+    // This method is a getter for the 'placesList'.
+    // It returns the list of PlaceModel objects that represent the places.
     public List<PlaceModel> getPlacesList() {
         return placesList;
     }
 
-    // Setter method for placesList
-    public void setPlacesList(List<PlaceModel> placesList) {
-        this.placesList = placesList;
-    }
 }

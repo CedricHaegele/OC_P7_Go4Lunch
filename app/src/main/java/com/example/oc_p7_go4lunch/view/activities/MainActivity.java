@@ -286,25 +286,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
             case R.id.mapView:
                 changeFragment(new MapViewFragment());
-                getSupportActionBar().setTitle("I'm Hungry !");
+                getSupportActionBar().setTitle(getString(R.string.title_im_hungry));
                 searchImageView.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.listView:
                 changeFragment(new RestoListView());
-                getSupportActionBar().setTitle("I'm Hungry !");
+                getSupportActionBar().setTitle(getString(R.string.title_im_hungry));
                 searchImageView.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.workmates:
                 changeFragment(new WorkmatesList());
-                getSupportActionBar().setTitle(" Workmates");
+                getSupportActionBar().setTitle(getString(R.string.title_workmates));
                 searchImageView.setVisibility(View.GONE);
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     };
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -316,13 +317,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
             case myLunch:
                 changeFragment(new YourLunchFragment());
-                getSupportActionBar().setTitle(" My Lunch Today");
+                getSupportActionBar().setTitle(getString(R.string.title_my_lunch_today));
                 searchImageView.setVisibility(View.GONE);
                 break;
 
             case settings:
                 changeFragment(new SettingsFragment.PreferencesFragment());
-                getSupportActionBar().setTitle("I'm Hungry !");
+                getSupportActionBar().setTitle(getString(R.string.title_im_hungry));
                 searchImageView.setVisibility(View.GONE);
                 break;
 

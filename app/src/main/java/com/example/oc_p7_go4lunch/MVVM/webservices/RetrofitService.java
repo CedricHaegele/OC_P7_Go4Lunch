@@ -17,7 +17,7 @@ public class RetrofitService {
     private static final String BASE_URL = "https://maps.googleapis.com/maps/api/";
 
     // Interceptor for counting API calls
-    private static CountingInterceptor countingInterceptor = new CountingInterceptor();
+    private static final CountingInterceptor countingInterceptor = new CountingInterceptor();
 
     public static Retrofit getRetrofitInstance() {
         if (retrofit == null) {

@@ -53,7 +53,9 @@
             android:text=""
             android:letterSpacing="0.07"
             android:textColor="@color/black"
-            android:textSize="13sp"/>
+            android:textSize="13sp"
+            android:maxLines="2"
+            android:ellipsize="end"/>
 
     </LinearLayout>
 

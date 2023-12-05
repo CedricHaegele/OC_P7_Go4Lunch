@@ -1,5 +1,6 @@
 package com.example.oc_p7_go4lunch.utils.notification;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,11 +16,8 @@ import com.example.oc_p7_go4lunch.view.activities.MainActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+@SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class NotificationService extends FirebaseMessagingService {
-
-    // Constants for notification ID and tag
-    private final int NOTIFICATION_ID = 007;
-    private final String NOTIFICATION_TAG = "GO4LUNCH";
 
     @Override
     // Method called when a message is received
@@ -71,6 +69,9 @@ public class NotificationService extends FirebaseMessagingService {
         }
 
         // Display the notification
+        // Constants for notification ID and tag
+        int NOTIFICATION_ID = 7;
+        String NOTIFICATION_TAG = "GO4LUNCH";
         notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
     }
 }

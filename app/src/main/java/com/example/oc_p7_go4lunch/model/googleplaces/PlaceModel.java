@@ -1,7 +1,6 @@
 package com.example.oc_p7_go4lunch.model.googleplaces;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -15,73 +14,6 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class PlaceModel implements Serializable {
-    private PhotoMetadata photoMetadata;
-    private String phoneNumber;
-    private String webSite;
-    private String mail;
-    private int userNumber;
-
-    public int getUserNumber() {
-        return userNumber;
-    }
-
-    public void setUserNumber(int userNumber) {
-        this.userNumber = userNumber;
-    }
-
-    public String getWebSite() {
-        return webSite;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
-
-    // Fields for various attributes of a restaurant
-
-    @SerializedName("geometry")
-    @Expose
-    private Geometry geometry;
-
-    @SerializedName("photo_url")
-    @Expose
-    private String photoUrl;
-
-    // Getter et Setter pour photoUrl
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-
-    public PlaceModel(String id, String name, String address) {
-        this.placeId = id;
-        this.name = name;
-        this.vicinity = address;
-    }
-
-    public PlaceModel() {
-
-    }
-
-    public void setRating(Double rating) {
-        this.rating = rating;
-    }
-
-    public void setVicinity(String vicinity) {
-        this.vicinity = vicinity;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     @SerializedName("name")
     @Expose
@@ -90,14 +22,6 @@ public class PlaceModel implements Serializable {
     @SerializedName("opening_hours")
     @Expose
     private OpeningHours openingHours;
-
-    public String getPlaceId() {
-        return placeId;
-    }
-
-    public void setPlaceId(String placeId) {
-        this.placeId = placeId;
-    }
 
     @SerializedName("place_id")
     @Expose
@@ -119,16 +43,80 @@ public class PlaceModel implements Serializable {
     @Expose
     private double longitude;
 
+    @SerializedName("geometry")
+    @Expose
+    private Geometry geometry;
 
-     private float distanceFromCurrentLocation;
+    private PhotoMetadata photoMetadata;
+    private float distanceFromCurrentLocation;
+    private String phoneNumber;
+    private String webSite;
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
-    public void extractCoordinates() {
-        if (this.geometry != null && this.geometry.getLocation() != null) {
-            this.latitude = this.geometry.getLocation().getLat();
-            this.longitude = this.geometry.getLocation().getLng();
-        }
+    public String getWebSite() {
+        return webSite;
+    }
+
+    public void setWebSite(String webSite) {
+        this.webSite = webSite;
+    }
+
+    public PlaceModel() {
+
+    }
+
+    public PlaceModel(String id, String name, String address) {
+        this.placeId = id;
+        this.name = name;
+        this.vicinity = address;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
+    }
+
+    public String getVicinity() {
+        return vicinity;
+    }
+
+    public void setVicinity(String vicinity) {
+        this.vicinity = vicinity;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
+    // Getters and setters for 'photoMetadata'
+    public PhotoMetadata getPhotoMetadata() {
+        return photoMetadata;
+    }
+
+    public void setPhotoMetadata(PhotoMetadata photoMetadata) {
+        this.photoMetadata = photoMetadata;
     }
 
     public float getDistanceFromCurrentLocation() {
@@ -147,16 +135,12 @@ public class PlaceModel implements Serializable {
         return longitude;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getVicinity() {
-        return vicinity;
-    }
-
-    public Double getRating() {
-        return rating;
+    // Other methods
+    public void extractCoordinates() {
+        if (this.geometry != null && this.geometry.getLocation() != null) {
+            this.latitude = this.geometry.getLocation().getLat();
+            this.longitude = this.geometry.getLocation().getLng();
+        }
     }
 
     public OpeningHours getOpeningHours() {
@@ -167,13 +151,6 @@ public class PlaceModel implements Serializable {
         return geometry;
     }
 
-    public PhotoMetadata getPhotoMetadata() {
-        return photoMetadata;
-    }
-
-    public void setPhotoMetadata(PhotoMetadata photoMetadata) {
-        this.photoMetadata = photoMetadata;
-    }
     public LiveData<Bitmap> getPhoto(PlacesClient placesClient) {
         MutableLiveData<Bitmap> photoLiveData = new MutableLiveData<>();
 
@@ -181,27 +158,14 @@ public class PlaceModel implements Serializable {
             FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
                     .setMaxWidth(500)
                     .build();
-
             placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();
                 photoLiveData.setValue(bitmap);
-            }).addOnFailureListener((exception) -> {
-                Log.e("PhotoFetchError", "Erreur lors de la récupération de la photo", exception);
-                photoLiveData.setValue(null);
-            });
-
+            }).addOnFailureListener((exception) -> photoLiveData.setValue(null));
         } else {
             photoLiveData.setValue(null);
         }
 
         return photoLiveData;
-    }
-
-    public void setWebSite(String webSite) {
-        this.webSite = webSite;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 }
