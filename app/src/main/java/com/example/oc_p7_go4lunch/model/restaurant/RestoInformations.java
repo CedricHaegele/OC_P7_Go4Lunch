@@ -65,6 +65,11 @@ public class RestoInformations {
     return phoneNumber;
   }
 
+  public void setWebsite(String website) {
+    this.website = website;
+  }
 
-
+  public void setPhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
+  }
 }

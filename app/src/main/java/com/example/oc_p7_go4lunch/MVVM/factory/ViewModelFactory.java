@@ -12,6 +12,7 @@ import com.example.oc_p7_go4lunch.MVVM.webservices.request.GooglePlacesApi;
 import com.example.oc_p7_go4lunch.view.viewmodel.GoogleMapsViewModel;
 import com.example.oc_p7_go4lunch.view.viewmodel.RestaurantDetailViewModel;
 import com.example.oc_p7_go4lunch.view.viewmodel.SharedViewModel;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 /**
  * Factory for creating various ViewModels with necessary dependencies.
@@ -19,14 +20,14 @@ import com.example.oc_p7_go4lunch.view.viewmodel.SharedViewModel;
 public class ViewModelFactory implements ViewModelProvider.Factory {
     private final Application application;
     private final GooglePlacesApi googlePlacesApi;
-
+    private final PlacesClient placesClient;
     private final FirestoreHelper firestoreHelper;
     private final RestaurantRepository restaurantRepository;
 
-    public ViewModelFactory(Application application, GooglePlacesApi googlePlacesApi, FirestoreHelper firestoreHelper, RestaurantRepository restaurantRepository) {
+    public ViewModelFactory(Application application, GooglePlacesApi googlePlacesApi, FirestoreHelper firestoreHelper, RestaurantRepository restaurantRepository,PlacesClient placesClient) {
         this.application = application;
         this.googlePlacesApi = googlePlacesApi;
-
+        this.placesClient = placesClient;
         this.firestoreHelper = firestoreHelper;
         this.restaurantRepository = restaurantRepository;
     }
@@ -43,7 +44,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(GoogleMapsViewModel.class)) {
             return (T) new GoogleMapsViewModel(application, googlePlacesApi,firestoreHelper, restaurantRepository);
         } else if (modelClass.isAssignableFrom(RestaurantDetailViewModel.class)) {
-            return (T) new RestaurantDetailViewModel( firestoreHelper, restaurantRepository);
+            return (T) new RestaurantDetailViewModel( firestoreHelper, restaurantRepository,placesClient);
         } else if (modelClass.isAssignableFrom(SharedViewModel.class)) {
             return (T) new SharedViewModel(firestoreHelper);
         }

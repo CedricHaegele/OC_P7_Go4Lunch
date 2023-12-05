@@ -50,6 +50,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
@@ -92,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        Places.initialize(getApplicationContext(), BuildConfig.API_KEY);
+        PlacesClient placesClient = Places.createClient(this);
+
         // Initialisation de Firestore
         firestoreHelper = new FirestoreHelper();
 
@@ -99,13 +103,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firestoreHelper.addOrUpdateUserToFirestore(firebaseUser);
 
-        ViewModelFactory factory = new ViewModelFactory(getApplication(), googlePlacesApi, firestoreHelper, restaurantRepository);
+        ViewModelFactory factory = new ViewModelFactory(getApplication(), googlePlacesApi, firestoreHelper, restaurantRepository, placesClient);
+
 
         factory = new ViewModelFactory(
                 getApplication(),
                 googlePlacesApi,
                 firestoreHelper,
-                restaurantRepository
+                restaurantRepository,
+                placesClient
+
         );
         sharedViewModel = new ViewModelProvider(this, factory).get(SharedViewModel.class);
 

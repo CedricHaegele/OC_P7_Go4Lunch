@@ -63,7 +63,7 @@
            android:layout_toEndOf="@id/photo_user"
            android:shadowColor="#E60808"
            android:shadowRadius="45"
-           android:text="@string/john_smith"
+           android:text="john_smith"
            android:textAppearance="?attr/textAppearanceBody1"
            android:textColor="#FFFFFF"
            android:textSize="12sp"

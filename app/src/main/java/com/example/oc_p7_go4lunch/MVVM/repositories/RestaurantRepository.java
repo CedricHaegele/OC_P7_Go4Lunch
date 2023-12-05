@@ -88,7 +88,11 @@ public class RestaurantRepository {
      */
     public LiveData<PlaceModel> fetchPlaceDetails(PlacesClient placesClient, String placeId) {
         MutableLiveData<PlaceModel> liveData = new MutableLiveData<>();
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
+        List<Place.Field> placeFields = Arrays.asList(
+                Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS,
+                Place.Field.RATING, Place.Field.PHOTO_METADATAS,
+                Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI
+        );
         FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
 
         placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
@@ -101,6 +105,9 @@ public class RestaurantRepository {
                 placeModel.setPhotoMetadata(photoMetadata);
             }
 
+            placeModel.setPhoneNumber(place.getPhoneNumber());
+            placeModel.setWebSite(place.getWebsiteUri() != null ? place.getWebsiteUri().toString() : null);
+
             liveData.setValue(placeModel);
         }).addOnFailureListener((exception) -> {
             Log.e("fetchPlaceDetailsError", "Error fetching place details", exception);
@@ -109,6 +116,7 @@ public class RestaurantRepository {
 
         return liveData;
     }
+
 
     /**
      * Converts a Place object to a PlaceModel object.

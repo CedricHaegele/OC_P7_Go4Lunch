@@ -36,6 +36,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.List;
@@ -59,6 +60,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+        PlacesClient placesClient = Places.createClient(requireContext());
         return view;
     }
 
@@ -98,7 +100,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         FirestoreHelper firestoreHelper = new FirestoreHelper();
         RestaurantRepository restaurantRepository = new RestaurantRepository();
 
-        ViewModelFactory factory = new ViewModelFactory(application, googlePlacesApi,  firestoreHelper, restaurantRepository);
+        ViewModelFactory factory = new ViewModelFactory(application, googlePlacesApi,  firestoreHelper, restaurantRepository,placesClient);
         googleMapsViewModel = new ViewModelProvider(this, factory).get(GoogleMapsViewModel.class);
 
         // Observez les données nécessaires ici

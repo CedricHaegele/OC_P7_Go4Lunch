@@ -73,9 +73,9 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         ViewModelFactory factory = new ViewModelFactory(
                 getApplication(),
                 googlePlacesApi,
-
                 firestoreHelper,
-                restaurantRepository
+                restaurantRepository,
+                placesClient
         );
 
         restaurantDetailViewModel = new ViewModelProvider(this, factory).get(RestaurantDetailViewModel.class);
@@ -91,6 +91,21 @@ public class RestaurantDetailActivity extends AppCompatActivity {
     private void observeViewModelState() {
         restaurantDetailViewModel.isRestaurantSelected.observe(this, this::updateButtonUI);
         restaurantDetailViewModel.getIsRestaurantLiked().observe(this, this::updateLikeButtonUI);
+
+
+        restaurantDetailViewModel.getOpenWebsiteAction().observe(this, uri -> {
+            if (uri != null) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            }
+        });
+
+        restaurantDetailViewModel.getOpenDialerAction().observe(this, uri -> {
+            if (uri != null) {
+                Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initListener() {
@@ -99,16 +114,23 @@ public class RestaurantDetailActivity extends AppCompatActivity {
 
         binding.callButton.setOnClickListener(v -> {
             String phoneNumber = restaurant.getPhoneNumber();
-            openDialer(phoneNumber);
+            if (phoneNumber != null && !phoneNumber.isEmpty()) {
+                restaurantDetailViewModel.prepareOpenDialer(phoneNumber);
+            }
         });
+
 
         binding.websiteButton.setOnClickListener(v -> {
             String webSite = restaurant.getWebSite();
-            openWebSite(webSite);
+            if (webSite != null && !webSite.isEmpty()) {
+                restaurantDetailViewModel.prepareOpenWebsite(webSite);
+            }
         });
 
 
     }
+
+
 
     private void initView() {
         binding = ActivityRestaurantDetailBinding.inflate(getLayoutInflater());
@@ -132,7 +154,7 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         FirestoreHelper firestoreHelper = new FirestoreHelper();
         RestaurantRepository restaurantRepository = new RestaurantRepository();
 
-        ViewModelFactory factory = new ViewModelFactory(application, googlePlacesApi, firestoreHelper, restaurantRepository);
+        ViewModelFactory factory = new ViewModelFactory(application, googlePlacesApi, firestoreHelper, restaurantRepository,placesClient);
         restaurantDetailViewModel = new ViewModelProvider(this, factory).get(RestaurantDetailViewModel.class);
         PlaceModel restaurant = restaurantDetailViewModel.getRestaurant().getValue();
 
@@ -152,6 +174,10 @@ public class RestaurantDetailActivity extends AppCompatActivity {
             return false;
         }
 
+        Log.d("RestaurantDetailAct", "Restaurant Name: " + restaurant.getName());
+        Log.d("RestaurantDetailAct", "Restaurant Phone: " + restaurant.getPhoneNumber());
+        Log.d("RestaurantDetailAct", "Restaurant Website: " + restaurant.getWebSite());
+        Log.d("RestaurantDetailAct", "Restaurant Data: " + restaurant.toString());
         // Mise à jour des informations de base du restaurant
         updateBasicRestaurantInfo();
 
@@ -192,26 +218,42 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         restaurantDetailViewModel.checkUserSelection(restaurantId, userId).observe(this, this::updateButtonUI);
     }
 
-
     private void fetchRestaurantDetails(String placeId) {
         if (placeId == null) {
             Log.e("RestaurantDetail", "Place ID is null.");
             return;
         }
 
+        // Observe les détails de base du restaurant
+        restaurantDetailViewModel.getRestaurantDetails(placeId).observe(this, placeModel -> {
+            if (placeModel != null) {
+                // Mettre à jour l'UI avec les détails de base
+                binding.restaurantName.setText(placeModel.getName());
+                binding.restaurantAddress.setText(placeModel.getVicinity());
+                binding.ratingDetail.setRating(placeModel.getRating().floatValue());
 
-        restaurantDetailViewModel.getRestaurant().observe(this, restaurantModel -> {
-            binding.restaurantName.setText(restaurantModel.getName());
-            binding.restaurantAddress.setText(restaurantModel.getVicinity());
-            binding.ratingDetail.setRating(restaurantModel.getRating().floatValue());
-
+                // Mettre à jour le numéro de téléphone et le site web du restaurant dans le modèle
+                restaurant.setPhoneNumber(placeModel.getPhoneNumber());
+                restaurant.setWebSite(placeModel.getWebSite());
+            }
         });
 
-        restaurantDetailViewModel.fetchSelectedUsersForRestaurant(placeId);
+        // Observe les informations supplémentaires du restaurant
+        restaurantDetailViewModel.getAdditionalRestaurantDetails(placeId).observe(this, restoInformations -> {
+            if (restoInformations != null) {
+                String additionalInfo = "Téléphone : " + restoInformations.getPhoneNumber() + "\nSite web : " + restoInformations.getWebsite();
+                Log.d("RestaurantDetails", "Informations supplémentaires : " + additionalInfo);
 
+            }
+        });
+
+
+        restaurantDetailViewModel.fetchSelectedUsersForRestaurant(placeId);
         Intent callingIntent = getIntent();
         restaurantDetailViewModel.fetchRestaurantData(callingIntent);
     }
+
+
 
     private void fetchRestaurantPhoto(String placeId) {
         // Construire la requête pour récupérer les métadonnées de la photo
@@ -267,12 +309,6 @@ public class RestaurantDetailActivity extends AppCompatActivity {
                     }
                 });
                 restaurantDetailViewModel.checkIfRestaurantIsLiked(restaurantId);
-                restaurantDetailViewModel.websiteUrl.observe(this, url -> {
-                    if (url != null && !url.isEmpty() && !url.equals("https://www.google.com/")) {
-                        binding.websiteButton.setText(url);
-                    }
-                });
-
             } else {
                 Log.e("initializeViewBindings", "userId or restaurantId is null");
             }
@@ -295,24 +331,5 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         userListAdapter = new UserListAdapter(combinedList);
         binding.userRecyclerView.setAdapter(userListAdapter);
     }
-    // Ouvre le site web du restaurant
-    private void openWebSite(String webSite) {
-        if (webSite != null) {
-            Uri uri = Uri.parse(webSite);
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, "No website attached", Toast.LENGTH_SHORT).show();
-        }
-    }
 
-    // Compose le numéro de téléphone du restaurant
-    private void openDialer(String phoneNumber) {
-        if (phoneNumber != null && !phoneNumber.isEmpty()) {
-            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, "No phone number to dial", Toast.LENGTH_SHORT).show();
-        }
-    }
 }

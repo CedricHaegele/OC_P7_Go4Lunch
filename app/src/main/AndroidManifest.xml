@@ -29,17 +29,21 @@
         <!-- Main Activity -->
         <activity
             android:name=".view.activities.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
 
         <!-- Restaurant Detail Activity -->
         <activity
             android:name=".view.activities.RestaurantDetailActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:screenOrientation="portrait"/>
 
         <!-- Login Activity -->
         <activity
             android:name=".view.activities.LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
+
             <intent-filter>
                 <!-- This makes LoginActivity the first activity to launch when the app is opened. -->
                 <action android:name="android.intent.action.MAIN" />
@@ -51,7 +55,8 @@
         <activity
             android:name=".view.fragment.SettingsFragment"
             android:exported="false"
-            android:label="@string/title_activity_settings" />
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait"/>
 
 
         <!-- Meta-data Section: This section is for declaring meta-data for the app. -->

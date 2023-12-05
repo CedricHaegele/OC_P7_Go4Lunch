@@ -1,17 +1,21 @@
 package com.example.oc_p7_go4lunch.view.viewmodel;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.oc_p7_go4lunch.BuildConfig;
 import com.example.oc_p7_go4lunch.model.firebaseUser.UserModel;
 import com.example.oc_p7_go4lunch.MVVM.firestore.FirestoreHelper;
 import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
 import com.example.oc_p7_go4lunch.MVVM.repositories.RestaurantRepository;
 
+import com.example.oc_p7_go4lunch.model.restaurant.RestoInformations;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
@@ -27,11 +31,53 @@ public class RestaurantDetailViewModel extends ViewModel {
     private final MutableLiveData<List<UserModel>> selectedUsers = new MutableLiveData<>();
     private final FirestoreHelper firestoreHelper;
     private final RestaurantRepository restaurantRepository;
+    private final PlacesClient placesClient;
+    private MutableLiveData<Uri> openWebsiteAction = new MutableLiveData<>();
+    private MutableLiveData<Uri> openDialerAction = new MutableLiveData<>();
+
+    public LiveData<Uri> getOpenWebsiteAction() {
+        return openWebsiteAction;
+    }
+
+    public LiveData<Uri> getOpenDialerAction() {
+        return openDialerAction;
+    }
+
+    public void prepareOpenWebsite(String webSite) {
+        if (webSite != null && !webSite.isEmpty()) {
+            Log.d("RestaurantDetailVM", "Preparing to open website: " + webSite);
+            openWebsiteAction.setValue(Uri.parse(webSite));
+        } else {
+            Log.d("RestaurantDetailVM", "Website URL is null or empty");
+        }
+    }
+
+    public void prepareOpenDialer(String phoneNumber) {
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            Log.d("RestaurantDetailVM", "Preparing to dial phone number: " + phoneNumber);
+            openDialerAction.setValue(Uri.parse("tel:" + phoneNumber));
+        } else {
+            Log.d("RestaurantDetailVM", "Phone number is null or empty");
+        }
+    }
+
 
     // Constructor
-    public RestaurantDetailViewModel(FirestoreHelper firestoreHelper, RestaurantRepository restaurantRepository) {
+    public RestaurantDetailViewModel(FirestoreHelper firestoreHelper, RestaurantRepository restaurantRepository, PlacesClient placesClient) {
         this.firestoreHelper = firestoreHelper;
         this.restaurantRepository = restaurantRepository;
+        this.placesClient = placesClient;
+    }
+
+
+    public LiveData<PlaceModel> getRestaurantDetails(String placeId) {
+        // Utiliser fetchPlaceDetails pour les informations de base
+        return restaurantRepository.fetchPlaceDetails(placesClient, placeId);
+    }
+
+    public LiveData<RestoInformations> getAdditionalRestaurantDetails(String placeId) {
+        // Utiliser fetchRestaurantDetails pour des informations supplémentaires
+        return restaurantRepository.fetchRestaurantDetails(placeId, BuildConfig.API_KEY);
     }
 
     // --- Restaurant Data Management ---
@@ -47,6 +93,7 @@ public class RestaurantDetailViewModel extends ViewModel {
         if (callingIntent != null && callingIntent.hasExtra("Restaurant")) {
             PlaceModel fetchedData = (PlaceModel) callingIntent.getSerializableExtra("Restaurant");
             restaurant.setValue(fetchedData);
+            Log.d("RestaurantDetailAct", "Fetched restaurant data: " + restaurant.toString());
         }
     }
 

@@ -98,6 +98,4 @@
     <string name="sign_in">SIGN IN</string>
     <string name="no_restaurant_selected">No Restaurant selected</string>
     <string name="nav_header">nav_header</string>
-    <string name="john_smith">john_smith</string>
-    <string name="place_name">Place Name</string>
 </resources>
