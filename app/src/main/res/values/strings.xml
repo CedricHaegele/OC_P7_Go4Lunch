@@ -3,13 +3,10 @@
     <string name="app_name">Go4Lunch</string>
     <string name="main_activity_description">Find a nice restaurant and invite your co-workers for lunch</string>
     <string name="click_on_three_lines_top_left_hand_corner_in_toolbar">Click on three lines in the top left-hand corner of the toolbar</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="Settings">Notifications</string>
-
-    <!-- API Key -->
-    <string name="api_key" translatable="false">AIzaSyAh1itRs4lKYIj7idowK02VlemouPPKLJA</string>
 
     <!-- Bottom Navigation -->
     <string name="map_view">Map View</string>
@@ -98,4 +95,7 @@
     <string name="sign_in">SIGN IN</string>
     <string name="no_restaurant_selected">No Restaurant selected</string>
     <string name="nav_header">nav_header</string>
+    <string name="john_smith">John Smith</string>
+    <string name="jsmith1337_gmail_com">Jsmith1337@gmail.com</string>
+    <string name="place_name">Place Name</string>
 </resources>

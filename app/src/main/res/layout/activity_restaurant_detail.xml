@@ -14,6 +14,7 @@
         android:layout_width="0dp"
         android:layout_height="230dp"
         android:contentDescription="@string/restaurant_photo"
+        android:src="@drawable/loading_icon"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

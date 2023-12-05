@@ -6,8 +6,8 @@
         <item name="android:windowTranslucentStatus">true</item>
 
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#FF3300</item>
-        <item name="colorPrimaryVariant">#FF3300</item>
+        <item name="colorPrimary">#D3352A</item>
+        <item name="colorPrimaryVariant">#D3352A</item>
         <item name="colorOnPrimary">@color/white</item>
 
         <!-- Secondary brand color. -->

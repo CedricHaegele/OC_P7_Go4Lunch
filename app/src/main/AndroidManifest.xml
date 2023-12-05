@@ -64,7 +64,7 @@
         <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/api_key"/>
+            android:value="BuildConfig.API_KEY"/>
 
         <!-- Google Play Services Version -->
         <meta-data
