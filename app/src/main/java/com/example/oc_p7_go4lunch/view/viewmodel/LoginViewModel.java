@@ -15,10 +15,14 @@ public class LoginViewModel extends ViewModel {
         return userLiveData;
     }
 
+    protected FirebaseAuth getFirebaseAuth() {
+        return FirebaseAuth.getInstance();
+    }
+
     // This method is called to initiate the authentication process.
     public void authenticate() {
         // Get the instance of FirebaseAuth.
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseAuth auth = getFirebaseAuth();
 
         // Get the currently signed-in user.
         FirebaseUser currentUser = auth.getCurrentUser();

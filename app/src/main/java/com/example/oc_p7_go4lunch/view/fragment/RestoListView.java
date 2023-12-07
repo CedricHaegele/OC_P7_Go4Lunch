@@ -272,8 +272,8 @@ public class RestoListView extends Fragment implements RestoListAdapter.PhotoLoa
 
             // Create a FetchPhotoRequest.
             final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                    .setMaxWidth(500) // Optional.
-                    .setMaxHeight(300) // Optional.
+                    .setMaxWidth(500)
+                    .setMaxHeight(300)
                     .build();
             placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();

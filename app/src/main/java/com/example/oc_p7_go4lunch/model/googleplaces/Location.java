@@ -14,7 +14,7 @@ public class Location implements Serializable {
     @SerializedName("lng")
     private Double lng;
 
-    // Define a serialVersionUID for serializability (optional)
+    // Define a serialVersionUID for serializability
     private final static long serialVersionUID = -6836986616428735551L;
 
     // Getter method for lat

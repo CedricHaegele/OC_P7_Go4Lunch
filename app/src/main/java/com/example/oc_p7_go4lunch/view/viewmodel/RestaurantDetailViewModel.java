@@ -30,8 +30,8 @@ public class RestaurantDetailViewModel extends ViewModel {
     private final FirestoreHelper firestoreHelper;
     private final RestaurantRepository restaurantRepository;
     private final PlacesClient placesClient;
-    private final MutableLiveData<Uri> openWebsiteAction = new MutableLiveData<>();
-    private final MutableLiveData<Uri> openDialerAction = new MutableLiveData<>();
+    public MutableLiveData<Uri> openWebsiteAction = new MutableLiveData<>();
+    private MutableLiveData<Uri> openDialerAction = new MutableLiveData<>();
 
     public LiveData<Uri> getOpenWebsiteAction() {
         return openWebsiteAction;
@@ -39,6 +39,17 @@ public class RestaurantDetailViewModel extends ViewModel {
 
     public LiveData<Uri> getOpenDialerAction() {
         return openDialerAction;
+    }
+
+    private boolean isRunningUnitTest() {
+        boolean isUnitTest;
+        try {
+            Class.forName("org.junit.Test");
+            isUnitTest = true;
+        } catch (ClassNotFoundException e) {
+            isUnitTest = false;
+        }
+        return isUnitTest;
     }
 
     public void prepareOpenWebsite(String webSite) {

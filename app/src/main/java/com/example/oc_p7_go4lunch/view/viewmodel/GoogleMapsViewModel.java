@@ -114,7 +114,7 @@ public class GoogleMapsViewModel extends ViewModel {
             lastUpdatedLocation = new Location("");
             lastUpdatedLocation.setLatitude(latitude);
             lastUpdatedLocation.setLongitude(longitude);
-            // Mise à jour des données en cache.
+
             cachedRestaurants.setValue(nearbyRestaurants.getValue());
         }
     }

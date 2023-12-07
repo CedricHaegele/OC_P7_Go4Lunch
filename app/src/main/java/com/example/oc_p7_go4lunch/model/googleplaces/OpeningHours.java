@@ -11,7 +11,7 @@ public class OpeningHours implements Serializable {
     @SerializedName("open_now")
     private Boolean openNow;
 
-    // Define a serialVersionUID for serializability (optional)
+    // Define a serialVersionUID for serializability
     private final static long serialVersionUID = 3599790249304381944L;
 
     // Getter method for openNow

@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: org.robolectric:annotations:4.10" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.robolectric" artifactId="annotations" version="4.10" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/org.robolectric/annotations/4.10/a18cce4f2644364cb4d13664decd2b767d6d4678/annotations-4.10.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/org.robolectric/annotations/4.10/c5e8083553a9d4fec5cdbfebfe7e01be2c739509/annotations-4.10-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/org.robolectric/annotations/4.10/6ceba7e66db77ac41c679ddcb601a94a68ca289a/annotations-4.10-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

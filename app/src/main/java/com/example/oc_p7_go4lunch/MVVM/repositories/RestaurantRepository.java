@@ -69,7 +69,7 @@ public class RestaurantRepository {
     }
 
     // Helper method to convert a Google Place object to our custom PlaceModel object.
-    private PlaceModel convertPlaceToRestaurantModel(Place place) {
+    public PlaceModel convertPlaceToRestaurantModel(Place place) {
         PlaceModel placeModel = new PlaceModel();
         placeModel.setName(place.getName());
         placeModel.setVicinity(place.getAddress());

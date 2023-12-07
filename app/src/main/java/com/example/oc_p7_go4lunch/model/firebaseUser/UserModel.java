@@ -22,6 +22,10 @@ public class UserModel implements Serializable {
         return selectedRestaurantId;
     }
 
+    public String getMail() {
+        return mail;
+    }
+
     // Setter method for the user's email.
     public void setMail(String mail) {
         this.mail = mail;

@@ -26,7 +26,7 @@ This view provides detailed information about the restaurants on the map, includ
 Restaurant name
 Distance from the user
 Restaurant image (if available)
-Type of restaurant (optional)
+Type of restaurant 
 Address
 Number of interested colleagues
 Opening hours

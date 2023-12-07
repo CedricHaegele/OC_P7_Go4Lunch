@@ -1,8 +1,12 @@
 package com.example.oc_p7_go4lunch.view.activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -33,6 +37,8 @@ import com.example.oc_p7_go4lunch.R;
 import com.example.oc_p7_go4lunch.databinding.ActivityMainBinding;
 import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
+import com.example.oc_p7_go4lunch.utils.notification.LunchNotificationReceiver;
+import com.example.oc_p7_go4lunch.utils.notification.NotificationService;
 import com.example.oc_p7_go4lunch.view.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.view.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.view.fragment.SettingsFragment;
@@ -55,6 +61,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -91,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Getting the current Firebase user and updating it in Firestore
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firestoreHelper.addOrUpdateUserToFirestore(firebaseUser);
+
+        scheduleLunchNotification();
 
         ViewModelFactory factory;
 
@@ -319,6 +328,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Close the navigation drawer after selection.
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void scheduleLunchNotification() {
+        Intent intent = new Intent(this, LunchNotificationReceiver.class);
+        PendingIntent pendingIntent;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+
+            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        } else {
+
+            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     // Log out the user and navigate back to LoginActivity.

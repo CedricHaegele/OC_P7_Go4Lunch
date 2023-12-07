@@ -105,6 +105,6 @@
     <string name="user_eating_at">%1$s mange au %2$s</string>
     <string name="user_not_decided">%1$s ne s\'est pas encore décidé.</string>
     <string name="user_joining">%1$s mange ici</string>
-
+    <string name="api_key">AIzaSyAh1itRs4lKYIj7idowK02VlemouPPKLJA</string>
 
 </resources>

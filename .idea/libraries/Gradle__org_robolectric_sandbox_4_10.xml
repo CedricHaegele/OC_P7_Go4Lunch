@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: org.robolectric:sandbox:4.10" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.robolectric" artifactId="sandbox" version="4.10" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/org.robolectric/sandbox/4.10/ded1312bc48e74c93d2de0b978e063991d7523bb/sandbox-4.10.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/org.robolectric/sandbox/4.10/61f9f7c89cdac40190e3ba876ecf82ffcd5e9aff/sandbox-4.10-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/org.robolectric/sandbox/4.10/5ac5cdc5a7f7f746d260a6cb062e3d5b4ab96d71/sandbox-4.10-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

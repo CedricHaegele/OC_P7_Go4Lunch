@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: org.mockito:mockito-android:3.11.2" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.mockito" artifactId="mockito-android" version="3.11.2" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/org.mockito/mockito-android/3.11.2/320edf31be9186520d25f7c7b4e88cc41949b9a7/mockito-android-3.11.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/org.mockito/mockito-android/3.11.2/d7ff0fc68027ec731fcb0b8f5284bf7eb4ca4972/mockito-android-3.11.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../flutter/caches/modules-2/files-2.1/org.mockito/mockito-android/3.11.2/5d292e07d36513827834fecb495fc5a1de1e278/mockito-android-3.11.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

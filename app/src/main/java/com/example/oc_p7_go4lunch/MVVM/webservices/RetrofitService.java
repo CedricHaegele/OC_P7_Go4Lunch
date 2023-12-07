@@ -47,5 +47,4 @@ public class RetrofitService {
         }
         return googlePlacesApi;
     }
-
 }
