@@ -71,17 +71,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <!-- NOTIFICATION SERVICE -->
-        <service
-            android:name=".utils.notification.NotificationService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-
-        <receiver android:name="com.example.oc_p7_go4lunch.utils.notification.LunchNotificationReceiver" />
-
+        <receiver
+            android:name=".utils.notification.LunchNotificationReceiver"
+            android:exported="true" />
 
     </application>
 </manifest>

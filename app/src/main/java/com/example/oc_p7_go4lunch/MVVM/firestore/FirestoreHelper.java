@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit2.Callback;
+
 // Defines a class named FirestoreHelper for interacting with Firestore database.
 public class FirestoreHelper {
     // Declaration of Firestore database instance and a LiveData variable.
@@ -225,18 +227,18 @@ public class FirestoreHelper {
                     for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                         UserModel user = document.toObject(UserModel.class);
                         if (user != null) {
-
-                            Log.d(TAG, "Adding user: " + user.getName());
                             users.add(user);
+                            Log.d(TAG, "User fetched: " + user.getName()); // Log pour chaque utilisateur
                         }
                     }
+                    Log.d(TAG, "Total users fetched: " + users.size()); // Log du nombre total d'utilisateurs
                     listener.onUsersForRestaurantFetched(users);
-                    Log.d(TAG, "Total users fetched: " + users.size());
                 })
-                .addOnFailureListener(e -> Log.d(TAG, "Error fetching users: " + e.getMessage()));
-
+                .addOnFailureListener(e -> {
+                    Log.d(TAG, "Error fetching users: " + e.getMessage()); // Log en cas d'erreur
+                    listener.onUsersForRestaurantFetched(new ArrayList<>());
+                });
     }
-
 
 
     public interface OnUsersForRestaurantFetchedListener {

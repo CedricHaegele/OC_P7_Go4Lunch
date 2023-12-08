@@ -43,7 +43,6 @@ public class NotificationService extends FirebaseMessagingService {
             // Check if custom notification logic should be applied
             // Assuming the restaurant name and user ID are passed in the data payload
             Map<String, String> data = remoteMessage.getData();
-            Log.d(TAG, "Data Payload: " + remoteMessage.getData().toString());
             if (data.containsKey("restaurantName") && data.containsKey("userId")) {
                 String restaurantName = data.get("restaurantName");
                 String userId = data.get("userId");
