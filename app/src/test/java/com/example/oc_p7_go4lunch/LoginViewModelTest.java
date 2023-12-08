@@ -16,23 +16,27 @@ import com.google.firebase.auth.FirebaseUser;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
+// Utilisation de Robolectric pour le test unitaire
 @RunWith(RobolectricTestRunner.class)
 public class LoginViewModelTest {
 
-    @Mock
+    @Mock // Simule l'authentification Firebase
     private FirebaseAuth mockFirebaseAuth;
-    @Mock
+    @Mock // Simule un utilisateur Firebase
     private FirebaseUser mockFirebaseUser;
 
+    // Objet ViewModel à tester
     private LoginViewModel loginViewModel;
 
+    // Configuration initiale avant chaque test
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        // Simuler FirebaseAuth et FirebaseUser
+        MockitoAnnotations.initMocks(this); // Initialise les objets simulés
+
+        // Simule le retour de l'utilisateur courant Firebase
         when(mockFirebaseAuth.getCurrentUser()).thenReturn(mockFirebaseUser);
 
-
+        // Crée une instance de LoginViewModel pour le test
         loginViewModel = new LoginViewModel() {
             @Override
             protected FirebaseAuth getFirebaseAuth() {
@@ -41,16 +45,18 @@ public class LoginViewModelTest {
         };
     }
 
+    // Test vérifiant la mise à jour de LiveData lors de l'authentification
     @Test
     public void authenticate_UserSignedIn_UpdatesLiveData() {
-        // Observer pour LiveData
+        // Simule un observer pour LiveData
         Observer<FirebaseUser> observer = mock(Observer.class);
+        // Attache l'observer au LiveData de loginViewModel
         loginViewModel.getUserLiveData().observeForever(observer);
 
-        // Appeler authenticate
+        // Exécute la méthode à tester
         loginViewModel.authenticate();
 
-        // Vérifier si userLiveData a été mis à jour
+        // Vérifie si le LiveData a été mis à jour avec l'utilisateur simulé
         verify(observer).onChanged(mockFirebaseUser);
     }
 }
