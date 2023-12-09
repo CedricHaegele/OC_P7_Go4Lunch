@@ -12,7 +12,7 @@
     <PreferenceCategory app:title="@string/sync_header">
 
         <SwitchPreferenceCompat
-            app:key="notifications_enable"
+            app:key="notifications_enabled"
             app:title="Activate Notifications"
             app:defaultValue="True"/>
 

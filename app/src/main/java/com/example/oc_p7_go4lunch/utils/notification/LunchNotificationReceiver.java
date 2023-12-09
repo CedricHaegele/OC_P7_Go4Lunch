@@ -46,6 +46,8 @@ public class LunchNotificationReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         String message = "Time for lunch at " + restaurantName + " ! with: " + userNames ;
+        Log.d(TAG, "User Names for Notification: " + userNames);
+
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "YourChannelID")
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp)

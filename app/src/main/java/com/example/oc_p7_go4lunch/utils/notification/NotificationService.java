@@ -132,25 +132,33 @@ public class NotificationService extends FirebaseMessagingService {
         FirestoreHelper firestoreHelper = new FirestoreHelper();
 
         Runnable fetchAndNotify = () -> {
-            firestoreHelper.fetchUsersForRestaurant(restaurantName, users -> {
+            firestoreHelper.fetchRestaurantAndUsers(currentUserId, (selectedRestaurantName, users) -> {
                 StringBuilder userNames = new StringBuilder();
+                Log.d(TAG, "Users fetched for restaurant: " + restaurantName); // Log pour débuter le traitement
+
                 for (UserModel user : users) {
                     if (!user.getUserId().equals(currentUserId)) {
                         userNames.append(user.getName()).append(", ");
+                        Log.d(TAG, "User added: " + user.getName()); // Log pour chaque utilisateur ajouté
                     }
                 }
 
                 if (userNames.length() > 0) {
+                    // Retrait de la dernière virgule et espace
                     userNames = new StringBuilder(userNames.substring(0, userNames.length() - 2));
                     String notificationMessage = "You are eating with " + userNames + " at " + restaurantName;
+                    Log.d(TAG, "Notification message: " + notificationMessage); // Log du message final
                     sendCustomVisualNotification(notificationMessage);
+                } else {
+                    Log.d(TAG, "No users found for restaurant: " + restaurantName); // Log si aucun utilisateur n'est trouvé
                 }
             });
         };
 
+        // Vérification si un restaurant est sélectionné
         if (restaurantName == null) {
-            firestoreHelper.fetchUserSelectedRestaurant(currentUserId, selectedRestaurant -> {
-                if (selectedRestaurant != null) {
+            firestoreHelper.fetchRestaurantAndUsers(currentUserId, (selectedRestaurantName, users) -> {
+                if (selectedRestaurantName != null) {
                     fetchAndNotify.run();
                 } else {
                     Log.d(TAG, "No restaurant selected for user ID: " + currentUserId);
@@ -160,6 +168,8 @@ public class NotificationService extends FirebaseMessagingService {
             fetchAndNotify.run();
         }
     }
+
+
 
 }
 

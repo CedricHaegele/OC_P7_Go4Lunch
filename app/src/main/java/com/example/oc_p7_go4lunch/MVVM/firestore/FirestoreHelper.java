@@ -21,11 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import retrofit2.Callback;
-
 // Defines a class named FirestoreHelper for interacting with Firestore database.
 public class FirestoreHelper {
-    // Declaration of Firestore database instance and a LiveData variable.
+
     private final FirebaseFirestore db;
     private final MutableLiveData<Boolean> isRestaurantSelected = new MutableLiveData<>();
     public static final String TAG = "NotificationService";
@@ -102,6 +100,30 @@ public class FirestoreHelper {
                 .addOnFailureListener(listener::onError);
     }
 
+    // Fetches and notifies the listener with users who have selected a specific restaurant.
+    public void fetchUsersForRestaurant(String restaurantId, OnUsersForRestaurantFetchedListener listener) {
+        db.collection("users")
+                .whereEqualTo("selectedRestaurantId", restaurantId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<UserModel> users = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                        UserModel user = document.toObject(UserModel.class);
+                        if (user != null) {
+                            users.add(user);
+                            Log.d(TAG, "User fetched: " + user.getName()); // Log pour chaque utilisateur
+                        }
+                    }
+                    Log.d(TAG, "Total users fetched: " + users.size()); // Log du nombre total d'utilisateurs
+                    listener.onUsersForRestaurantFetched(users);
+                })
+                .addOnFailureListener(e -> {
+                    Log.d(TAG, "Error fetching users: " + e.getMessage()); // Log en cas d'erreur
+                    listener.onUsersForRestaurantFetched(new ArrayList<>());
+                });
+    }
+
+
     // Interfaces for callback listeners.
     public interface OnSelectedUsersFetchedListener {
         void onSelectedUsersFetched(List<UserModel> users);
@@ -113,7 +135,7 @@ public class FirestoreHelper {
     }
 
     // Fetches and returns the live data of the like state for a restaurant by a user.
-    public LiveData<Boolean> getLikeState(String userId, String restaurantId) {
+    public void getLikeState(String userId, String restaurantId) {
         MutableLiveData<Boolean> isLikedLiveData = new MutableLiveData<>();
         db.collection("users").document(userId).get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -126,7 +148,6 @@ public class FirestoreHelper {
                     }
                 })
                 .addOnFailureListener(e -> isLikedLiveData.setValue(false));
-        return isLikedLiveData;
     }
 
     // Updates the like state of a restaurant by a user in Firestore.
@@ -183,11 +204,10 @@ public class FirestoreHelper {
         return isRestaurantSelected;
     }
 
-    // Fetches and notifies the listener with user's selected restaurant data.
-    public void fetchUserSelectedRestaurant(String userId, OnUserRestaurantDataFetchedListener listener) {
+    public void fetchRestaurantAndUsers(String userId, OnRestaurantAndUsersFetchedListener listener) {
         if (userId == null) {
-            Log.e(TAG, "fetchUserSelectedRestaurant: userId is null");
-            listener.onUserRestaurantDataFetched(null);
+            Log.e(TAG, "fetchRestaurantAndUsers: userId is null");
+            listener.onRestaurantAndUsersFetched(null, new ArrayList<>());
             return;
         }
 
@@ -199,53 +219,42 @@ public class FirestoreHelper {
                         String selectedRestaurantName = documentSnapshot.getString("selectedRestaurantName");
 
                         if (selectedRestaurantId != null) {
-                            fetchUsersForRestaurant(selectedRestaurantId, users -> {
-                                Log.d(TAG, "Total users fetched in callback: " + users.size());
-                            });
+                            db.collection("users")
+                                    .whereEqualTo("selectedRestaurantId", selectedRestaurantId)
+                                    .get()
+                                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                                        List<UserModel> users = new ArrayList<>();
+                                        for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                                            UserModel user = doc.toObject(UserModel.class);
+                                            if (user != null) {
+                                                users.add(user);
+                                            }
+                                        }
+                                        listener.onRestaurantAndUsersFetched(selectedRestaurantName, users);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.d(TAG, "Error fetching users: " + e.getMessage());
+                                        listener.onRestaurantAndUsersFetched(selectedRestaurantName, new ArrayList<>());
+                                    });
+                        } else {
+                            listener.onRestaurantAndUsersFetched(null, new ArrayList<>());
                         }
-                        listener.onUserRestaurantDataFetched(selectedRestaurantName);
                     } else {
-                        Log.e(TAG, "No document found for userId: " + userId);
-                        listener.onUserRestaurantDataFetched(null);
+                        listener.onRestaurantAndUsersFetched(null, new ArrayList<>());
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error fetching user selected restaurant: " + e.getMessage());
-                    listener.onUserRestaurantDataFetched(null);
+                    listener.onRestaurantAndUsersFetched(null, new ArrayList<>());
                 });
     }
 
-
-
-    // Fetches and notifies the listener with users who have selected a specific restaurant.
-    public void fetchUsersForRestaurant(String restaurantId, OnUsersForRestaurantFetchedListener listener) {
-        db.collection("users")
-                .whereEqualTo("selectedRestaurantId", restaurantId)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<UserModel> users = new ArrayList<>();
-                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                        UserModel user = document.toObject(UserModel.class);
-                        if (user != null) {
-                            users.add(user);
-                            Log.d(TAG, "User fetched: " + user.getName()); // Log pour chaque utilisateur
-                        }
-                    }
-                    Log.d(TAG, "Total users fetched: " + users.size()); // Log du nombre total d'utilisateurs
-                    listener.onUsersForRestaurantFetched(users);
-                })
-                .addOnFailureListener(e -> {
-                    Log.d(TAG, "Error fetching users: " + e.getMessage()); // Log en cas d'erreur
-                    listener.onUsersForRestaurantFetched(new ArrayList<>());
-                });
+    public interface OnRestaurantAndUsersFetchedListener {
+        void onRestaurantAndUsersFetched(String selectedRestaurantName, List<UserModel> users);
     }
-
 
     public interface OnUsersForRestaurantFetchedListener {
         void onUsersForRestaurantFetched(List<UserModel> users);
     }
 
-    public interface OnUserRestaurantDataFetchedListener {
-        void onUserRestaurantDataFetched(String selectedRestaurantName);
-    }
 }

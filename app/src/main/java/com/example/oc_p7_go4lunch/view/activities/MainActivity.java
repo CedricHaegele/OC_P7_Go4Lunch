@@ -5,8 +5,10 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -30,6 +33,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.bumptech.glide.Glide;
 import com.example.oc_p7_go4lunch.BuildConfig;
@@ -87,8 +91,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirestoreHelper firestoreHelper;
     GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
     RestaurantRepository restaurantRepository = new RestaurantRepository();
-    private static final String TAG = "MainActivityr";
+    private static final String TAG = "MainActivity";
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,6 +178,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Initializing other UI components
         initUIComponents();
+
+        // Enregistrement du BroadcastReceiver
+        IntentFilter filter = new IntentFilter("NOTIFICATION_TOGGLE");
+        registerReceiver(notificationToggleReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
 
         fetchDataAndScheduleAlarm();
 
@@ -344,6 +353,71 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void scheduleLunchNotification() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean notificationsEnabled = prefs.getBoolean("notifications_enabled", true);
+
+        if (notificationsEnabled) {
+            Intent intent = new Intent(this, LunchNotificationReceiver.class);
+            PendingIntent pendingIntent;
+
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                flags |= PendingIntent.FLAG_IMMUTABLE;
+            }
+
+            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, flags);
+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 9);
+            calendar.set(Calendar.MINUTE, 04);
+            calendar.set(Calendar.SECOND, 0);
+
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY, pendingIntent);
+        }
+    }
+
+    public void fetchDataAndScheduleAlarm() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            firestoreHelper.fetchRestaurantAndUsers(currentUser.getUid(), (selectedRestaurantName, users) -> {
+                if (selectedRestaurantName != null && !users.isEmpty()) {
+                    List<String> userNames = new ArrayList<>();
+                    for (UserModel user : users) {
+                        userNames.add(user.getName());
+                    }
+                    storeLunchPreferences(selectedRestaurantName, userNames);
+                    scheduleLunchNotification();
+                }
+            });
+        }
+    }
+
+    private void storeLunchPreferences(String restaurantName, List<String> userNames) {
+        SharedPreferences prefs = getSharedPreferences("YourPrefName", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        String userNamesStr = TextUtils.join(", ", userNames);
+
+        editor.putString("restaurantName", restaurantName);
+        editor.putString("userNames", userNamesStr);
+        editor.apply();
+    }
+
+    private BroadcastReceiver notificationToggleReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean enabled = intent.getBooleanExtra("enabled", true);
+            if (enabled) {
+                scheduleLunchNotification();
+            } else {
+                cancelLunchNotification();
+            }
+        }
+    };
+
+    private void cancelLunchNotification() {
         Intent intent = new Intent(this, LunchNotificationReceiver.class);
         PendingIntent pendingIntent;
 
@@ -355,42 +429,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         pendingIntent = PendingIntent.getBroadcast(this, 0, intent, flags);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 15);
-        calendar.set(Calendar.MINUTE, 19);
-        calendar.set(Calendar.SECOND, 0);
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent);
+        }
 
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, pendingIntent);
-    }
-
-    public void fetchDataAndScheduleAlarm() {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            firestoreHelper.fetchUserSelectedRestaurant(currentUser.getUid(), selectedRestaurantName -> {
-                if (selectedRestaurantName != null) {
-                    firestoreHelper.fetchUsersForRestaurant(selectedRestaurantName, users -> {
-                        List<String> userNames = new ArrayList<>();
-                        for (UserModel user : users) {
-                            userNames.add(user.getName());
-                        }
-                        storeLunchPreferences(selectedRestaurantName, userNames);
-                        scheduleLunchNotification();
-                    });
-                }
-            });
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null) {
+            notificationManager.cancelAll();
         }
     }
 
-    private void storeLunchPreferences(String restaurantName, List<String> userNames) {
-        SharedPreferences prefs = getSharedPreferences("YourPrefName", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        String userNamesStr = TextUtils.join(", ", userNames);
-        editor.putString("restaurantName", restaurantName);
-        editor.putString("userNames", userNamesStr);
-        editor.apply();
-    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
+        unregisterReceiver(notificationToggleReceiver);
+    }
 
     // Log out the user and navigate back to LoginActivity.
     public void onSignOutButtonClicked() {

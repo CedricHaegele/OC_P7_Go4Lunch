@@ -1,5 +1,6 @@
 package com.example.oc_p7_go4lunch.view.fragment;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -85,15 +86,12 @@ public class SettingsFragment extends Fragment implements SharedPreferences.OnSh
         }
     }
 
-    // Toggle the state of notification based on user preference
     private void toggleNotificationService(boolean enabled) {
-        // Edit the SharedPreferences
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        // Put the new value for notifications
-        editor.putBoolean("notifications_enabled", enabled);
-        // Apply changes asynchronously
-        editor.apply();
+        Intent intent = new Intent("NOTIFICATION_TOGGLE");
+        intent.putExtra("enabled", enabled);
+        requireActivity().sendBroadcast(intent);
     }
+
 
     // Inner class to handle preferences UI
     public static class PreferencesFragment extends PreferenceFragmentCompat {
