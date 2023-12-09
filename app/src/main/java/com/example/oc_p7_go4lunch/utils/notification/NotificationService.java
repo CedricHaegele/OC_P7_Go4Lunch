@@ -131,37 +131,32 @@ public class NotificationService extends FirebaseMessagingService {
     public void notifyUserForLunch(String currentUserId, String restaurantName) {
         FirestoreHelper firestoreHelper = new FirestoreHelper();
 
-        Runnable fetchAndNotify = () -> {
-            firestoreHelper.fetchRestaurantAndUsers(currentUserId, (selectedRestaurantName, users) -> {
-                StringBuilder userNames = new StringBuilder();
-                Log.d(TAG, "Users fetched for restaurant: " + restaurantName); // Log pour débuter le traitement
+        Runnable fetchAndNotify = () -> firestoreHelper.fetchRestaurantAndUsers(currentUserId, (selectedRestaurantName, users) -> {
+            StringBuilder userNames = new StringBuilder();
 
-                for (UserModel user : users) {
-                    if (!user.getUserId().equals(currentUserId)) {
-                        userNames.append(user.getName()).append(", ");
-                        Log.d(TAG, "User added: " + user.getName()); // Log pour chaque utilisateur ajouté
-                    }
+            for (UserModel user : users) {
+                if (!user.getUserId().equals(currentUserId)) {
+                    userNames.append(user.getName()).append(", ");
+
                 }
+            }
 
-                if (userNames.length() > 0) {
-                    // Retrait de la dernière virgule et espace
-                    userNames = new StringBuilder(userNames.substring(0, userNames.length() - 2));
-                    String notificationMessage = "You are eating with " + userNames + " at " + restaurantName;
-                    Log.d(TAG, "Notification message: " + notificationMessage); // Log du message final
-                    sendCustomVisualNotification(notificationMessage);
-                } else {
-                    Log.d(TAG, "No users found for restaurant: " + restaurantName); // Log si aucun utilisateur n'est trouvé
-                }
-            });
-        };
+            if (userNames.length() > 0) {
 
-        // Vérification si un restaurant est sélectionné
+                userNames = new StringBuilder(userNames.substring(0, userNames.length() - 2));
+                String notificationMessage = "You are eating with " + userNames + " at " + restaurantName;
+                sendCustomVisualNotification(notificationMessage);
+            } else {
+
+            }
+        });
+
         if (restaurantName == null) {
             firestoreHelper.fetchRestaurantAndUsers(currentUserId, (selectedRestaurantName, users) -> {
                 if (selectedRestaurantName != null) {
                     fetchAndNotify.run();
                 } else {
-                    Log.d(TAG, "No restaurant selected for user ID: " + currentUserId);
+
                 }
             });
         } else {

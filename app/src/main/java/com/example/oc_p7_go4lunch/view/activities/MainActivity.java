@@ -2,7 +2,6 @@ package com.example.oc_p7_go4lunch.view.activities;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -26,7 +25,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -48,7 +46,6 @@ import com.example.oc_p7_go4lunch.databinding.HeaderNavigationDrawerBinding;
 import com.example.oc_p7_go4lunch.model.firebaseUser.UserModel;
 import com.example.oc_p7_go4lunch.model.googleplaces.PlaceModel;
 import com.example.oc_p7_go4lunch.utils.notification.LunchNotificationReceiver;
-import com.example.oc_p7_go4lunch.utils.notification.NotificationService;
 import com.example.oc_p7_go4lunch.view.fragment.MapViewFragment;
 import com.example.oc_p7_go4lunch.view.fragment.RestoListView;
 import com.example.oc_p7_go4lunch.view.fragment.SettingsFragment;
@@ -73,10 +70,8 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 // Main Activity class
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -91,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirestoreHelper firestoreHelper;
     GooglePlacesApi googlePlacesApi = RetrofitService.getGooglePlacesApi();
     RestaurantRepository restaurantRepository = new RestaurantRepository();
-    private static final String TAG = "MainActivity";
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -221,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             assert data != null;
             Status status = Autocomplete.getStatusFromIntent(data);
             if (status.getStatusMessage() != null) {
-                Log.i("PlaceAPI", status.getStatusMessage());
+
             }
         }
     }
@@ -369,8 +363,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, 9);
-            calendar.set(Calendar.MINUTE, 04);
+            calendar.set(Calendar.HOUR_OF_DAY, 12);
+            calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
 
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
@@ -405,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         editor.apply();
     }
 
-    private BroadcastReceiver notificationToggleReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver notificationToggleReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean enabled = intent.getBooleanExtra("enabled", true);

@@ -111,14 +111,11 @@ public class FirestoreHelper {
                         UserModel user = document.toObject(UserModel.class);
                         if (user != null) {
                             users.add(user);
-                            Log.d(TAG, "User fetched: " + user.getName()); // Log pour chaque utilisateur
                         }
                     }
-                    Log.d(TAG, "Total users fetched: " + users.size()); // Log du nombre total d'utilisateurs
                     listener.onUsersForRestaurantFetched(users);
                 })
                 .addOnFailureListener(e -> {
-                    Log.d(TAG, "Error fetching users: " + e.getMessage()); // Log en cas d'erreur
                     listener.onUsersForRestaurantFetched(new ArrayList<>());
                 });
     }
@@ -206,7 +203,6 @@ public class FirestoreHelper {
 
     public void fetchRestaurantAndUsers(String userId, OnRestaurantAndUsersFetchedListener listener) {
         if (userId == null) {
-            Log.e(TAG, "fetchRestaurantAndUsers: userId is null");
             listener.onRestaurantAndUsersFetched(null, new ArrayList<>());
             return;
         }
@@ -233,7 +229,6 @@ public class FirestoreHelper {
                                         listener.onRestaurantAndUsersFetched(selectedRestaurantName, users);
                                     })
                                     .addOnFailureListener(e -> {
-                                        Log.d(TAG, "Error fetching users: " + e.getMessage());
                                         listener.onRestaurantAndUsersFetched(selectedRestaurantName, new ArrayList<>());
                                     });
                         } else {
@@ -244,7 +239,6 @@ public class FirestoreHelper {
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error fetching user selected restaurant: " + e.getMessage());
                     listener.onRestaurantAndUsersFetched(null, new ArrayList<>());
                 });
     }

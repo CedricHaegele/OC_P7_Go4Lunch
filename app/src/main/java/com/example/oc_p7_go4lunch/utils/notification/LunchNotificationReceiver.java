@@ -6,18 +6,14 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
-import com.example.oc_p7_go4lunch.MVVM.firestore.FirestoreHelper;
-import com.example.oc_p7_go4lunch.R;
-import com.example.oc_p7_go4lunch.view.activities.MainActivity;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
+
+import com.example.oc_p7_go4lunch.R;
+import com.example.oc_p7_go4lunch.view.activities.MainActivity;
 
 public class LunchNotificationReceiver extends BroadcastReceiver {
     private static final String TAG = "LunchNotifReceiver";
@@ -31,7 +27,7 @@ public class LunchNotificationReceiver extends BroadcastReceiver {
         if (userNames != null && selectedRestaurantName != null) {
             sendNotification(context, userNames, selectedRestaurantName);
         } else {
-            Log.d(TAG, "No user names or restaurant name stored");
+
         }
     }
 
@@ -46,8 +42,6 @@ public class LunchNotificationReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         String message = "Time for lunch at " + restaurantName + " ! with: " + userNames ;
-        Log.d(TAG, "User Names for Notification: " + userNames);
-
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "YourChannelID")
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp)

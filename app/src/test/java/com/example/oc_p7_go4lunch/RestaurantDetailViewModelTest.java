@@ -1,15 +1,16 @@
 package com.example.oc_p7_go4lunch;
 
-import androidx.lifecycle.MutableLiveData;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import android.net.Uri;
+
+import com.example.oc_p7_go4lunch.view.viewmodel.RestaurantDetailViewModel;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import android.net.Uri;
-import com.example.oc_p7_go4lunch.view.viewmodel.RestaurantDetailViewModel;
 
 @RunWith(RobolectricTestRunner.class) // Utilise Robolectric pour simuler l'environnement Android.
 public class RestaurantDetailViewModelTest {

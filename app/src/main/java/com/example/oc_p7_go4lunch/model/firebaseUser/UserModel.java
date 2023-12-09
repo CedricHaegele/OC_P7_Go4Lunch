@@ -53,7 +53,6 @@ public class UserModel implements Serializable {
 
     // Setter method for the user's photo URL. Logs the photo URL for debugging.
     public void setPhoto(String photo) {
-        Log.d("UserModel", "setPhoto: " + photo);
         this.photo = photo;
     }
 

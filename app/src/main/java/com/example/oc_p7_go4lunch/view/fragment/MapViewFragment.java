@@ -196,14 +196,14 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
         // Fetch and observe nearby restaurants separately
         googleMapsViewModel.getNearbyRestaurants().observe(getViewLifecycleOwner(), restaurants -> {
-            mMap.clear(); // Clear existing markers before adding new ones
-            if (restaurants != null && !restaurants.isEmpty()) {
+            mMap.clear(); // Clear existing markers
+            if (restaurants != null) {
                 for (PlaceModel restaurant : restaurants) {
-                    restaurant.extractCoordinates();
-                    LatLng latLng = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
-
-                    Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(restaurant.getName()));
-                    marker.setTag(restaurant); // Set tag with restaurant data
+                    if (restaurant != null) {
+                        LatLng restaurantLocation = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
+                        Marker marker = mMap.addMarker(new MarkerOptions().position(restaurantLocation).title(restaurant.getName()));
+                        marker.setTag(restaurant);
+                    }
                 }
             }
         });
@@ -221,10 +221,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 Intent detailIntent = new Intent(getActivity(), RestaurantDetailActivity.class);
                 detailIntent.putExtra("Restaurant", clickedRestaurant);
                 startActivity(detailIntent);
-            } else {
-                Toast.makeText(getContext(), "Restaurant data is not available", Toast.LENGTH_SHORT).show();
             }
-            return true;
+            return false;
         });
     }
 

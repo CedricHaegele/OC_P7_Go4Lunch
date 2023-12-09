@@ -33,7 +33,7 @@ public class MapRepository {
         String location = latitude + "," + longitude;
 
         // Define the search radius in meters
-        int radius = 1000;
+        int radius = 2000;
 
         // Define the type of place to search for (restaurant)
         String type = "restaurant";
