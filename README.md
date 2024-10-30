@@ -1,67 +1,91 @@
-Go4Lunch Application Specification Document
+# Go4Lunch
 
-Overview
-Go4Lunch is designed to be a collaborative application for employees to find and select restaurants in their vicinity and share their choices with colleagues. It facilitates group lunch arrangements by allowing users to see where their peers are dining and join them. Prior to lunchtime, the app sends notifications to remind employees to meet their colleagues.
+**Application mobile Android pour faciliter la planification de déjeuners en équipe en sélectionnant des restaurants à proximité.**
 
-Back-end Integration
-The mobile application leverages Firebase as its back-end service to manage user accounts, authentication through third-party services like Facebook and Google, data storage, and push notifications. Users must have a Google account to access Firebase functionalities and integrate Firebase dependencies into their Android Studio project.
+---
 
-Authentication
-Access to the application requires login using a Google. This step is crucial to ensure user identity verification and prevent impersonation.
+## Vue d'ensemble
 
-Main Views
-Go4Lunch features three primary views accessible via three buttons at the bottom of the screen:
+**Go4Lunch** est une application collaborative destinée aux employés qui souhaitent organiser leurs déjeuners en groupe en sélectionnant des restaurants proches et en partageant leurs choix avec leurs collègues. Elle permet de visualiser les préférences de chaque membre de l’équipe et de coordonner les plans de déjeuner via des notifications de rappel.
 
-Map view of restaurants
-List view of restaurants
-View of colleagues using the app
-By default, the map view of restaurants is displayed upon user login.
+---
 
-Map View
-The app automatically geolocates the user, displaying nearby restaurants with custom pins on the map. Restaurants chosen by colleagues are highlighted with green pins. Users can tap on a pin to view the restaurant's detailed information.
+## Fonctionnalités
 
-List View
-This view provides detailed information about the restaurants on the map, including:
+1. **Authentification sécurisée** : Connexion via un compte Google pour vérifier l’identité de chaque utilisateur.
+2. **Recherche et sélection de restaurants** :
+   - Affichage des restaurants à proximité avec une carte interactive.
+   - Option de marquer un restaurant comme favori.
+3. **Coordination des collègues** :
+   - Affichage des choix de restaurants de chaque utilisateur.
+   - Possibilité de rejoindre le même restaurant que d’autres collègues.
+4. **Notifications de rappel** : Envoi de notifications avant le déjeuner pour rappeler aux utilisateurs l’adresse et les collègues associés au restaurant sélectionné.
+5. **Interface multilingue** : Disponible en français et en anglais.
 
-Restaurant name
-Distance from the user
-Restaurant image (if available)
-Type of restaurant 
-Address
-Number of interested colleagues
-Opening hours
-Number of positive reviews (0 to 5 stars)
-Detailed Restaurant Information
-When a user selects a restaurant, they can view detailed information, including:
+---
 
-A button to indicate their restaurant choice
-A call button to phone the restaurant (if available)
-A like button to express preference (stored on Firebase)
-A website button to visit the restaurant's site (if available)
-A list of colleagues planning to dine at the restaurant (displayed only if there are any)
-Colleagues List
-Displays all colleagues and their restaurant choices, with an option to view the detailed page of the selected restaurant.
+## Architecture et intégration back-end
 
-Search Functionality
-A search icon on each view allows for contextual search, updating the corresponding view with the search results based on restaurant names.
+L’application utilise **Firebase** pour les services de back-end suivants :
 
-Menu
-The menu button reveals a sidebar with profile information, a button to show the chosen restaurant, settings access, and a logout option.
+- **Authentification** : Connexion via OAuth Google.
+- **Base de données en temps réel** : Stockage des informations de restaurant et des préférences utilisateur.
+- **Notifications push** : Rappel de la réservation de restaurant pour le déjeuner.
 
-Notifications
-A notification is sent to users who have selected a restaurant, reminding them of their choice, address, and the colleagues joining them.
+> **Important** : L’accès aux fonctionnalités de Firebase est restreint aux utilisateurs connectés, conformément aux Firebase rules.
 
-Translation
-The application must offer at least French and English versions to cater to international colleagues.
+---
 
-Additional Feature
-Developers can choose to add a chat feature, integrate Twitter authentication, or implement sorting criteria for restaurants.
+## Vue principale et interface utilisateur
 
-Constraints
-The application is to be developed using Java.
+L’application comporte trois vues principales, accessibles par des boutons en bas de l’écran :
 
-Application Screenshots
-The document includes screenshots illustrating the application interface at different stages.
+1. **Vue Carte** : Affiche les restaurants à proximité avec géolocalisation automatique et des marqueurs personnalisés pour les restaurants choisis.
+2. **Vue Liste** : Liste des restaurants avec détails comme la distance, l’adresse, les avis, et le nombre de collègues intéressés.
+3. **Vue des collègues** : Montre les choix de restaurant de chaque utilisateur connecté.
+
+Chaque vue possède une fonction de recherche intégrée pour trouver un restaurant spécifique.
+
+---
+
+## Fonctionnalités complémentaires
+
+En plus des fonctionnalités de base, les options suivantes peuvent être implémentées :
+
+- **Tri avancé des restaurants** : Selon des critères comme la distance, la popularité, ou le type de cuisine.
+- **Chat intégré** : Permettre aux utilisateurs de discuter et de finaliser leurs plans de déjeuner.
+- **Authentification Twitter** : Une option d’authentification complémentaire.
+
+---
+
+## Contraintes et optimisation
+
+**Green code et économies d’énergie** :
+
+- L’appel API pour récupérer la liste des restaurants est effectué une seule fois au démarrage, et les données sont mises en cache pour éviter les appels répétés.
+- L’application est optimisée pour une faible consommation de batterie et de données, en tenant compte des appareils plus anciens.
+
+**Compatibilité** :
+
+- Fonctionne sur toutes les tailles d’écran Android en mode portrait.
+- Prise en charge d’Android 5.0 (Lollipop) et versions ultérieures.
+
+---
+
+## Installation et configuration
+
+### Prérequis
+
+- **Android Studio** : Version Hedgehog (2023.1.1) ou plus récente.
+- **SDK Android minimum** : API 21 (Android 5.0).
+- **Firebase** : Configurer la base de données Firebase et ajouter le fichier `google-services.json` au projet.
+
+### Étapes d’installation
+
+1. **Cloner le dépôt** :
+   ```bash
+   git clone https://github.com/CedricHaegele/OC_P7_Go4Lunch.git
+
 
 <img width="209" alt="image" src="https://github.com/CedricHaegele/OC_P7_Go4Lunch/assets/85683236/96dec6c5-325c-49ec-a152-4e82eaebb5a8">
 <img width="208" alt="image" src="https://github.com/CedricHaegele/OC_P7_Go4Lunch/assets/85683236/d95c07c2-3c60-4497-b7c7-268ebcf927af">
